@@ -83,7 +83,6 @@ public class Lr33Step {
             System.out.println("Last color (alphabetically): " + set.last());
 
             if (set.size() >= 3) {
-                String firstElement = set.first();
                 String lastElement = set.last();
 
                 System.out.println("\nSubset between first and last (exclusive of last):");
