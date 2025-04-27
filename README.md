@@ -7,4 +7,4 @@ This repository was created to store and share(with teachers or anyone else) own
 - [OOP](https://github.com/d3Par1/University-Repository/tree/main/OOP) (Object Oriented Programming)
 - [Crossplatform Programming](https://github.com/d3Par1/University-Repository/tree/main/CrossplatformProgramming)
 
-### Link to my university: [National University Kyiv Polytechnic«Nazar Stepanenko»](https://kpi.ua/)
+### Link to my university: [National University Kyiv Polytechnic «Nazar Stepanenko»](https://kpi.ua/)
