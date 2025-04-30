@@ -7,6 +7,9 @@
 #include <iomanip>
 #include <algorithm>
 
+void experiment_uniform_distribution();
+void experiment_large_stream();
+
 int main() {
   std::setlocale(LC_ALL, "");
   
