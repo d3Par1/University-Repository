@@ -11,6 +11,26 @@
 #include <numeric>
 #include <sstream>
 
+// Forward declarations of functions
+void create_test_files();
+// Removed redundant declaration of compare_approaches
+void save_results_to_csv(const std::vector<ComparisonResult>& results);
+
+// ComparisonResult struct needs to be defined before its use in function declarations
+struct ComparisonResult {
+    std::string file_name;
+    size_t file_size;
+    size_t total_words;
+    size_t unique_words;
+    double uniqueness_ratio;
+    double standard_memory;
+    double dedup_memory;
+    double memory_saving;
+    double standard_time;
+    double dedup_time;
+    double time_diff;
+};
+
 int main() {
   std::setlocale(LC_ALL, "");
   
@@ -41,7 +61,7 @@ int main() {
       }
   }
   
-  auto results = (compare_approaches(existing_files));
+auto results = (perform_comparison(existing_files));
   
   if (!results.empty()) {
       (save_results_to_csv(results));
@@ -56,20 +76,6 @@ struct ProcessingStats {
     size_t memory_usage = 0;
     double processing_time = 0.0;
     double memory_profile = 0.0;
-};
-
-struct ComparisonResult {
-    std::string file_name;
-    size_t file_size;
-    size_t total_words;
-    size_t unique_words;
-    double uniqueness_ratio;
-    double standard_memory;
-    double dedup_memory;
-    double memory_saving;
-    double standard_time;
-    double dedup_time;
-    double time_diff;
 };
 
 struct PairHash {
@@ -173,7 +179,7 @@ public:
     }
 };
 
-std::vector<ComparisonResult> compare_approaches(const std::vector<std::string>& file_paths) {
+std::vector<ComparisonResult> perform_comparison(const std::vector<std::string>& file_paths) {
     std::vector<ComparisonResult> results;
     
     for (const auto& file_path : file_paths) {
