@@ -1,16 +1,14 @@
 {
   "version": "0.2.0",
   "configurations": [
-   
       {
-          "name": "Debug",
+          "name": "C/C++: g++.exe build and debug active file",
           "type": "cppdbg",
           "request": "launch",
-          "program": "D:/OneDrive - kpi.ua/Documents/GitHub/University-Repository/OOP/C++/Lr4/lr4.1.exe",
+          "program": "${fileDirname}/${fileBasenameNoExtension}.exe",
           "args": [],
           "stopAtEntry": false,
-          "cwd": "/cygdrive/d/OneDrive",
-          //"D:/OneDrive - kpi.ua/Documents/GitHub/University-Repository/OOP",
+          "cwd": "${fileDirname}",
           "environment": [],
           "externalConsole": false,
           "MIMode": "gdb",
@@ -22,7 +20,7 @@
                   "ignoreFailures": true
               }
           ],
-          "preLaunchTask": "build"
+          "preLaunchTask": "C/C++: g++.exe build active file"
       }
   ]
 }
