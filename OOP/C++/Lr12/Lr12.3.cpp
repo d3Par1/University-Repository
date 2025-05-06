@@ -48,7 +48,7 @@ public:
     void enqueue(QueueType obj);
     QueueType dequeue();
     bool isEmpty();
-    bool isFull()
+    bool isFull();
 };
 
 template <class QueueType>
