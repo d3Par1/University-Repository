@@ -1,4 +1,4 @@
-// Main class Lr41Petr
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
