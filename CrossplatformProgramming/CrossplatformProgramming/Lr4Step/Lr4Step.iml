@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/../production/production/Lr4Step" />
+    <output-test url="file://$MODULE_DIR$/../production/test/Lr4Step" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../Lr4Step">
+      <sourceFolder url="file://$MODULE_DIR$/../../Lr4Step" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="openjdk-24" jdkType="JavaSDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
