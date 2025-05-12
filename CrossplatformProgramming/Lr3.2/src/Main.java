@@ -1,5 +1,4 @@
 
-
 public static void main(String[] args) {
     int[] sequence1 = { -5, 3, 0, -2, 4, 0, -1, 7, -3, 8 };
     int[] sequence2 = { 6, -4, 0, 0, 2, -8, 1, -1, 5, -6, 3 };
