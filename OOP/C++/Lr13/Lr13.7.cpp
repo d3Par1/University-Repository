@@ -1,45 +1,38 @@
 #include <iostream>
 using namespace std;
 
-// Абстрактний базовий клас DataStruct
 class DataStruct {
 protected:
-    int *data;     // Масив для зберігання даних
-    int size;      // Максимальний розмір структури даних
-    int count;     // Поточна кількість елементів
+    int *data;    
+    int size;   
+    int count;     
     
 public:
-    // Конструктор
     DataStruct(int s) {
-        size = s > 0 ? s : 10; // Мінімальний розмір 10
+        size = s > 0 ? s : 10; 
         data = new int[size];
         count = 0;
     }
     
-    // Віртуальний деструктор для правильного звільнення пам'яті
     virtual ~DataStruct() {
         delete[] data;
     }
     
-    // Абстрактні методи, які повинні бути реалізовані в похідних класах
-    virtual void add(int item) = 0;  // Додати елемент
-    virtual int remove() = 0;        // Видалити та повернути елемент
-    virtual bool isEmpty() = 0;      // Перевірка чи структура порожня
-    virtual bool isFull() = 0;       // Перевірка чи структура заповнена
-    virtual void display() = 0;      // Відображення вмісту
+    virtual void add(int item) = 0; 
+    virtual int remove() = 0;      
+    virtual bool isEmpty() = 0;    
+    virtual bool isFull() = 0; 
+    virtual void display() = 0;
     
-    // Неабстрактний метод для отримання кількості елементів
     int getCount() {
         return count;
     }
 };
 
-// Похідний клас Stack (Стек) - працює за принципом LIFO (Last In First Out)
 class Stack : public DataStruct {
 public:
     Stack(int s) : DataStruct(s) {}
     
-    // Додавання елемента на вершину стеку
     void add(int item) override {
         if (isFull()) {
             cout << "Stack overflow! Cannot add element: " << item << endl;
@@ -49,28 +42,24 @@ public:
         cout << "Added " << item << " to stack" << endl;
     }
     
-    // Видалення елемента з вершини стеку
     int remove() override {
         if (isEmpty()) {
             cout << "Stack underflow! Cannot remove element from empty stack." << endl;
-            return -1; // Повертаємо -1 як ознаку помилки
+            return -1;
         }
         int item = data[--count];
         cout << "Removed " << item << " from stack" << endl;
         return item;
     }
     
-    // Перевірка чи стек порожній
     bool isEmpty() override {
         return count == 0;
     }
     
-    // Перевірка чи стек заповнений
     bool isFull() override {
         return count == size;
     }
     
-    // Відображення елементів стеку
     void display() override {
         if (isEmpty()) {
             cout << "Stack is empty" << endl;
@@ -86,11 +75,10 @@ public:
     }
 };
 
-// Похідний клас Queue (Черга) - працює за принципом FIFO (First In First Out)
 class Queue : public DataStruct {
 private:
-    int front;  // Індекс першого елемента (голова черги)
-    int rear;   // Індекс останнього елемента (хвіст черги)
+    int front;
+    int rear;
     
 public:
     Queue(int s) : DataStruct(s) {
@@ -98,14 +86,12 @@ public:
         rear = -1;
     }
     
-    // Додавання елемента в кінець черги
     void add(int item) override {
         if (isFull()) {
             cout << "Queue overflow! Cannot add element: " << item << endl;
             return;
         }
         
-        // Циклічне збільшення rear для кругового буфера
         rear = (rear + 1) % size;
         data[rear] = item;
         count++;
@@ -113,16 +99,14 @@ public:
         cout << "Added " << item << " to queue" << endl;
     }
     
-    // Видалення елемента з початку черги
     int remove() override {
         if (isEmpty()) {
             cout << "Queue underflow! Cannot remove element from empty queue." << endl;
-            return -1; // Повертаємо -1 як ознаку помилки
+            return -1;
         }
         
         int item = data[front];
         
-        // Циклічне збільшення front для кругового буфера
         front = (front + 1) % size;
         count--;
         
@@ -130,17 +114,14 @@ public:
         return item;
     }
     
-    // Перевірка чи черга порожня
     bool isEmpty() override {
         return count == 0;
     }
     
-    // Перевірка чи черга заповнена
     bool isFull() override {
         return count == size;
     }
     
-    // Відображення елементів черги
     void display() override {
         if (isEmpty()) {
             cout << "Queue is empty" << endl;
@@ -159,9 +140,8 @@ public:
     }
 };
 
-// Функція фабрики для створення об'єктів DataStruct
 DataStruct *DataStructFactory(char what) {
-    const int DEFAULT_SIZE = 5; // Розмір за замовчуванням для демонстраційних цілей
+    const int DEFAULT_SIZE = 5;
     
     if (what == 's' || what == 'S') {
         cout << "Creating Stack with size " << DEFAULT_SIZE << endl;
@@ -176,71 +156,56 @@ DataStruct *DataStructFactory(char what) {
     return nullptr;
 }
 
-// Демонстраційна функція для тестування стеку
 void demoStack() {
     cout << "\n=== STACK DEMONSTRATION ===\n";
     
     DataStruct *stack = DataStructFactory('s');
     
-    // Додавання елементів
     for (int i = 1; i <= 6; i++) {
         stack->add(i * 10);
     }
     
-    // Відображення стеку
     stack->display();
     
-    // Видалення елементів
     for (int i = 0; i < 3; i++) {
         stack->remove();
     }
     
-    // Відображення після видалення
     stack->display();
     
-    // Додавання після видалення
     stack->add(100);
     stack->add(200);
     
-    // Фінальне відображення
     stack->display();
     
     delete stack;
 }
 
-// Демонстраційна функція для тестування черги
 void demoQueue() {
     cout << "\n=== QUEUE DEMONSTRATION ===\n";
     
     DataStruct *queue = DataStructFactory('q');
     
-    // Додавання елементів
     for (int i = 1; i <= 6; i++) {
         queue->add(i * 10);
     }
     
-    // Відображення черги
     queue->display();
     
-    // Видалення елементів
     for (int i = 0; i < 3; i++) {
         queue->remove();
     }
     
-    // Відображення після видалення
     queue->display();
     
-    // Додавання після видалення
     queue->add(100);
     queue->add(200);
     
-    // Фінальне відображення
     queue->display();
     
     delete queue;
 }
 
-// Інтерактивна демонстрація з вибором користувача
 void interactiveDemo() {
     char choice;
     
@@ -290,13 +255,10 @@ void interactiveDemo() {
 int main() {
     cout << "=== DataStruct Hierarchy Demonstration ===\n";
     
-    // Автоматична демонстрація стеку
     demoStack();
     
-    // Автоматична демонстрація черги
     demoQueue();
     
-    // Інтерактивна демонстрація
     interactiveDemo();
  
     return 0;

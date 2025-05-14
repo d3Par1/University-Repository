@@ -1,15 +1,11 @@
-// typeinfo.cpp
-// Демонстрація використання заголовного файлу <typeinfo> та RTTI в C++
-
 #include <iostream>
-#include <typeinfo>   // Для використання typeid та std::type_info
+#include <typeinfo>
 #include <string>
-#include <cxxabi.h>   // Для demangle імен типів (GCC/Clang специфічно)
+#include <cxxabi.h>
 using namespace std;
 
-// Функція для отримання читабельної назви типу (для GCC/Clang)
 string demangle(const char* name) {
-#ifdef __GNUG__ // GNU C++ compiler (g++)
+#ifdef __GNUG__ 
     int status = -1;
     char* demangledName = abi::__cxa_demangle(name, NULL, NULL, &status);
     if (status == 0) {
@@ -19,21 +15,18 @@ string demangle(const char* name) {
     }
     return name;
 #else
-    // Для інших компіляторів
     return name;
 #endif
 }
 
-// Базовий клас з віртуальною функцією
 class Base {
 public:
     virtual void virtualFunc() {
         cout << "Base::virtualFunc()" << endl;
     }
-    virtual ~Base() {} // Віртуальний деструктор
+    virtual ~Base() {} 
 };
 
-// Похідний клас
 class Derived : public Base {
 public:
     void virtualFunc() override {
@@ -41,7 +34,6 @@ public:
     }
 };
 
-// Демонстрація typeid з фундаментальними типами
 void demo_fundamental_types() {
     cout << "\n=== Fundamental Types demonstration ===\n";
     
@@ -53,24 +45,20 @@ void demo_fundamental_types() {
     cout << "Type of d: " << typeid(d).name() << " (demangled: " << demangle(typeid(d).name()) << ")" << endl;
     cout << "Type of c: " << typeid(c).name() << " (demangled: " << demangle(typeid(c).name()) << ")" << endl;
     
-    // Порівняння типів
     cout << "\nComparing types:\n";
     cout << "typeid(i) == typeid(int): " << (typeid(i) == typeid(int) ? "true" : "false") << endl;
     cout << "typeid(d) == typeid(int): " << (typeid(d) == typeid(int) ? "true" : "false") << endl;
 }
 
-// Демонстрація typeid з поліморфними класами
 void demo_polymorphic_classes() {
     cout << "\n=== Polymorphic Classes demonstration ===\n";
     
     Base baseObj;
     Derived derivedObj;
     
-    // Типи статичних об'єктів
     cout << "Type of baseObj: " << typeid(baseObj).name() << " (demangled: " << demangle(typeid(baseObj).name()) << ")" << endl;
     cout << "Type of derivedObj: " << typeid(derivedObj).name() << " (demangled: " << demangle(typeid(derivedObj).name()) << ")" << endl;
     
-    // Використання вказівників та поліморфізм
     Base* pBase1 = &baseObj;
     Base* pBase2 = &derivedObj;
     
@@ -78,22 +66,18 @@ void demo_polymorphic_classes() {
     cout << "Type of *pBase1: " << typeid(*pBase1).name() << " (demangled: " << demangle(typeid(*pBase1).name()) << ")" << endl;
     cout << "Type of *pBase2: " << typeid(*pBase2).name() << " (demangled: " << demangle(typeid(*pBase2).name()) << ")" << endl;
     
-    // Демонстрація поліморфної поведінки
     cout << "\nPolymorphic behavior:\n";
     pBase1->virtualFunc();
     pBase2->virtualFunc();
 }
 
-// Демонстрація dynamic_cast
 void demo_dynamic_cast() {
     cout << "\n=== dynamic_cast demonstration ===\n";
     
     Base* pBase = new Derived();
     
-    // Використання typeid для перевірки
     cout << "Type of *pBase: " << typeid(*pBase).name() << " (demangled: " << demangle(typeid(*pBase).name()) << ")" << endl;
     
-    // Безпечне приведення типів за допомогою dynamic_cast
     Derived* pDerived = dynamic_cast<Derived*>(pBase);
     
     if (pDerived) {
@@ -102,7 +86,6 @@ void demo_dynamic_cast() {
         cout << "dynamic_cast failed: pBase is not pointing to a Derived object" << endl;
     }
     
-    // Невдала спроба приведення
     Base* pBase2 = new Base();
     Derived* pDerived2 = dynamic_cast<Derived*>(pBase2);
     
@@ -112,12 +95,10 @@ void demo_dynamic_cast() {
         cout << "dynamic_cast failed: pBase2 is not pointing to a Derived object" << endl;
     }
     
-    // Звільнення пам'яті
     delete pBase;
     delete pBase2;
 }
 
-// Демонстрація методів class std::type_info
 void demo_type_info_methods() {
     cout << "\n=== std::type_info methods demonstration ===\n";
     
@@ -126,23 +107,19 @@ void demo_type_info_methods() {
     const type_info& base_info = typeid(Base);
     const type_info& derived_info = typeid(Derived);
     
-    // name() method
     cout << "int_info.name(): " << int_info.name() << " (demangled: " << demangle(int_info.name()) << ")" << endl;
     cout << "double_info.name(): " << double_info.name() << " (demangled: " << demangle(double_info.name()) << ")" << endl;
     
-    // hash_code() method
     cout << "\nHash codes:\n";
     cout << "int_info.hash_code(): " << int_info.hash_code() << endl;
     cout << "double_info.hash_code(): " << double_info.hash_code() << endl;
     cout << "base_info.hash_code(): " << base_info.hash_code() << endl;
     cout << "derived_info.hash_code(): " << derived_info.hash_code() << endl;
     
-    // operator== and operator!=
     cout << "\nOperator == and !=:\n";
     cout << "int_info == double_info: " << (int_info == double_info ? "true" : "false") << endl;
     cout << "base_info != derived_info: " << (base_info != derived_info ? "true" : "false") << endl;
     
-    // before() method - для сортування/порівняння
     cout << "\nbefore() method (collation order):\n";
     cout << "int_info.before(double_info): " << (int_info.before(double_info) ? "true" : "false") << endl;
     cout << "double_info.before(int_info): " << (double_info.before(int_info) ? "true" : "false") << endl;
@@ -150,11 +127,9 @@ void demo_type_info_methods() {
     cout << "derived_info.before(base_info): " << (derived_info.before(base_info) ? "true" : "false") << endl;
 }
 
-// Демонстрація можливих помилок при використанні typeid
 void demo_common_mistakes() {
     cout << "\n=== Common Mistakes with typeid ===\n";
     
-    // 1. Типід на вказівник, а не на об'єкт
     Base* pBase = new Derived();
     
     cout << "typeid(pBase).name(): " << typeid(pBase).name() 
@@ -163,7 +138,6 @@ void demo_common_mistakes() {
     cout << "typeid(*pBase).name(): " << typeid(*pBase).name() 
          << " - правильно: тип об'єкта" << endl;
     
-    // 2. Використання typeid з непоялиморфними класами
     class NonPolymorphic {};
     class DerivedNonPolymorphic : public NonPolymorphic {};
     
@@ -173,7 +147,6 @@ void demo_common_mistakes() {
     cout << "typeid(*pNon).name(): " << typeid(*pNon).name() 
          << " - неправильно визначає тип, бо базовий клас не є поліморфним!" << endl;
     
-    // 3. Забуття включити <typeinfo>
     cout << "\nDon't forget to #include <typeinfo> before using typeid or dynamic_cast!" << endl;
     
     delete pBase;

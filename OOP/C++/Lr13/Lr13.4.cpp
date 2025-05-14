@@ -1,26 +1,20 @@
 #include <iostream>
 using namespace std;
 
-// Функція з константним параметром, яка намагається змінити його значення
 void f(const double &i) {
-    // Помилка: спроба модифікувати константний параметр
-    // i = 100; // Це викликає помилку компіляції
     
-    // Використовуємо const_cast для зняття константності
     double& non_const_i = const_cast<double&>(i);
     non_const_i = 100;
 }
 
-// Демонстрація небезпечного використання const_cast з константним об'єктом
 void danger_example1() {
     cout << "\nНебезпечний приклад 1:\n";
     
     const double value = 10.0;
     cout << "Початкове значення константи: " << value << endl;
     
-    // Зняття константності з константного об'єкта - це погана практика
     double& ref = const_cast<double&>(value);
-    ref = 20.0; // Це призведе до невизначеної поведінки!
+    ref = 20.0;
     
     cout << "Значення після модифікації через const_cast: " << value << endl;
     cout << "Значення ref: " << ref << endl;
@@ -28,13 +22,12 @@ void danger_example1() {
     cout << "модифікуємо об'єкт, який був визначений як const!\n";
 }
 
-// Демонстрація проблеми з const_cast при роботі з функціями API
 void danger_example2() {
     cout << "\nНебезпечний приклад 2:\n";
     cout << "Уявімо, що ми працюємо з API функцією, яка приймає тільки неконстантний вказівник:\n";
     cout << "void some_api_function(char* str) { ... }\n\n";
     
-    const char* const_str = "Hello"; // Рядковий літерал - константний за замовчуванням
+    const char* const_str = "Hello";
     
     cout << "Початковий рядок: " << const_str << endl;
     cout << "Використання const_cast для виклику API:\n";
@@ -53,7 +46,6 @@ int main() {
     
     cout << "Значення x після виклику f(): " << x << endl;
     
-    // Демонстрація небезпечних випадків використання const_cast
     danger_example1();
     danger_example2();
     
