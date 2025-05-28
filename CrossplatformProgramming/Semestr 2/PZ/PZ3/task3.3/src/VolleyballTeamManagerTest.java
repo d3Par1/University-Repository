@@ -5,7 +5,8 @@ import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-// Розширений клас VolleyballTeamManager з функцією запису у файлclass EnhancedVolleyballTeamManager extends VolleyballTeamManager {
+// Розширений клас VolleyballTeamManager з функцією запису у файл
+class EnhancedVolleyballTeamManager extends VolleyballTeamManager {
 
     // Метод для запису списку гравців у файл
     public void savePlayersToFile(String fileName) throws IOException {
