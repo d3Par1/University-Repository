@@ -88,4 +88,5 @@ public class Lr3_1 {
             System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
         }
     }
+    public static void KeyValue (Map<String , String > map, Scanner scanner) {}
 }
