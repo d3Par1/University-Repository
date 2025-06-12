@@ -1,252 +1,498 @@
+// Лабораторна робота 4 - Завдання 1
+// Клас для зберігання даних про співробітників у LinkedHashSet
+// Автор: Студент групи ТВ-43, прізвище Step
+// Варіант 16
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
+import java.io.*;
+import java.text.SimpleDateFormat;
 
-public class Lr4_1 {
-    public static void main(String[] args) {
-        EmployeeManager manager = new EmployeeManager();
-
-        // Method 1: Adding employees programmatically (3 data sets)
-        // Data set 1
-        manager.addEmployee(new Employee("Іванов Іван", 25, 28000.0));
-        manager.addEmployee(new Employee("Петров Петро", 30, 32000.0));
-        manager.addEmployee(new Employee("Сидоренко Сидір", 35, 35000.0));
-        manager.addEmployee(new Employee("Ковальчук Марія", 28, 30000.0));
-        manager.addEmployee(new Employee("Шевченко Тарас", 40, 45000.0));
-
-        // Data set 2
-        manager.addEmployee(new Employee("Мельник Олена", 27, 29000.0));
-        manager.addEmployee(new Employee("Бондаренко Богдан", 32, 33000.0));
-        manager.addEmployee(new Employee("Кравченко Катерина", 29, 31000.0));
-        manager.addEmployee(new Employee("Коваленко Костянтин", 34, 36000.0));
-        manager.addEmployee(new Employee("Ткаченко Тимофій", 45, 48000.0));
-
-        // Data set 3
-        manager.addEmployee(new Employee("Савченко Софія", 26, 27500.0));
-        manager.addEmployee(new Employee("Романенко Роман", 31, 33500.0));
-        manager.addEmployee(new Employee("Данилюк Дарія", 30, 32500.0));
-        manager.addEmployee(new Employee("Лисенко Леонід", 38, 40000.0));
-        manager.addEmployee(new Employee("Павленко Павло", 42, 46000.0));
-
-        // Output to console and file
-        System.out.println("=== Співробітники, додані програмно ===");
-        String initialData = manager.displayEmployees();
-        System.out.println(initialData);
-
-        // Save to file
-        try {
-            saveToFile("employees_output.txt", "=== Початковий список співробітників ===\n" + initialData);
-        } catch (IOException e) {
-            System.out.println("Помилка при збереженні у файл: " + e.getMessage());
-        }
-
-        // Method 2: Interactive user mode
-        Scanner scanner = new Scanner(System.in);
-        boolean exit = false;
-
-        while (!exit) {
-            System.out.println("\nМеню управління співробітниками:");
-            System.out.println("1. Додати співробітника");
-            System.out.println("2. Видалити співробітника");
-            System.out.println("3. Показати всіх співробітників");
-            System.out.println("4. Вихід");
-            System.out.print("Оберіть опцію (1-4): ");
-
-            int choice = 0;
-            try {
-                choice = Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Будь ласка, введіть число від 1 до 4.");
-                continue;
-            }
-
-            switch (choice) {
-                case 1:
-                    addEmployeeInteractive(scanner, manager);
-                    break;
-                case 2:
-                    removeEmployeeInteractive(scanner, manager);
-                    break;
-                case 3:
-                    String employees = manager.displayEmployees();
-                    System.out.println("=== Список співробітників ===");
-                    System.out.println(employees);
-
-                    // Save to file
-                    try {
-                        appendToFile("employees_output.txt", "\n\n=== Оновлений список співробітників ===\n" + employees);
-                    } catch (IOException e) {
-                        System.out.println("Помилка при збереженні у файл: " + e.getMessage());
-                    }
-                    break;
-                case 4:
-                    exit = true;
-                    System.out.println("Дякуємо за використання програми!");
-                    break;
-                default:
-                    System.out.println("Невірний вибір. Будь ласка, введіть число від 1 до 4.");
-            }
-        }
-
-        scanner.close();
-    }
-
-    private static void addEmployeeInteractive(Scanner scanner, EmployeeManager manager) {
-        System.out.println("=== Додавання нового співробітника ===");
-
-        System.out.print("Введіть ПІБ: ");
-        String name = scanner.nextLine();
-
-        int age = 0;
-        while (age < 18 || age > 65) {
-            System.out.print("Введіть вік (18-65): ");
-            try {
-                age = Integer.parseInt(scanner.nextLine());
-                if (age < 18 || age > 65) {
-                    System.out.println("Вік має бути між 18 та 65 роками.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Будь ласка, введіть правильне число.");
-            }
-        }
-
-        double salary = 0;
-        while (salary <= 0) {
-            System.out.print("Введіть зарплату: ");
-            try {
-                salary = Double.parseDouble(scanner.nextLine());
-                if (salary <= 0) {
-                    System.out.println("Зарплата має бути більше 0.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Будь ласка, введіть правильне число.");
-            }
-        }
-
-        Employee employee = new Employee(name, age, salary);
-        boolean added = manager.addEmployee(employee);
-
-        if (added) {
-            System.out.println("Співробітник успішно доданий!");
-
-            // Save to file
-            try {
-                appendToFile("employees_output.txt", "\n\n=== Додано нового співробітника ===\n" + employee);
-            } catch (IOException e) {
-                System.out.println("Помилка при збереженні у файл: " + e.getMessage());
-            }
-        } else {
-            System.out.println("Співробітник з таким ім'ям вже існує!");
-        }
-    }
-
-    private static void removeEmployeeInteractive(Scanner scanner, EmployeeManager manager) {
-        System.out.println("=== Видалення співробітника ===");
-        System.out.print("Введіть ПІБ співробітника для видалення: ");
-        String name = scanner.nextLine();
-
-        boolean removed = manager.removeEmployee(name);
-
-        if (removed) {
-            System.out.println("Співробітник успішно видалений!");
-
-            // Save to file
-            try {
-                appendToFile("employees_output.txt", "\n\n=== Видалено співробітника ===\n" + name);
-            } catch (IOException e) {
-                System.out.println("Помилка при збереженні у файл: " + e.getMessage());
-            }
-        } else {
-            System.out.println("Співробітник з таким ім'ям не знайдений!");
-        }
-    }
-
-    private static void saveToFile(String fileName, String content) throws IOException {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
-            writer.println(content);
-        }
-    }
-
-    private static void appendToFile(String fileName, String content) throws IOException {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName, true))) {
-            writer.println(content);
-        }
-    }
-}
-
-// Employee class
+// Клас співробітника
 class Employee {
     private String name;
     private int age;
     private double salary;
+    private String position;
+    private String department;
+    private Date hireDate;
 
-    public Employee(String name, int age, double salary) {
+    public Employee(String name, int age, double salary, String position, String department) {
         this.name = name;
         this.age = age;
         this.salary = salary;
+        this.position = position;
+        this.department = department;
+        this.hireDate = new Date(); // поточна дата як дата найму
     }
 
-    public String getName() {
-        return name;
+    public Employee(String name, int age, double salary) {
+        this(name, age, salary, "Не вказано", "Не вказано");
     }
 
-    public int getAge() {
-        return age;
-    }
+    // Геттери
+    public String getName() { return name; }
+    public int getAge() { return age; }
+    public double getSalary() { return salary; }
+    public String getPosition() { return position; }
+    public String getDepartment() { return department; }
+    public Date getHireDate() { return hireDate; }
 
-    public double getSalary() {
-        return salary;
-    }
+    // Сеттери
+    public void setName(String name) { this.name = name; }
+    public void setAge(int age) { this.age = age; }
+    public void setSalary(double salary) { this.salary = salary; }
+    public void setPosition(String position) { this.position = position; }
+    public void setDepartment(String department) { this.department = department; }
+    public void setHireDate(Date hireDate) { this.hireDate = hireDate; }
 
+    // Рівність базується на імені та віку
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Employee employee = (Employee) o;
-        return Objects.equals(name, employee.name);
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Employee employee = (Employee) obj;
+        return age == employee.age && Objects.equals(name, employee.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, age);
     }
 
     @Override
     public String toString() {
-        return String.format("ПІБ: %-25s | Вік: %-3d | Зарплата: %.2f грн", name, age, salary);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        return String.format("%-20s | %-3d років | %-8.2f грн | %-15s | %-12s | %s",
+            name, age, salary, position, department, dateFormat.format(hireDate));
+    }
+
+    // Детальна інформація
+    public String getDetailedInfo() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        return String.format(
+            "Ім'я: %s\nВік: %d років\nЗарплата: %.2f грн\nПосада: %s\nВідділ: %s\nДата найму: %s\n",
+            name, age, salary, position, department, dateFormat.format(hireDate));
     }
 }
 
-// EmployeeManager class
-class EmployeeManager {
-    private Set<Employee> employees;
+// Головний клас для управління співробітниками
+public class Lr4_1 {
+    private LinkedHashSet<Employee> employees;
+    private Random random;
 
-    public EmployeeManager() {
-        this.employees = new LinkedHashSet<>();
+    public Lr4_1() {
+        employees = new LinkedHashSet<>();
+        random = new Random();
+        initializeWithSampleData();
     }
 
+    // Ініціалізація з тестовими даними
+    private void initializeWithSampleData() {
+        // Набір 1: IT відділ
+        addEmployee(new Employee("Олександр Петренко", 28, 45000, "Java розробник", "IT"));
+        addEmployee(new Employee("Марія Коваленко", 32, 52000, "Senior Developer", "IT"));
+        addEmployee(new Employee("Дмитро Шевченко", 25, 38000, "Junior Developer", "IT"));
+
+        // Набір 2: HR відділ
+        addEmployee(new Employee("Анна Бондаренко", 30, 35000, "HR менеджер", "HR"));
+        addEmployee(new Employee("Володимир Мельник", 45, 48000, "HR директор", "HR"));
+
+        // Набір 3: Фінансовий відділ
+        addEmployee(new Employee("Катерина Ткаченко", 27, 42000, "Бухгалтер", "Фінанси"));
+        addEmployee(new Employee("Сергій Морозов", 35, 55000, "Фін. директор", "Фінанси"));
+
+        System.out.println("✅ Початкові дані завантажено: " + employees.size() + " співробітників");
+    }
+
+    // Додавання співробітника
     public boolean addEmployee(Employee employee) {
-        return employees.add(employee);
+        if (employee == null) {
+            System.out.println("❌ Помилка: співробітник не може бути null");
+            return false;
+        }
+
+        boolean added = employees.add(employee);
+        if (added) {
+            System.out.println("✅ Співробітника додано: " + employee.getName());
+        } else {
+            System.out.println("⚠️ Співробітник з таким ім'ям та віком вже існує: " + employee.getName());
+        }
+        return added;
     }
 
-    public boolean removeEmployee(String name) {
-        return employees.removeIf(e -> e.getName().equalsIgnoreCase(name));
+    // Видалення співробітника
+    public boolean removeEmployee(Employee employee) {
+        boolean removed = employees.remove(employee);
+        if (removed) {
+            System.out.println("✅ Співробітника видалено: " + employee.getName());
+        } else {
+            System.out.println("❌ Співробітника не знайдено");
+        }
+        return removed;
     }
 
-    public String displayEmployees() {
+    // Пошук співробітника за іменем
+    public Employee findEmployeeByName(String name) {
+        for (Employee emp : employees) {
+            if (emp.getName().equalsIgnoreCase(name)) {
+                return emp;
+            }
+        }
+        return null;
+    }
+
+    // Пошук співробітників за віком
+    public List<Employee> findEmployeesByAge(int age) {
+        List<Employee> result = new ArrayList<>();
+        for (Employee emp : employees) {
+            if (emp.getAge() == age) {
+                result.add(emp);
+            }
+        }
+        return result;
+    }
+
+    // Пошук співробітників за відділом
+    public List<Employee> findEmployeesByDepartment(String department) {
+        List<Employee> result = new ArrayList<>();
+        for (Employee emp : employees) {
+            if (emp.getDepartment().equalsIgnoreCase(department)) {
+                result.add(emp);
+            }
+        }
+        return result;
+    }
+
+    // Пошук співробітників за діапазоном зарплати
+    public List<Employee> findEmployeesBySalaryRange(double minSalary, double maxSalary) {
+        List<Employee> result = new ArrayList<>();
+        for (Employee emp : employees) {
+            if (emp.getSalary() >= minSalary && emp.getSalary() <= maxSalary) {
+                result.add(emp);
+            }
+        }
+        return result;
+    }
+
+    // Виведення всіх співробітників
+    public void displayAllEmployees() {
+        System.out.println("\n👥 СПИСОК СПІВРОБІТНИКІВ (" + employees.size() + " осіб)");
+        System.out.println("=" .repeat(85));
+
         if (employees.isEmpty()) {
-            return "Немає співробітників.";
+            System.out.println("Список співробітників порожній");
+            return;
         }
 
-        StringBuilder sb = new StringBuilder();
-        int index = 1;
+        System.out.println("Ім'я                 | Вік     | Зарплата  | Посада          | Відділ       | Дата найму");
+        System.out.println("-" .repeat(85));
 
-        for (Employee employee : employees) {
-            sb.append(String.format("%d. %s\n", index++, employee));
+        for (Employee emp : employees) {
+            System.out.println(emp);
         }
 
-        return sb.toString();
+        System.out.println("-" .repeat(85));
+        System.out.printf("Загальна кількість: %d співробітників\n", employees.size());
+    }
+
+    // Статистика
+    public void displayStatistics() {
+        System.out.println("\n📊 СТАТИСТИКА СПІВРОБІТНИКІВ");
+        System.out.println("=" .repeat(40));
+
+        if (employees.isEmpty()) {
+            System.out.println("Немає даних для статистики");
+            return;
+        }
+
+        // Загальна статистика
+        double totalSalary = employees.stream().mapToDouble(Employee::getSalary).sum();
+        double avgSalary = employees.stream().mapToDouble(Employee::getSalary).average().orElse(0);
+        double maxSalary = employees.stream().mapToDouble(Employee::getSalary).max().orElse(0);
+        double minSalary = employees.stream().mapToDouble(Employee::getSalary).min().orElse(0);
+
+        double avgAge = employees.stream().mapToInt(Employee::getAge).average().orElse(0);
+        int maxAge = employees.stream().mapToInt(Employee::getAge).max().orElse(0);
+        int minAge = employees.stream().mapToInt(Employee::getAge).min().orElse(0);
+
+        System.out.printf("Загальна кількість: %d\n", employees.size());
+        System.out.printf("Загальний фонд зарплати: %.2f грн\n", totalSalary);
+        System.out.printf("Середня зарплата: %.2f грн\n", avgSalary);
+        System.out.printf("Мінімальна зарплата: %.2f грн\n", minSalary);
+        System.out.printf("Максимальна зарплата: %.2f грн\n", maxSalary);
+        System.out.printf("Середній вік: %.1f років\n", avgAge);
+        System.out.printf("Мінімальний вік: %d років\n", minAge);
+        System.out.printf("Максимальний вік: %d років\n", maxAge);
+
+        // Статистика по відділах
+        System.out.println("\nСтатистика по відділах:");
+        Map<String, List<Employee>> byDepartment = new HashMap<>();
+        for (Employee emp : employees) {
+            byDepartment.computeIfAbsent(emp.getDepartment(), k -> new ArrayList<>()).add(emp);
+        }
+
+        for (Map.Entry<String, List<Employee>> entry : byDepartment.entrySet()) {
+            String dept = entry.getKey();
+            List<Employee> deptEmployees = entry.getValue();
+            double deptAvgSalary = deptEmployees.stream().mapToDouble(Employee::getSalary).average().orElse(0);
+
+            System.out.printf("  %s: %d осіб, середня зарплата: %.2f грн\n",
+                dept, deptEmployees.size(), deptAvgSalary);
+        }
+
+        // Вікові групи
+        System.out.println("\nВікові групи:");
+        long young = employees.stream().filter(e -> e.getAge() < 30).count();
+        long middle = employees.stream().filter(e -> e.getAge() >= 30 && e.getAge() < 45).count();
+        long senior = employees.stream().filter(e -> e.getAge() >= 45).count();
+
+        System.out.printf("  Молоді (< 30 років): %d\n", young);
+        System.out.printf("  Середні (30-44 роки): %d\n", middle);
+        System.out.printf("  Старші (45+ років): %d\n", senior);
+    }
+
+    // Сортування співробітників
+    public void sortEmployees(String criterion) {
+        List<Employee> sorted = new ArrayList<>(employees);
+
+        switch (criterion.toLowerCase()) {
+            case "name":
+            case "ім'я":
+                sorted.sort(Comparator.comparing(Employee::getName));
+                break;
+            case "age":
+            case "вік":
+                sorted.sort(Comparator.comparing(Employee::getAge));
+                break;
+            case "salary":
+            case "зарплата":
+                sorted.sort(Comparator.comparing(Employee::getSalary).reversed());
+                break;
+            case "department":
+            case "відділ":
+                sorted.sort(Comparator.comparing(Employee::getDepartment)
+                    .thenComparing(Employee::getName));
+                break;
+            default:
+                System.out.println("❌ Невірний критерій сортування");
+                return;
+        }
+
+        System.out.println("\n📋 Співробітники відсортовані за: " + criterion);
+        System.out.println("=" .repeat(85));
+        System.out.println("Ім'я                 | Вік     | Зарплата  | Посада          | Відділ       | Дата найму");
+        System.out.println("-" .repeat(85));
+
+        for (Employee emp : sorted) {
+            System.out.println(emp);
+        }
+    }
+
+    // Збереження у файл
+    public void saveToFile(String filename) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
+            writer.println("=== ЗВІТ ПО СПІВРОБІТНИКАХ ===");
+            writer.println("Дата створення: " + new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date()));
+            writer.println("Студент: групи ТВ-43, прізвище Step, варіант 16");
+            writer.println();
+
+            writer.println("ПОЧАТКОВІ ДАНІ:");
+            for (Employee emp : employees) {
+                writer.println(emp.getDetailedInfo());
+                writer.println("-" .repeat(40));
+            }
+
+            writer.println("СТАТИСТИКА:");
+            if (!employees.isEmpty()) {
+                double avgSalary = employees.stream().mapToDouble(Employee::getSalary).average().orElse(0);
+                double avgAge = employees.stream().mapToInt(Employee::getAge).average().orElse(0);
+
+                writer.printf("Загальна кількість: %d співробітників\n", employees.size());
+                writer.printf("Середня зарплата: %.2f грн\n", avgSalary);
+                writer.printf("Середній вік: %.1f років\n", avgAge);
+            }
+
+            System.out.println("✅ Дані збережено у файл: " + filename);
+        } catch (IOException e) {
+            System.out.println("❌ Помилка збереження файлу: " + e.getMessage());
+        }
+    }
+
+    // Генерація випадкових співробітників
+    public void generateRandomEmployees(int count) {
+        String[] names = {
+            "Олексій Іваненко", "Тетяна Петрова", "Микола Сидоренко", "Ольга Коваль",
+            "Андрій Лисенко", "Юлія Федорова", "Віктор Мороз", "Наталія Козлова",
+            "Павло Крамар", "Світлана Гончар", "Роман Клименко", "Ірина Савченко"
+        };
+
+        String[] positions = {
+            "Менеджер", "Аналітик", "Спеціаліст", "Консультант", "Координатор",
+            "Розробник", "Дизайнер", "Тестувальник", "Адміністратор"
+        };
+
+        String[] departments = {"IT", "HR", "Фінанси", "Маркетинг", "Продажі", "Логістика"};
+
+        System.out.printf("Генерація %d випадкових співробітників...\n", count);
+
+        for (int i = 0; i < count; i++) {
+            String name = names[random.nextInt(names.length)];
+            int age = 22 + random.nextInt(43); // 22-65 років
+            double salary = 25000 + random.nextInt(75000); // 25k-100k
+            String position = positions[random.nextInt(positions.length)];
+            String department = departments[random.nextInt(departments.length)];
+
+            Employee emp = new Employee(name, age, salary, position, department);
+            addEmployee(emp);
+        }
+    }
+
+    // Інтерактивне меню
+    public void showInteractiveMenu() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\n🎮 МЕНЮ УПРАВЛІННЯ СПІВРОБІТНИКАМИ");
+            System.out.println("=" .repeat(40));
+            System.out.println("1. Показати всіх співробітників");
+            System.out.println("2. Додати співробітника");
+            System.out.println("3. Видалити співробітника");
+            System.out.println("4. Знайти співробітника");
+            System.out.println("5. Показати статистику");
+            System.out.println("6. Сортувати співробітників");
+            System.out.println("7. Генерувати випадкових співробітників");
+            System.out.println("8. Зберегти у файл");
+            System.out.println("0. Вийти");
+            System.out.print("Ваш вибір: ");
+
+            try {
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // споживаємо новий рядок
+
+                switch (choice) {
+                    case 1:
+                        displayAllEmployees();
+                        break;
+
+                    case 2:
+                        System.out.print("Введіть ім'я: ");
+                        String name = scanner.nextLine();
+                        System.out.print("Введіть вік: ");
+                        int age = scanner.nextInt();
+                        System.out.print("Введіть зарплату: ");
+                        double salary = scanner.nextDouble();
+                        scanner.nextLine();
+                        System.out.print("Введіть посаду: ");
+                        String position = scanner.nextLine();
+                        System.out.print("Введіть відділ: ");
+                        String department = scanner.nextLine();
+
+                        Employee newEmp = new Employee(name, age, salary, position, department);
+                        addEmployee(newEmp);
+                        break;
+
+                    case 3:
+                        System.out.print("Введіть ім'я співробітника для видалення: ");
+                        String removeName = scanner.nextLine();
+                        Employee empToRemove = findEmployeeByName(removeName);
+                        if (empToRemove != null) {
+                            removeEmployee(empToRemove);
+                        } else {
+                            System.out.println("❌ Співробітника не знайдено");
+                        }
+                        break;
+
+                    case 4:
+                        System.out.println("Пошук за:");
+                        System.out.println("1 - Ім'ям, 2 - Віком, 3 - Відділом, 4 - Зарплатою");
+                        int searchType = scanner.nextInt();
+                        scanner.nextLine();
+
+                        if (searchType == 1) {
+                            System.out.print("Введіть ім'я: ");
+                            String searchName = scanner.nextLine();
+                            Employee found = findEmployeeByName(searchName);
+                            if (found != null) {
+                                System.out.println("✅ Знайдено: " + found);
+                            } else {
+                                System.out.println("❌ Не знайдено");
+                            }
+                        } else if (searchType == 2) {
+                            System.out.print("Введіть вік: ");
+                            int searchAge = scanner.nextInt();
+                            List<Employee> foundByAge = findEmployeesByAge(searchAge);
+                            if (!foundByAge.isEmpty()) {
+                                System.out.println("✅ Знайдено " + foundByAge.size() + " співробітників:");
+                                foundByAge.forEach(System.out::println);
+                            } else {
+                                System.out.println("❌ Не знайдено");
+                            }
+                        }
+                        break;
+
+                    case 5:
+                        displayStatistics();
+                        break;
+
+                    case 6:
+                        System.out.println("Сортувати за: name/age/salary/department");
+                        String sortBy = scanner.nextLine();
+                        sortEmployees(sortBy);
+                        break;
+
+                    case 7:
+                        System.out.print("Кількість співробітників для генерації: ");
+                        int count = scanner.nextInt();
+                        generateRandomEmployees(count);
+                        break;
+
+                    case 8:
+                        System.out.print("Введіть ім'я файлу (наприклад, employees.txt): ");
+                        String filename = scanner.nextLine();
+                        saveToFile(filename);
+                        break;
+
+                    case 0:
+                        return;
+
+                    default:
+                        System.out.println("❌ Невірний вибір!");
+                }
+            } catch (Exception e) {
+                System.out.println("❌ Помилка введення!");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("=== Лабораторна робота 4 - Завдання 1 ===");
+        System.out.println("LinkedHashSet: управління співробітниками");
+        System.out.println("Студент групи ТВ-43, прізвище Step, варіант 16\n");
+
+        Lr4_1 program = new Lr4_1();
+
+        // Демонстрація основного функціоналу
+        program.displayAllEmployees();
+        program.displayStatistics();
+
+        // Демонстрація пошуку
+        System.out.println("\n🔍 ДЕМОНСТРАЦІЯ ПОШУКУ:");
+        Employee found = program.findEmployeeByName("Марія Коваленко");
+        if (found != null) {
+            System.out.println("Знайдено співробітника:");
+            System.out.println(found.getDetailedInfo());
+        }
+
+        // Демонстрація сортування
+        program.sortEmployees("salary");
+
+        // Збереження у файл
+        program.saveToFile("employees_output.txt");
+
+        // Інтерактивне меню
+        program.showInteractiveMenu();
+
+        System.out.println("\n✅ Програма завершена успішно!");
     }
 }
