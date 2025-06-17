@@ -68,6 +68,7 @@ int main() {
     totalSalary = hours * hourlyRate;
     cout << fixed << setprecision(2);
     cout << "Сумарна заробітна плата: " << totalSalary << endl;
-    
+   
     return 0;
+    
 }
