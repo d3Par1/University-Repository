@@ -9,7 +9,6 @@
 #define GROWTH_FACTOR 2          // Коефіцієнт зростання
 #define MULTIPLIER 31
 
-// ============= СТРУКТУРА ДИНАМІЧНОЇ ХЕШ-ТАБЛИЦІ =============
 
 typedef struct Nameval Nameval;
 

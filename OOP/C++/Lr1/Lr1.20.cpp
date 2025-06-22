@@ -3,20 +3,10 @@
 #include <string.h>
 #include <time.h>
 
-/*
-ЗАВДАННЯ 20: Конструювання даних для поганої роботи хеш-функції
-
-Створюємо набори даних, які змушують хеш-функцію з прикладу
-«Hash Table» працювати неефективно, та аналізуємо складність
-побудови таких наборів для різних значень NHASH.
-*/
-
-// ============= ПАРАМЕТРИ ХЕШУВАННЯ =============
 
 #define MAX_NHASH 1009
 #define MULTIPLIER 31
 
-// ============= ХЕШ-ФУНКЦІЯ =============
 
 unsigned int hash(char *str, int nhash) {
     unsigned int h = 0;
@@ -29,7 +19,6 @@ unsigned int hash(char *str, int nhash) {
     return h % nhash;
 }
 
-// ============= АНАЛІЗ ЯКОСТІ РОЗПОДІЛУ =============
 
 typedef struct {
     int nhash;
@@ -113,7 +102,6 @@ void print_attack_result(AttackResult result, const char *attack_name) {
     }
 }
 
-// ============= МЕТОДИ АТАК =============
 
 // Атака 1: Експлуатація модульної арифметики
 char** create_modular_attack(int nhash, int count, const char *attack_name) {
@@ -299,7 +287,6 @@ char** create_bruteforce_attack(int nhash, int count) {
     return strings;
 }
 
-// ============= АНАЛІЗ СКЛАДНОСТІ ДЛЯ РІЗНИХ NHASH =============
 
 void analyze_attack_difficulty() {
     printf("\n=== АНАЛІЗ СКЛАДНОСТІ АТАК ДЛЯ РІЗНИХ NHASH ===\n");
@@ -351,7 +338,6 @@ void analyze_attack_difficulty() {
     printf("• Більші числа потребують більше обчислень для атаки\n");
 }
 
-// ============= ДЕМОНСТРАЦІЇ АТАК =============
 
 void demonstrate_attacks_on_different_nhash() {
     printf("\n=== ДЕМОНСТРАЦІЯ АТАК НА РІЗНІ ЗНАЧЕННЯ NHASH ===\n");
@@ -509,34 +495,6 @@ int main(void) {
     demonstrate_worst_case_construction();
     practical_implications();
 
-    printf("\n=== ВІДПОВІДІ НА ПИТАННЯ ЗАВДАННЯ ===\n");
-
-    printf("\nСКОНСТРУЮЮ НАБІР ДАНИХ ДЛЯ ПОГАНОЇ РОБОТИ:\n");
-    printf("✓ УСПІШНО - продемонстровано кілька методів атак\n");
-    printf("✓ Модульна атака - використання властивостей % NHASH\n");
-    printf("✓ Брутфорс атака - систематичний пошук колізій\n");
-    printf("✓ Математична атака - експлуатація структури NHASH\n\n");
-
-    printf("НАСКІЛЬКИ ВАЖКО ПОБУДУВАТИ ТАКИЙ НАБІР?\n");
-    printf("ЗАЛЕЖИТЬ ВІД NHASH:\n");
-    printf("• NHASH = 7:    Тривіально (хвилини)\n");
-    printf("• NHASH = 51:   Легко (години)\n");
-    printf("• NHASH = 101:  Помірно (години-дні)\n");
-    printf("• NHASH = 1009: Складно (дні-тижні)\n\n");
-
-    printf("ФАКТОРИ СКЛАДНОСТІ:\n");
-    printf("1. Простота числа NHASH\n");
-    printf("2. Наявність малих дільників\n");
-    printf("3. Розмір цільового набору колізій\n");
-    printf("4. Обчислювальні ресурси\n");
-    printf("5. Знання внутрішньої структури хеш-функції\n\n");
-
-    printf("=== ПРАКТИЧНІ РЕКОМЕНДАЦІЇ ===\n");
-    printf("1. Використовуйте великі прості числа для NHASH\n");
-    printf("2. Моніторьте розподіл елементів у runtime\n");
-    printf("3. Розгляньте криптографічні хеш-функції для критичних систем\n");
-    printf("4. Впроваджуйте захист від DoS атак\n");
-    printf("5. Регулярно аналізуйте якість хешування на реальних даних\n");
 
     return 0;
 }

@@ -2,19 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-ЗАВДАННЯ 18: Код програми «Hash Table» та оптимальний розмір symtab
-
-Реалізуємо хеш-таблицю з прикладу лекції та аналізуємо
-оптимальний розмір масиву symtab для різних сценаріїв використання.
-*/
-
-// ============= ПАРАМЕТРИ ХЕШУВАННЯ =============
 
 #define NHASH 101        // Розмір хеш-таблиці (просте число)
 #define MULTIPLIER 31    // Множник для хеш-функції
 
-// ============= СТРУКТУРА ХЕШ-ТАБЛИЦІ =============
 
 typedef struct Nameval Nameval;
 
@@ -27,7 +18,6 @@ struct Nameval {
 // Глобальна хеш-таблиця
 static Nameval *symtab[NHASH];
 
-// ============= ХЕش-ФУНКЦІЯ =============
 
 // Основна хеш-функція з лекції
 unsigned int hash(char *str) {
@@ -41,7 +31,6 @@ unsigned int hash(char *str) {
     return h % NHASH;
 }
 
-// ============= ОСНОВНІ ОПЕРАЦІЇ З ХЕШ-ТАБЛИЦЕЮ =============
 
 // Пошук елемента в хеш-таблиці
 Nameval* lookup(char *name) {
@@ -101,7 +90,6 @@ int uninstall(char *name) {
     return 0; // Не знайдено
 }
 
-// ============= АНАЛІТИЧНІ ФУНКЦІЇ =============
 
 // Статистика хеш-таблиці
 typedef struct {
@@ -209,7 +197,6 @@ void print_chain_distribution() {
     }
 }
 
-// ============= ТЕСТОВІ ДАНІ =============
 
 // Генератор коротких імен змінних
 void generate_short_names(char names[][20], int count) {
@@ -251,7 +238,6 @@ void generate_similar_length_names(char names[][20], int count, int length) {
     }
 }
 
-// ============= ОЧИЩЕННЯ ТА ІНІЦІАЛІЗАЦІЯ =============
 
 void clear_hash_table() {
     for (int i = 0; i < NHASH; i++) {
@@ -293,7 +279,6 @@ void print_sample_buckets(int num_buckets) {
     }
 }
 
-// ============= ДЕМОНСТРАЦІЇ =============
 
 void demonstrate_basic_functionality() {
     printf("=== ДЕМОНСТРАЦІЯ БАЗОВОЇ ФУНКЦІОНАЛЬНОСТІ ===\n");
@@ -538,28 +523,6 @@ int main(void) {
     test_multiplier_variations();
     analyze_optimal_size();
     recommend_table_size();
-
-    printf("\n=== ЗАГАЛЬНІ ВИСНОВКИ ===\n");
-    printf("1. ПОТОЧНИЙ КОД ПРАЦЮЄ КОРЕКТНО\n");
-    printf("   • Основні операції (lookup, install, uninstall) функціонують\n");
-    printf("   • Колізії вирішуються методом ланцюжків\n");
-    printf("   • Хеш-функція дає прийнятний розподіл\n\n");
-
-    printf("2. РОЗМІР SYMTAB = %d:\n", NHASH);
-    printf("   • Добре для навчальних цілей\n");
-    printf("   • Оптимально для ~75 елементів\n");
-    printf("   • Потребує збільшення для великих систем\n\n");
-
-    printf("3. ЯКІСТЬ ХЕШУВАННЯ:\n");
-    printf("   • Короткі рядки: помірна кількість колізій\n");
-    printf("   • Довгі рядки: кращий розподіл\n");
-    printf("   • Подібні рядки: можливі кластери\n\n");
-
-    printf("4. ПРАКТИЧНІ РЕКОМЕНДАЦІЇ:\n");
-    printf("   • Моніторити коефіцієнт завантаження\n");
-    printf("   • Використовувати прості числа для розміру\n");
-    printf("   • Розглянути динамічне розширення\n");
-    printf("   • Тестувати на реальних даних\n");
 
     // Очищення перед завершенням
     clear_hash_table();

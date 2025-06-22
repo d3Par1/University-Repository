@@ -4,17 +4,6 @@
 #include <assert.h>
 #include <time.h>
 
-/*
-ЗАВДАННЯ 17: Тестування функцій роботи з бінарними деревами
-
-Комплексна система тестування для функцій з прикладів
-"Binary search tree" та "Tree-traverser":
-- Вставка, пошук, видалення
-- Різні види обходу дерева
-- Крайні випадки та стрес-тестування
-*/
-
-// ============= СТРУКТУРА ДЕРЕВА =============
 
 typedef struct Treenode Treenode;
 
@@ -25,7 +14,6 @@ struct Treenode {
     Treenode *right;
 };
 
-// ============= ОСНОВНІ ФУНКЦІЇ ДЕРЕВА =============
 
 Treenode* newtree(char *word, int count) {
     Treenode *newp = (Treenode *) malloc(sizeof(Treenode));
@@ -132,7 +120,6 @@ void freetree(Treenode *treep) {
     free(treep);
 }
 
-// ============= ФУНКЦІЇ ОБХОДУ =============
 
 // Симетричний обхід (in-order)
 void inorder_traverse(Treenode *treep, char **result, int *index) {
@@ -164,7 +151,6 @@ void postorder_traverse(Treenode *treep, char **result, int *index) {
     (*index)++;
 }
 
-// ============= ДОПОМІЖНІ ФУНКЦІЇ ДЛЯ ТЕСТУВАННЯ =============
 
 int tree_size(Treenode *treep) {
     if (treep == NULL) return 0;
@@ -194,7 +180,6 @@ int is_valid_bst(Treenode *treep, char *min_val, char *max_val) {
            is_valid_bst(treep->right, treep->word, max_val);
 }
 
-// ============= ТЕСТУВАЛЬНА СИСТЕМА =============
 
 typedef struct {
     int total_tests;
@@ -236,7 +221,6 @@ void test_summary() {
     }
 }
 
-// ============= ТЕСТИ ОСНОВНИХ ФУНКЦІЙ =============
 
 void test_tree_creation() {
     test_start("Створення вузла дерева");
@@ -359,7 +343,6 @@ void test_deletion() {
     freetree(tree);
 }
 
-// ============= ТЕСТИ ОБХОДУ =============
 
 void test_inorder_traversal() {
     test_start("Симетричний обхід (in-order)");
@@ -437,7 +420,6 @@ void test_postorder_traversal() {
     freetree(tree);
 }
 
-// ============= ТЕСТИ КРАЙНІХ ВИПАДКІВ =============
 
 void test_empty_tree() {
     test_start("Операції з порожнім деревом");
@@ -513,7 +495,6 @@ void test_linear_tree() {
     freetree(tree);
 }
 
-// ============= СТРЕС-ТЕСТУВАННЯ =============
 
 void stress_test_insertion() {
     test_start("Стрес-тест вставки (1000 елементів)");
@@ -582,7 +563,6 @@ void stress_test_mixed_operations() {
     freetree(tree);
 }
 
-// ============= ТЕСТ ПРОДУКТИВНОСТІ =============
 
 void performance_test() {
     printf("\n=== ТЕСТИ ПРОДУКТИВНОСТІ ===\n");
@@ -629,7 +609,6 @@ void performance_test() {
     }
 }
 
-// ============= ГОЛОВНА ФУНКЦІЯ ТЕСТУВАННЯ =============
 
 void run_all_tests() {
     printf("=== ЗАПУСК ПОВНОГО НАБОРУ ТЕСТІВ ===\n\n");
@@ -673,38 +652,6 @@ int main(void) {
 
     run_all_tests();
 
-    printf("\n=== РЕКОМЕНДАЦІЇ ПО ТЕСТУВАННЮ ДЕРЕВ ===\n");
-    printf("1. ОСНОВНІ ФУНКЦІЇ:\n");
-    printf("   • Тестуйте створення, вставку, пошук, видалення\n");
-    printf("   • Перевіряйте обробку дублікатів\n");
-    printf("   • Валідуйте структуру BST після кожної операції\n\n");
-
-    printf("2. ОБХОДИ ДЕРЕВА:\n");
-    printf("   • In-order повинен давати відсортований порядок\n");
-    printf("   • Pre-order та post-order мають специфічні порядки\n");
-    printf("   • Тестуйте на різних формах дерев\n\n");
-
-    printf("3. КРАЙНІ ВИПАДКИ:\n");
-    printf("   • Порожнє дерево\n");
-    printf("   • Дерево з одним вузлом\n");
-    printf("   • Лінійне дерево (найгірший випадок)\n");
-    printf("   • Збалансоване дерево (найкращий випадок)\n\n");
-
-    printf("4. СТРЕС-ТЕСТУВАННЯ:\n");
-    printf("   • Великі обсяги даних\n");
-    printf("   • Змішані операції\n");
-    printf("   • Випадкові та патологічні дані\n\n");
-
-    printf("5. ПРОДУКТИВНІСТЬ:\n");
-    printf("   • Вимірюйте час операцій\n");
-    printf("   • Перевіряйте висоту дерева\n");
-    printf("   • Моніторьте використання пам'яті\n\n");
-
-    printf("6. ІНСТРУМЕНТИ:\n");
-    printf("   • valgrind для перевірки пам'яті\n");
-    printf("   • Unit testing frameworks\n");
-    printf("   • Автоматизація тестів\n");
-    printf("   • Continuous integration\n");
 
     return (test_suite.failed_tests == 0) ? 0 : 1;
 }

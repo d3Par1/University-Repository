@@ -2,12 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-ЗАВДАННЯ 8: Функція coolfun для гнучкого перебору списку
-
-Реалізуємо універсальну функцію, яка перебирає елементи списку
-та викликає задану функцію для кожного елемента окремо.
-*/
 
 typedef struct Nameval Nameval;
 
@@ -51,7 +45,6 @@ void coolfun(Nameval *listp, void (*fn)(Nameval *, void *), void *arg) {
     }
 }
 
-// ============= ПРИКЛАДИ ФУНКЦІЙ ДЛЯ ВИКОРИСТАННЯ З coolfun =============
 
 // 1. Функція для підрахунку елементів (з прикладу в завданні)
 void inccounter(Nameval *p, void *arg) {
@@ -186,7 +179,7 @@ void demonstrate_basic_usage() {
 
     // Виведення всіх елементів
     printf("\nВсі елементи списку:\n");
-    coolfun(nvlist, print_element, "  ");
+    coolfun(nvlist, print_element, "");
 }
 
 void demonstrate_advanced_usage() {

@@ -3,14 +3,6 @@
 #include <string.h>
 #include <time.h>
 
-/*
-ЗАВДАННЯ 15: Порівняння швидкодії lookup та nvlookup
-
-Аналізуємо різниці між рекурсивною та ітераційною формами
-функцій пошуку в бінарному дереві пошуку.
-*/
-
-// ============= СТРУКТУРА ДЕРЕВА =============
 
 typedef struct Treenode Treenode;
 
@@ -21,7 +13,6 @@ struct Treenode {
     Treenode *right;
 };
 
-// ============= ДОПОМІЖНІ ФУНКЦІЇ =============
 
 Treenode* newtree(char *word, int count) {
     Treenode *newp = (Treenode *) malloc(sizeof(Treenode));
@@ -66,7 +57,6 @@ void freetree(Treenode *treep) {
     free(treep);
 }
 
-// ============= РЕКУРСИВНА ВЕРСІЯ (lookup) =============
 
 int recursive_calls = 0;  // Лічильник рекурсивних викликів
 
@@ -87,7 +77,6 @@ Treenode* lookup_recursive(Treenode *treep, char *word) {
         return lookup_recursive(treep->right, word);
 }
 
-// ============= ІТЕРАЦІЙНА ВЕРСІЯ (nvlookup) =============
 
 int iterative_comparisons = 0;  // Лічильник порівнянь
 
@@ -112,7 +101,6 @@ Treenode* lookup_iterative(Treenode *treep, char *word) {
     return NULL;
 }
 
-// ============= АНАЛІЗ ПРОДУКТИВНОСТІ =============
 
 typedef struct {
     double recursive_time;
@@ -159,7 +147,6 @@ int tree_height(Treenode *treep) {
     return 1 + (left_height > right_height ? left_height : right_height);
 }
 
-// ============= СТВОРЕННЯ ТЕСТОВИХ ДЕРЕВ =============
 
 // Створення збалансованого дерева
 Treenode* create_balanced_tree(char words[][20], int start, int end) {
@@ -188,7 +175,6 @@ Treenode* create_linear_tree(char words[][20], int count) {
     return root;
 }
 
-// ============= ДЕМОНСТРАЦІЇ =============
 
 void demonstrate_basic_comparison() {
     printf("=== БАЗОВЕ ПОРІВНЯННЯ LOOKUP vs NVLOOKUP ===\n");
@@ -411,14 +397,6 @@ int main(void) {
     stress_test();
     memory_usage_analysis();
     practical_recommendations();
-
-    printf("\n=== ЗАГАЛЬНІ ВИСНОВКИ ===\n");
-    printf("1. ФУНКЦІОНАЛЬНІСТЬ: Обидві версії еквівалентні за результатом\n");
-    printf("2. ШВИДКІСТЬ: Ітераційна зазвичай трохи швидша (менше накладних витрат)\n");
-    printf("3. ПАМ'ЯТЬ: Ітераційна використовує O(1), рекурсивна O(h) де h - висота\n");
-    printf("4. БЕЗПЕКА: Ітераційна безпечніша для глибоких дерев\n");
-    printf("5. ЧИТАБЕЛЬНІСТЬ: Рекурсивна більш інтуїтивна\n");
-    printf("6. ВИБІР: Залежить від конкретних вимог до продуктивності та безпеки\n");
 
     return 0;
 }

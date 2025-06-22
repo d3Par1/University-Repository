@@ -4,16 +4,6 @@
 #include <time.h>
 #include <math.h>
 
-/*
-ЗАВДАННЯ 14: Збалансовані бінарні дерева пошуку
-
-Реалізуємо генерацію потоку даних та перевірку збалансованості
-для двох варіантів:
-1. Випадковий порядок надходження елементів
-2. Відсортований порядок надходження елементів
-*/
-
-// ============= СТРУКТУРА БІНАРНОГО ДЕРЕВА =============
 
 typedef struct Treenode Treenode;
 
@@ -24,7 +14,6 @@ struct Treenode {
     Treenode *right;
 };
 
-// ============= ОСНОВНІ ФУНКЦІЇ ДЕРЕВА =============
 
 // Створення нового вузла
 Treenode* newtree(char *word, int count) {
@@ -89,7 +78,6 @@ void freetree(Treenode *treep) {
     free(treep);
 }
 
-// ============= ФУНКЦІЇ АНАЛІЗУ ЗБАЛАНСОВАНОСТІ =============
 
 // Обчислення висоти дерева
 int tree_height(Treenode *treep) {
@@ -207,7 +195,6 @@ void print_balance_info(BalanceInfo info, const char *title) {
     }
 }
 
-// ============= ГЕНЕРАТОРИ ДАНИХ =============
 
 // Генератор випадкових слів
 void generate_random_word(char *word, int max_length) {
@@ -257,7 +244,6 @@ Treenode* generate_sorted_tree(int count) {
     return tree;
 }
 
-// ============= ВІЗУАЛІЗАЦІЯ СТРУКТУРИ ДЕРЕВА =============
 
 // Виведення структури дерева (спрощена версія)
 void print_tree_structure(Treenode *treep, int depth, char *prefix) {
@@ -283,7 +269,6 @@ void print_tree_structure(Treenode *treep, int depth, char *prefix) {
     }
 }
 
-// ============= ДЕМОНСТРАЦІЇ =============
 
 void demonstrate_random_tree() {
     printf("\n=== ВАРІАНТ 1: ВИПАДКОВИЙ ПОРЯДОК ЕЛЕМЕНТІВ ===\n");
@@ -434,12 +419,6 @@ int main(void) {
     compare_scenarios();
     practical_recommendations();
 
-    printf("\n=== ЗАГАЛЬНІ ВИСНОВКИ ===\n");
-    printf("1. Порядок вставки критично впливає на структуру BST\n");
-    printf("2. Випадкові дані зазвичай дають прийнятну збалансованість\n");
-    printf("3. Відсортовані дані завжди створюють вироджене дерево\n");
-    printf("4. Для гарантованої продуктивності використовуйте самобалансуючі дерева\n");
-    printf("5. Аналіз збалансованості допомагає виявити проблеми продуктивності\n");
 
     return 0;
 }

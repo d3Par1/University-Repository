@@ -2,15 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-ЗАВДАННЯ 12: Нетипізовані списки на C та типізовані шаблони на C++
-
-Частина 1: Реалізація нетипізованого списку на C з void*
-Частина 2: Реалізація типізованого шаблону на C++
-Частина 3: Порівняльний аналіз
-*/
-
-// ============= ЧАСТИНА 1: НЕТИПІЗОВАНИЙ СПИСОК НА C =============
 
 typedef struct ListNode ListNode;
 
@@ -148,7 +139,6 @@ void generic_destroy(GenericList *list) {
     free(list);
 }
 
-// ============= ФУНКЦІЇ ДЛЯ РОБОТИ З INT =============
 
 int compare_int(const void *a, const void *b) {
     int ia = *(const int*)a;
@@ -165,7 +155,6 @@ void destroy_int(void *data) {
     (void)data; // Щоб компілятор не попереджав про невикористаний параметр
 }
 
-// ============= ФУНКЦІЇ ДЛЯ РОБОТИ З STRING =============
 
 typedef struct {
     char *str;
@@ -199,7 +188,6 @@ StringData create_string_data(const char *str) {
     return data;
 }
 
-// ============= ДЕМОНСТРАЦІЯ C ВЕРСІЇ =============
 
 void demonstrate_c_version() {
     printf("=== ДЕМОНСТРАЦІЯ НЕТИПІЗОВАНОГО СПИСКУ НА C ===\n");
@@ -257,7 +245,6 @@ void demonstrate_c_version() {
     generic_destroy(string_list);
 }
 
-// ============= ЧАСТИНА 2: ТИПІЗОВАНИЙ ШАБЛОН НА C++ =============
 
 #ifdef __cplusplus
 
@@ -392,7 +379,6 @@ void demonstrate_cpp_version() {
 
 #endif // __cplusplus
 
-// ============= ПОРІВНЯЛЬНИЙ АНАЛІЗ =============
 
 void comparative_analysis() {
     printf("\n=== ПОРІВНЯЛЬНИЙ АНАЛІЗ C vs C++ ===\n");
@@ -480,13 +466,6 @@ int main(void) {
 
     comparative_analysis();
     usage_recommendations();
-
-    printf("\n=== ВИСНОВКИ ===\n");
-    printf("1. C підхід надає універсальність за рахунок безпеки\n");
-    printf("2. C++ підхід надає безпеку за рахунок розміру коду\n");
-    printf("3. Обидва підходи мають своє місце в розробці\n");
-    printf("4. Вибір залежить від конкретних вимог проекту\n");
-    printf("5. Важливо розуміти trade-offs кожного підходу\n");
 
     return 0;
 }

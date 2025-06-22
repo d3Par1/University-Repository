@@ -2,12 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-ЗАВДАННЯ 10: Рекурсивна та ітераційна версії функції reverse_list
-
-Реалізуємо дві версії функції для зміни порядку елементів списку
-на протилежний без створення нових елементів.
-*/
 
 typedef struct Nameval Nameval;
 
@@ -63,7 +57,6 @@ void print_list(Nameval *listp, const char *title) {
     printf("\n");
 }
 
-// ============= ІТЕРАЦІЙНА ВЕРСІЯ =============
 
 Nameval* reverse_list_iterative(Nameval *listp) {
     if (listp == NULL || listp->next == NULL) {
@@ -102,7 +95,6 @@ Nameval* reverse_list_iterative(Nameval *listp) {
     return prev; // prev тепер вказує на новий початок
 }
 
-// ============= РЕКУРСИВНА ВЕРСІЯ =============
 
 Nameval* reverse_list_recursive(Nameval *listp) {
     // Базовий випадок: порожній список або один елемент
@@ -138,7 +130,6 @@ Nameval* reverse_list_recursive(Nameval *listp) {
     return new_head;
 }
 
-// ============= ДОПОМІЖНІ ФУНКЦІЇ =============
 
 // Створення копії списку для тестування
 Nameval* copy_list(Nameval *listp) {
@@ -210,7 +201,6 @@ void free_list(Nameval *listp) {
     }
 }
 
-// ============= ДЕМОНСТРАЦІЇ =============
 
 void demonstrate_iterative() {
     printf("=== ДЕМОНСТРАЦІЯ ІТЕРАЦІЙНОЇ ВЕРСІЇ ===\n");
@@ -346,25 +336,4 @@ int main(void) {
     compare_versions();
     test_edge_cases();
     demonstrate_double_reverse();
-
-    printf("\n=== АЛГОРИТМІЧНИЙ АНАЛІЗ ===\n");
-    printf("Обидві версії:\n");
-    printf("• Час виконання: O(n) - кожен елемент обробляється один раз\n");
-    printf("• Простір: ітераційна O(1), рекурсивна O(n)\n");
-    printf("• Стабільність: обидві стабільні (не змінюють відносний порядок однакових елементів)\n");
-    printf("• Місце: in-place (не створюють нових елементів)\n\n");
-
-    printf("Ключові моменти реалізації:\n");
-    printf("1. Ітераційна: три вказівники (prev, current, next)\n");
-    printf("2. Рекурсивна: базовий випадок + розворот зв'язків при поверненні\n");
-    printf("3. Важливо: обнулити next у останнього елемента\n");
-    printf("4. Повертати новий початок списку\n\n");
-
-    printf("Практичне застосування:\n");
-    printf("• Undo/Redo операції\n");
-    printf("• Алгоритми сортування\n");
-    printf("• Обробка стеків та черг\n");
-    printf("• Інвертування послідовностей\n");
-
-    return 0;
 }

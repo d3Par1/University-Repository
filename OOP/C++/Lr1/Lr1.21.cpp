@@ -2,19 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/*
-ЗАВДАННЯ 21: Функція для послідовного звернення до елементів хеш-таблиці
-
-Реалізуємо функцію для послідовного обходу всіх елементів хеш-таблиці
-в невідсортованому порядку, дозволяючи ітерацію по всій таблиці.
-*/
-
-// ============= ПАРАМЕТРИ ХЕШУВАННЯ =============
 
 #define NHASH 101
 #define MULTIPLIER 31
 
-// ============= СТРУКТУРА ХЕШ-ТАБЛИЦІ =============
 
 typedef struct Nameval Nameval;
 
@@ -27,7 +18,6 @@ struct Nameval {
 // Глобальна хеш-таблиця
 static Nameval *symtab[NHASH];
 
-// ============= СТРУКТУРА ДЛЯ ІТЕРАТОРА =============
 
 typedef struct {
     int current_bucket;      // Поточний bucket
@@ -35,8 +25,6 @@ typedef struct {
     int total_visited;       // Кількість відвіданих елементів
     int is_finished;         // Прапор завершення ітерації
 } HashIterator;
-
-// ============= ОСНОВНІ ФУНКЦІЇ ХЕШ-ТАБЛИЦІ =============
 
 unsigned int hash(char *str) {
     unsigned int h = 0;
@@ -83,7 +71,6 @@ Nameval* install(char *name, int value) {
     return sym;
 }
 
-// ============= ФУНКЦІЇ ПОСЛІДОВНОГО ОБХОДУ =============
 
 // Ініціалізація ітератора
 void hash_iterator_init(HashIterator *iter) {
@@ -147,7 +134,6 @@ void hash_iterator_status(HashIterator *iter) {
            iter->is_finished ? "завершено" : "активний");
 }
 
-// ============= АЛЬТЕРНАТИВНІ МЕТОДИ ОБХОДУ =============
 
 // Метод 1: Простий послідовний обхід з callback функцією
 void hash_table_foreach(void (*callback)(Nameval *item, void *data), void *user_data) {
@@ -232,7 +218,6 @@ void hash_table_foreach_with_position(void (*callback)(HashTableEntry *entry, vo
     }
 }
 
-// ============= CALLBACK ФУНКЦІЇ ДЛЯ ДЕМОНСТРАЦІЇ =============
 
 // Callback для простого виведення
 void print_item(Nameval *item, void *data) {
@@ -294,7 +279,6 @@ int filter_short_names(Nameval *item) {
     return strlen(item->name) <= 5;
 }
 
-// ============= ДОПОМІЖНІ ФУНКЦІЇ =============
 
 void clear_hash_table() {
     for (int i = 0; i < NHASH; i++) {
@@ -326,7 +310,6 @@ void populate_test_data() {
     }
 }
 
-// ============= ДЕМОНСТРАЦІЇ =============
 
 void demonstrate_iterator() {
     printf("=== ДЕМОНСТРАЦІЯ ІТЕРАТОРА ===\n");
@@ -489,45 +472,6 @@ int main(void) {
     demonstrate_filtered_traversal();
     demonstrate_positional_traversal();
     performance_comparison();
-
-    printf("\n=== ПІДСУМОК РЕАЛІЗОВАНИХ МЕТОДІВ ===\n");
-
-    printf("\n1. ІТЕРАТОР (HashIterator):\n");
-    printf("   + Контроль над процесом ітерації\n");
-    printf("   + Можливість зупинки та продовження\n");
-    printf("   + Мінімальне використання пам'яті\n");
-    printf("   - Більш складний у використанні\n\n");
-
-    printf("2. FOREACH З CALLBACK:\n");
-    printf("   + Простота використання\n");
-    printf("   + Гнучкість через callback функції\n");
-    printf("   + Компактний код\n");
-    printf("   - Складніше зупинити передчасно\n\n");
-
-    printf("3. КОНВЕРТАЦІЯ У МАСИВ:\n");
-    printf("   + Можливість сортування\n");
-    printf("   + Швидкий випадковий доступ\n");
-    printf("   + Сумісність з іншими алгоритмами\n");
-    printf("   - Додаткове використання пам'яті\n\n");
-
-    printf("4. ФІЛЬТРОВАНИЙ ОБХІД:\n");
-    printf("   + Обробка тільки потрібних елементів\n");
-    printf("   + Ефективність для вибіркових операцій\n");
-    printf("   + Композиція фільтрів\n");
-    printf("   - Потребує написання фільтр-функцій\n\n");
-
-    printf("5. ПОЗИЦІЙНИЙ ОБХІД:\n");
-    printf("   + Додаткова інформація про розташування\n");
-    printf("   + Корисно для налагодження\n");
-    printf("   + Аналіз розподілу елементів\n");
-    printf("   - Невеликі накладні витрати\n\n");
-
-    printf("=== РЕКОМЕНДАЦІЇ ПО ВИКОРИСТАННЮ ===\n");
-    printf("• Простий перебір → foreach\n");
-    printf("• Контрольований обхід → ітератор\n");
-    printf("• Сортування результатів → масив\n");
-    printf("• Вибіркова обробка → фільтрований обхід\n");
-    printf("• Аналіз структури → позиційний обхід\n");
 
     clear_hash_table();
     return 0;

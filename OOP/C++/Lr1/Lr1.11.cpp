@@ -2,14 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-ЗАВДАННЯ 11: Модифікація функцій delitem та freeall
-для звільнення пам'яті полів name
-
-У оригінальному прикладі з лекції функції delitem та freeall
-не звільняють пам'ять, виділену під поля name, що призводить
-до витоку пам'яті.
-*/
 
 typedef struct Nameval Nameval;
 
@@ -22,7 +14,6 @@ struct Nameval {
 // Глобальний вказівник на початок списку
 Nameval *nvlist = NULL;
 
-// ============= ДОПОМІЖНІ ФУНКЦІЇ =============
 
 // Створення нового елемента з динамічним виділенням пам'яті для name
 Nameval* newitem(char *name, int value) {
@@ -84,7 +75,6 @@ void print_list_with_addresses(Nameval *listp, const char *title) {
     printf("Загальна кількість: %d елементів\n", count);
 }
 
-// ============= ОРИГІНАЛЬНІ ФУНКЦІЇ (З ВИТОКОМ ПАМ'ЯТІ) =============
 
 // ОРИГІНАЛЬНА delitem (НЕ звільняє name) - для демонстрації проблеми
 Nameval* delitem_original_buggy(Nameval *listp, char *name) {
@@ -127,7 +117,6 @@ void freeall_original_buggy(Nameval *listp) {
     }
 }
 
-// ============= ВИПРАВЛЕНІ ФУНКЦІЇ =============
 
 // ВИПРАВЛЕНА delitem (звільняє і name, і структуру)
 Nameval* delitem_fixed(Nameval *listp, char *name) {
@@ -178,7 +167,6 @@ void freeall_fixed(Nameval *listp) {
     printf("Вся пам'ять звільнена!\n");
 }
 
-// ============= ФУНКЦІЇ ДЛЯ АНАЛІЗУ ПАМ'ЯТІ =============
 
 // Підрахунок використаної пам'яті
 typedef struct {
@@ -215,7 +203,6 @@ void print_memory_usage(MemoryUsage usage, const char *title) {
     printf("Загалом:   %zu байт\n", usage.total_size);
 }
 
-// ============= ДЕМОНСТРАЦІЇ =============
 
 void demonstrate_memory_leak() {
     printf("=== ДЕМОНСТРАЦІЯ ВИТОКУ ПАМ'ЯТІ ===\n");
@@ -357,21 +344,6 @@ int main(void) {
     analyze_memory_management();
     demonstrate_safe_patterns();
 
-    printf("\n=== ВИСНОВКИ ===\n");
-    printf("Виправлені функції:\n");
-    printf("1. delitem_fixed() - звільняє і name, і структуру\n");
-    printf("2. freeall_fixed() - звільняє всю виділену пам'ять\n\n");
-
-    printf("Ключові зміни:\n");
-    printf("• Додано free(p->name) перед free(p)\n");
-    printf("• Зберігається правильний порядок звільнення\n");
-    printf("• Додано інформативні повідомлення для відстеження\n\n");
-
-    printf("Практичне значення:\n");
-    printf("• Попередження витоків пам'яті\n");
-    printf("• Стабільність програми\n");
-    printf("• Ефективне використання ресурсів\n");
-    printf("• Відповідність стандартам якості коду\n");
 
     return 0;
 }

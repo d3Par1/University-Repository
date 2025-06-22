@@ -3,14 +3,7 @@
 #include <string.h>
 #include <time.h>
 
-/*
-ЗАВДАННЯ 16: Функція сортування з симетричним обходом
 
-Реалізуємо сортування через бінарне дерево пошуку з симетричним обходом
-та порівнюємо з іншими алгоритмами сортування.
-*/
-
-// ============= СТРУКТУРА ДЕРЕВА =============
 
 typedef struct Treenode Treenode;
 
@@ -21,7 +14,6 @@ struct Treenode {
     Treenode *right;
 };
 
-// ============= ОСНОВНІ ФУНКЦІЇ ДЕРЕВА =============
 
 Treenode* newtree(char *word, int count) {
     Treenode *newp = (Treenode *) malloc(sizeof(Treenode));
@@ -66,7 +58,6 @@ void freetree(Treenode *treep) {
     free(treep);
 }
 
-// ============= СИМЕТРИЧНИЙ ОБХІД (IN-ORDER TRAVERSAL) =============
 
 // Базовий симетричний обхід з виведенням
 void inorder_print(Treenode *treep) {
@@ -102,7 +93,6 @@ void inorder_apply(Treenode *treep, void (*func)(char *word, int count, void *ar
     inorder_apply(treep->right, func, arg);
 }
 
-// ============= СОРТУВАННЯ ЧЕРЕЗ ДЕРЕВО =============
 
 // Основна функція сортування через BST
 char** tree_sort(char **words, int n, int *result_count) {
@@ -148,7 +138,6 @@ void free_sorted_array(char **array, int count) {
     free(array);
 }
 
-// ============= ПОРІВНЯННЯ З ІНШИМИ АЛГОРИТМАМИ =============
 
 // Швидке сортування (quicksort)
 int string_compare(const void *a, const void *b) {
@@ -197,7 +186,6 @@ char** insertion_sort(char **words, int n) {
     return result;
 }
 
-// ============= ТЕСТУВАННЯ ПРОДУКТИВНОСТІ =============
 
 typedef struct {
     double tree_sort_time;
@@ -245,7 +233,6 @@ PerformanceTest measure_sorting_performance(char **words, int n, const char *sce
     return result;
 }
 
-// ============= ГЕНЕРАТОРИ ТЕСТОВИХ ДАНИХ =============
 
 // Випадкові дані
 char** generate_random_data(int n) {
@@ -313,7 +300,6 @@ void free_test_data(char **words, int n) {
     free(words);
 }
 
-// ============= ДЕМОНСТРАЦІЇ =============
 
 void demonstrate_basic_sorting() {
     printf("=== БАЗОВА ДЕМОНСТРАЦІЯ СОРТУВАННЯ ЧЕРЕЗ ДЕРЕВО ===\n");
@@ -518,27 +504,6 @@ int main(void) {
     compare_with_library_functions();
     when_tree_sort_fails();
 
-    printf("\n=== ЗАГАЛЬНІ ВИСНОВКИ ===\n");
-    printf("ПОРЯДОК ШВИДКОДІЇ:\n");
-    printf("• Середній випадок: O(n log n)\n");
-    printf("• Найгірший випадок: O(n²) для відсортованих даних\n");
-    printf("• Найкращий випадок: O(n log n) для збалансованих дерев\n\n");
-
-    printf("КОЛИ ПРАЦЮЄ ПОГАНО:\n");
-    printf("• Відсортовані або зворотно відсортовані дані\n");
-    printf("• Великі обсяги даних з обмеженою пам'яттю\n");
-    printf("• Коли потрібна максимальна швидкість\n\n");
-
-    printf("ПОРІВНЯННЯ З QUICKSORT:\n");
-    printf("• Tree Sort: стабільний, але повільніший\n");
-    printf("• Quick Sort: швидший, але не стабільний\n");
-    printf("• Бібліотечні функції оптимізовані та швидші\n\n");
-
-    printf("ПРАКТИЧНІ РЕКОМЕНДАЦІЇ:\n");
-    printf("• Використовуйте Tree Sort для навчальних цілей\n");
-    printf("• Для продакшн коду застосовуйте qsort() або std::sort()\n");
-    printf("• Tree Sort корисний коли потрібно видалити дублікати\n");
-    printf("• Розгляньте самобалансуючі дерева для стабільної продуктивності\n");
 
     return 0;
 }

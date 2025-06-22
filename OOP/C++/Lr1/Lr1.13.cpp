@@ -4,18 +4,7 @@
 #include <assert.h>
 #include <time.h>
 
-/*
-ЗАВДАННЯ 13: Набір тестів для функцій роботи зі списками
 
-Реалізуємо комплексну систему тестування всіх функцій
-роботи з односв'язними списками, включаючи:
-- Основні операції (додавання, видалення, пошук)
-- Крайні випадки
-- Тестування продуктивності
-- Тестування пам'яті
-*/
-
-// ============= БАЗОВА СТРУКТУРА СПИСКУ =============
 
 typedef struct Nameval Nameval;
 
@@ -25,7 +14,6 @@ struct Nameval {
     Nameval *next;
 };
 
-// ============= ОСНОВНІ ФУНКЦІЇ СПИСКУ =============
 
 Nameval* newitem(char *name, int value) {
     Nameval *newp = (Nameval *) malloc(sizeof(Nameval));
@@ -108,7 +96,6 @@ Nameval* reverse_list(Nameval *listp) {
     return prev;
 }
 
-// ============= ТЕСТУВАЛЬНА СИСТЕМА =============
 
 typedef struct {
     int total_tests;
@@ -150,7 +137,6 @@ void test_summary() {
     }
 }
 
-// ============= ТЕСТИ ОСНОВНИХ ФУНКЦІЙ =============
 
 void test_newitem() {
     test_start("newitem - створення елемента");
@@ -358,7 +344,6 @@ void test_reverse_list() {
     free_list(list);
 }
 
-// ============= ТЕСТИ КРАЙНІХ ВИПАДКІВ =============
 
 void test_edge_cases() {
     printf("\n=== ТЕСТИ КРАЙНІХ ВИПАДКІВ ===\n");
@@ -408,7 +393,6 @@ void test_edge_cases() {
     }
 }
 
-// ============= ТЕСТ ПРОДУКТИВНОСТІ =============
 
 void test_performance() {
     printf("\n=== ТЕСТИ ПРОДУКТИВНОСТІ ===\n");
@@ -462,7 +446,6 @@ void test_performance() {
     printf("    Час очищення: %.3f сек\n", free_time);
 }
 
-// ============= ТЕСТ ЦІЛІСНОСТІ ПАМ'ЯТІ =============
 
 void test_memory_integrity() {
     printf("\n=== ТЕСТИ ЦІЛІСНОСТІ ПАМ'ЯТІ ===\n");
@@ -494,7 +477,6 @@ void test_memory_integrity() {
     test_assert(1, "Тест завершено без крахів");
 }
 
-// ============= ТЕСТ СТІЙКОСТІ =============
 
 void test_robustness() {
     printf("\n=== ТЕСТИ СТІЙКОСТІ ===\n");
@@ -524,7 +506,6 @@ void test_robustness() {
     }
 }
 
-// ============= ГОЛОВНА ФУНКЦІЯ ТЕСТУВАННЯ =============
 
 void run_all_tests() {
     printf("=== ЗАПУСК ПОВНОГО НАБОРУ ТЕСТІВ ===\n\n");
@@ -565,20 +546,6 @@ int main(void) {
 
     run_all_tests();
 
-    printf("\n=== РЕКОМЕНДАЦІЇ ПО ТЕСТУВАННЮ ===\n");
-    printf("1. Завжди тестуйте крайні випадки (порожні списки, один елемент)\n");
-    printf("2. Перевіряйте обробку помилок (NULL параметри, нестача пам'яті)\n");
-    printf("3. Тестуйте продуктивність на великих даних\n");
-    printf("4. Використовуйте інструменти для виявлення витоків пам'яті\n");
-    printf("5. Автоматизуйте тестування для регресійного аналізу\n");
-    printf("6. Документуйте очікувану поведінку кожної функції\n");
-    printf("7. Тестуйте інтеграцію функцій між собою\n\n");
-
-    printf("=== ДОДАТКОВІ ІНСТРУМЕНТИ ===\n");
-    printf("• valgrind --leak-check=full ./program\n");
-    printf("• gcc -fsanitize=address для AddressSanitizer\n");
-    printf("• static analysis tools (cppcheck, clang-static-analyzer)\n");
-    printf("• code coverage tools (gcov, lcov)\n");
 
     return (test_suite.failed_tests == 0) ? 0 : 1;
 }
