@@ -1,324 +1,492 @@
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-// ======= Частина 1: Нетипізований список на C =======
+/*
+ЗАВДАННЯ 12: Нетипізовані списки на C та типізовані шаблони на C++
 
-// Нетипізована структура Node для C
-typedef struct TypeNode {
-    void* data;           // Вказівник на будь-які дані
-    struct TypeNode* next; // Вказівник на наступний елемент
-} TypeNode;
+Частина 1: Реалізація нетипізованого списку на C з void*
+Частина 2: Реалізація типізованого шаблону на C++
+Частина 3: Порівняльний аналіз
+*/
 
-// Структура для управління списком
-typedef struct Type_List {
-    TypeNode* head;       // Голова списку
-    int size;             // Розмір списку
-    
-    // Додаткове поле: функція для звільнення пам'яті даних
-    void (*free_data)(void*);
-} Type_List;
+// ============= ЧАСТИНА 1: НЕТИПІЗОВАНИЙ СПИСОК НА C =============
 
-// Ініціалізація нетипізованого списку
-void init_list(Type_List* list, void (*free_func)(void*)) {
+typedef struct ListNode ListNode;
+
+struct ListNode {
+    void *data;          // Універсальний вказівник на дані
+    ListNode *next;
+};
+
+typedef struct {
+    ListNode *head;
+    int count;
+    size_t data_size;    // Розмір одного елемента даних
+
+    // Функції для роботи з даними
+    int (*compare)(const void *a, const void *b);
+    void (*print)(const void *data);
+    void (*destroy)(void *data);
+} GenericList;
+
+// Створення нового списку
+GenericList* create_list(size_t data_size,
+                        int (*compare_func)(const void *a, const void *b),
+                        void (*print_func)(const void *data),
+                        void (*destroy_func)(void *data)) {
+    GenericList *list = (GenericList *) malloc(sizeof(GenericList));
+    if (list == NULL) return NULL;
+
     list->head = NULL;
-    list->size = 0;
-    list->free_data = free_func;
+    list->count = 0;
+    list->data_size = data_size;
+    list->compare = compare_func;
+    list->print = print_func;
+    list->destroy = destroy_func;
+
+    return list;
 }
 
-// Додавання елементу до нетипізованого списку
-int add_to_list(Type_List* list, void* data) {
-    TypeNode* new_node = (TypeNode*)malloc(sizeof(TypeNode));
-    if (new_node == NULL) {
-        return 0; // Помилка виділення пам'яті
+// Додавання елемента на початок
+int generic_add_front(GenericList *list, const void *data) {
+    if (list == NULL || data == NULL) return 0;
+
+    ListNode *new_node = (ListNode *) malloc(sizeof(ListNode));
+    if (new_node == NULL) return 0;
+
+    // Копіюємо дані
+    new_node->data = malloc(list->data_size);
+    if (new_node->data == NULL) {
+        free(new_node);
+        return 0;
     }
-    
-    new_node->data = data;
+
+    memcpy(new_node->data, data, list->data_size);
     new_node->next = list->head;
     list->head = new_node;
-    list->size++;
-    
-    return 1; // Успіх
+    list->count++;
+
+    return 1;
 }
 
-// Видалення елементу з нетипізованого списку за заданим вказівником на дані
-int remove_from_list(Type_List* list, void* data, int (*compare)(void*, void*)) {
-    TypeNode* current = list->head;
-    TypeNode* prev = NULL;
-    
+// Пошук елемента
+void* generic_find(GenericList *list, const void *key) {
+    if (list == NULL || key == NULL || list->compare == NULL)
+        return NULL;
+
+    for (ListNode *current = list->head; current != NULL; current = current->next) {
+        if (list->compare(current->data, key) == 0) {
+            return current->data;
+        }
+    }
+    return NULL;
+}
+
+// Видалення елемента
+int generic_remove(GenericList *list, const void *key) {
+    if (list == NULL || key == NULL || list->compare == NULL)
+        return 0;
+
+    ListNode *current = list->head;
+    ListNode *prev = NULL;
+
     while (current != NULL) {
-        if (compare(current->data, data) == 0) {
-            // Знайдено елемент для видалення
+        if (list->compare(current->data, key) == 0) {
+            // Знайшли елемент для видалення
             if (prev == NULL) {
-                // Видалення першого елементу
                 list->head = current->next;
             } else {
-                // Видалення з середини або кінця
                 prev->next = current->next;
             }
-            
-            // Звільнення пам'яті
-            if (list->free_data != NULL) {
-                list->free_data(current->data);
+
+            // Звільняємо пам'ять
+            if (list->destroy != NULL) {
+                list->destroy(current->data);
             }
+            free(current->data);
             free(current);
-            list->size--;
-            
-            return 1; // Успіх
+            list->count--;
+            return 1;
         }
-        
         prev = current;
         current = current->next;
     }
-    
-    return 0; // Елемент не знайдено
+    return 0;
 }
 
-// Звільнення всього нетипізованого списку
-void free_list(Type_List* list) {
-    TypeNode* current = list->head;
-    TypeNode* next;
-    
+// Виведення списку
+void generic_print(GenericList *list) {
+    if (list == NULL || list->print == NULL) {
+        printf("Список порожній або функція print не визначена\n");
+        return;
+    }
+
+    printf("Список (%d елементів):\n", list->count);
+    int index = 0;
+    for (ListNode *current = list->head; current != NULL; current = current->next) {
+        printf("  [%d] ", index++);
+        list->print(current->data);
+        printf("\n");
+    }
+}
+
+// Звільнення списку
+void generic_destroy(GenericList *list) {
+    if (list == NULL) return;
+
+    ListNode *current = list->head;
     while (current != NULL) {
-        next = current->next;
-        
-        // Звільнення даних, якщо є функція для цього
-        if (list->free_data != NULL) {
-            list->free_data(current->data);
+        ListNode *next = current->next;
+        if (list->destroy != NULL) {
+            list->destroy(current->data);
         }
-        
+        free(current->data);
         free(current);
         current = next;
     }
-    
-    list->head = NULL;
-    list->size = 0;
+    free(list);
 }
 
-// Обробка елементів нетипізованого списку
-void process_list(Type_List* list, void (*processor)(void*)) {
-    TypeNode* current = list->head;
-    
-    while (current != NULL) {
-        processor(current->data);
-        current = current->next;
+// ============= ФУНКЦІЇ ДЛЯ РОБОТИ З INT =============
+
+int compare_int(const void *a, const void *b) {
+    int ia = *(const int*)a;
+    int ib = *(const int*)b;
+    return (ia > ib) - (ia < ib);
+}
+
+void print_int(const void *data) {
+    printf("int: %d", *(const int*)data);
+}
+
+void destroy_int(void *data) {
+    // Для простих типів нічого особливого робити не треба
+    (void)data; // Щоб компілятор не попереджав про невикористаний параметр
+}
+
+// ============= ФУНКЦІЇ ДЛЯ РОБОТИ З STRING =============
+
+typedef struct {
+    char *str;
+    int length;
+} StringData;
+
+int compare_string(const void *a, const void *b) {
+    const StringData *sa = (const StringData*)a;
+    const StringData *sb = (const StringData*)b;
+    return strcmp(sa->str, sb->str);
+}
+
+void print_string(const void *data) {
+    const StringData *s = (const StringData*)data;
+    printf("string: \"%s\" (len=%d)", s->str, s->length);
+}
+
+void destroy_string(void *data) {
+    StringData *s = (StringData*)data;
+    if (s->str != NULL) {
+        free(s->str);
+        s->str = NULL;
     }
 }
 
-// ======= Частина 2: Шаблонний список на C++ =======
+StringData create_string_data(const char *str) {
+    StringData data;
+    data.length = strlen(str);
+    data.str = (char *) malloc(data.length + 1);
+    strcpy(data.str, str);
+    return data;
+}
 
-// Шаблонний клас вузла списку для C++
-template <typename T>
-class Node {
-public:
-    T data;
-    Node<T>* next;
-    
-    Node(const T& value) : data(value), next(nullptr) {}
-};
+// ============= ДЕМОНСТРАЦІЯ C ВЕРСІЇ =============
 
-// Шаблонний клас списку для C++
-template <typename T>
-class List {
+void demonstrate_c_version() {
+    printf("=== ДЕМОНСТРАЦІЯ НЕТИПІЗОВАНОГО СПИСКУ НА C ===\n");
+
+    // Тест з int
+    printf("\n--- Тест з цілими числами ---\n");
+    GenericList *int_list = create_list(sizeof(int), compare_int, print_int, destroy_int);
+
+    int values[] = {42, 17, 89, 3, 56};
+    for (int i = 0; i < 5; i++) {
+        generic_add_front(int_list, &values[i]);
+        printf("Додано: %d\n", values[i]);
+    }
+
+    generic_print(int_list);
+
+    // Пошук
+    int search_value = 17;
+    int *found = (int *) generic_find(int_list, &search_value);
+    if (found != NULL) {
+        printf("Знайдено: %d\n", *found);
+    }
+
+    // Видалення
+    int remove_value = 89;
+    if (generic_remove(int_list, &remove_value)) {
+        printf("Видалено: %d\n", remove_value);
+        generic_print(int_list);
+    }
+
+    generic_destroy(int_list);
+
+    // Тест з рядками
+    printf("\n--- Тест з рядками ---\n");
+    GenericList *string_list = create_list(sizeof(StringData),
+                                         compare_string, print_string, destroy_string);
+
+    const char *strings[] = {"Alice", "Bob", "Charlie", "David"};
+    for (int i = 0; i < 4; i++) {
+        StringData data = create_string_data(strings[i]);
+        generic_add_front(string_list, &data);
+        printf("Додано: %s\n", strings[i]);
+    }
+
+    generic_print(string_list);
+
+    // Пошук рядка
+    StringData search_data = create_string_data("Bob");
+    StringData *found_str = (StringData *) generic_find(string_list, &search_data);
+    if (found_str != NULL) {
+        printf("Знайдено: %s\n", found_str->str);
+    }
+    free(search_data.str); // Звільняємо тимчасові дані
+
+    generic_destroy(string_list);
+}
+
+// ============= ЧАСТИНА 2: ТИПІЗОВАНИЙ ШАБЛОН НА C++ =============
+
+#ifdef __cplusplus
+
+#include <iostream>
+#include <string>
+#include <memory>
+
+template<typename T>
+class TypedList {
 private:
-    Node<T>* head;
-    int size;
-    
+    struct Node {
+        T data;
+        std::unique_ptr<Node> next;
+
+        Node(const T& value) : data(value), next(nullptr) {}
+    };
+
+    std::unique_ptr<Node> head;
+    int count;
+
 public:
-    List() : head(nullptr), size(0) {}
-    
-    ~List() {
+    TypedList() : head(nullptr), count(0) {}
+
+    ~TypedList() {
         clear();
     }
-    
-    // Додавання елементу до початку списку
-    void push_front(const T& value) {
-        Node<T>* new_node = new Node<T>(value);
-        new_node->next = head;
-        head = new_node;
-        size++;
+
+    // Додавання на початок
+    void addFront(const T& value) {
+        auto new_node = std::make_unique<Node>(value);
+        new_node->next = std::move(head);
+        head = std::move(new_node);
+        count++;
     }
-    
-    // Видалення елементу зі списку
-    bool remove(const T& value) {
-        Node<T>* current = head;
-        Node<T>* prev = nullptr;
-        
-        while (current != nullptr) {
+
+    // Пошук елемента
+    T* find(const T& value) {
+        for (Node* current = head.get(); current != nullptr; current = current->next.get()) {
             if (current->data == value) {
-                if (prev == nullptr) {
-                    // Видалення першого елементу
-                    head = current->next;
-                } else {
-                    // Видалення з середини або кінця
-                    prev->next = current->next;
-                }
-                
-                delete current;
-                size--;
+                return &(current->data);
+            }
+        }
+        return nullptr;
+    }
+
+    // Видалення елемента
+    bool remove(const T& value) {
+        if (head == nullptr) return false;
+
+        if (head->data == value) {
+            head = std::move(head->next);
+            count--;
+            return true;
+        }
+
+        for (Node* current = head.get(); current->next != nullptr; current = current->next.get()) {
+            if (current->next->data == value) {
+                current->next = std::move(current->next->next);
+                count--;
                 return true;
             }
-            
-            prev = current;
-            current = current->next;
         }
-        
-        return false; // Елемент не знайдено
+        return false;
     }
-    
-    // Очищення всього списку
+
+    // Виведення списку
+    void print() const {
+        std::cout << "TypedList (" << count << " елементів):\n";
+        int index = 0;
+        for (Node* current = head.get(); current != nullptr; current = current->next.get()) {
+            std::cout << "  [" << index++ << "] " << current->data << "\n";
+        }
+    }
+
+    // Очищення списку
     void clear() {
-        Node<T>* current = head;
-        Node<T>* next;
-        
-        while (current != nullptr) {
-            next = current->next;
-            delete current;
-            current = next;
+        while (head != nullptr) {
+            head = std::move(head->next);
         }
-        
-        head = nullptr;
-        size = 0;
+        count = 0;
     }
-    
-    // Перевірка, чи є список порожнім
-    bool empty() const {
-        return head == nullptr;
-    }
-    
-    // Отримання розміру списку
-    int get_size() const {
-        return size;
-    }
-    
-    // Обробка всіх елементів списку
-    void for_each(void (*processor)(const T&)) const {
-        Node<T>* current = head;
-        
-        while (current != nullptr) {
-            processor(current->data);
-            current = current->next;
-        }
-    }
+
+    int size() const { return count; }
+    bool empty() const { return count == 0; }
 };
 
-// ======= Приклад використання обох реалізацій =======
+void demonstrate_cpp_version() {
+    std::cout << "\n=== ДЕМОНСТРАЦІЯ ТИПІЗОВАНОГО ШАБЛОНУ НА C++ ===\n";
 
-// Структура для демонстрації нетипізованого списку
-typedef struct Person {
-    char* name;
-    int age;
-} Person;
+    // Тест з int
+    std::cout << "\n--- Тест з цілими числами ---\n";
+    TypedList<int> int_list;
 
-// Функція для звільнення пам'яті Person
-void free_person(void* data) {
-    Person* person = (Person*)data;
-    free(person->name);
-    free(person);
-}
-
-// Функція для виведення Person
-void print_person(void* data) {
-    Person* person = (Person*)data;
-    std::cout << "Ім'я: " << person->name << ", Вік: " << person->age << std::endl;
-}
-
-// Функція для порівняння Person за ім'ям
-int compare_person_name(void* data1, void* data2) {
-    Person* person1 = (Person*)data1;
-    Person* person2 = (Person*)data2;
-    return strcmp(person1->name, person2->name);
-}
-
-// Функція для виведення int
-void print_int(const int& value) {
-    std::cout << value << " ";
-}
-
-int main() {
-    std::cout << "===== Демонстрація нетипізованого списку на C =====" << std::endl;
-    
-    // Створення та ініціалізація нетипізованого списку
-    Type_List person_list;
-    init_list(&person_list, free_person);
-    
-    // Створення та додавання елементів
-    Person* p1 = (Person*)malloc(sizeof(Person));
-    p1->name = strdup("Іван");
-    p1->age = 25;
-    add_to_list(&person_list, p1);
-    
-    Person* p2 = (Person*)malloc(sizeof(Person));
-    p2->name = strdup("Марія");
-    p2->age = 30;
-    add_to_list(&person_list, p2);
-    
-    Person* p3 = (Person*)malloc(sizeof(Person));
-    p3->name = strdup("Петро");
-    p3->age = 22;
-    add_to_list(&person_list, p3);
-    
-    // Виведення елементів
-    std::cout << "Список осіб:" << std::endl;
-    process_list(&person_list, print_person);
-    
-    // Видалення елементу
-    Person search_person;
-    search_person.name = (char*)"Марія";
-    remove_from_list(&person_list, &search_person, compare_person_name);
-    
-    std::cout << "\nСписок після видалення 'Марія':" << std::endl;
-    process_list(&person_list, print_person);
-    
-    // Звільнення списку
-    free_list(&person_list);
-    
-    std::cout << "\n\n===== Демонстрація шаблонного списку на C++ =====" << std::endl;
-    
-    // Створення шаблонного списку цілих чисел
-    List<int> int_list;
-    
-    // Додавання елементів
-    for (int i = 1; i <= 5; i++) {
-        int_list.push_front(i * 10);
+    int values[] = {42, 17, 89, 3, 56};
+    for (int i = 0; i < 5; i++) {
+        int_list.addFront(values[i]);
+        std::cout << "Додано: " << values[i] << "\n";
     }
-    
-    // Виведення елементів
-    std::cout << "Список цілих чисел:" << std::endl;
-    int_list.for_each(print_int);
-    std::cout << std::endl;
-    
-    // Видалення елементу
-    int_list.remove(30);
-    
-    std::cout << "Список після видалення 30:" << std::endl;
-    int_list.for_each(print_int);
-    std::cout << std::endl;
-    
-    // Очищення списку автоматично при виході зі scope
-    
-    std::cout << "\n===== Порівняння підходів =====" << std::endl;
-    std::cout << "Сильні сторони нетипізованого списку на C:" << std::endl;
-    std::cout << "1. Простота реалізації без знання шаблонів" << std::endl;
-    std::cout << "2. Можливість зберігати елементи різних типів в одному списку" << std::endl;
-    std::cout << "3. Сумісність з кодом на чистому C" << std::endl;
-    
-    std::cout << "\nСлабкі сторони нетипізованого списку на C:" << std::endl;
-    std::cout << "1. Відсутність перевірки типів на етапі компіляції" << std::endl;
-    std::cout << "2. Необхідність явного приведення типів і роботи з вказівниками" << std::endl;
-    std::cout << "3. Вища вірогідність помилок, пов'язаних з управлінням пам'яттю" << std::endl;
-    std::cout << "4. Складніше використання для клієнтського коду" << std::endl;
-    
-    std::cout << "\nСильні сторони шаблонного списку на C++:" << std::endl;
-    std::cout << "1. Перевірка типів на етапі компіляції" << std::endl;
-    std::cout << "2. Безпечніша та зрозуміліша робота з типами (без void*)" << std::endl;
-    std::cout << "3. Автоматичне керування ресурсами (деструктори)" << std::endl;
-    std::cout << "4. Зручніший інтерфейс для використання" << std::endl;
-    
-    std::cout << "\nСлабкі сторони шаблонного списку на C++:" << std::endl;
-    std::cout << "1. Складніша реалізація, потребує знання шаблонів" << std::endl;
-    std::cout << "2. Окремий екземпляр коду генерується для кожного типу" << std::endl;
-    std::cout << "3. Несумісність з чистим кодом на C" << std::endl;
-    
+
+    int_list.print();
+
+    // Пошук
+    int *found = int_list.find(17);
+    if (found != nullptr) {
+        std::cout << "Знайдено: " << *found << "\n";
+    }
+
+    // Видалення
+    if (int_list.remove(89)) {
+        std::cout << "Видалено: 89\n";
+        int_list.print();
+    }
+
+    // Тест з рядками
+    std::cout << "\n--- Тест з рядками ---\n";
+    TypedList<std::string> string_list;
+
+    std::string strings[] = {"Alice", "Bob", "Charlie", "David"};
+    for (int i = 0; i < 4; i++) {
+        string_list.addFront(strings[i]);
+        std::cout << "Додано: " << strings[i] << "\n";
+    }
+
+    string_list.print();
+
+    // Пошук рядка
+    std::string *found_str = string_list.find("Bob");
+    if (found_str != nullptr) {
+        std::cout << "Знайдено: " << *found_str << "\n";
+    }
+}
+
+#endif // __cplusplus
+
+// ============= ПОРІВНЯЛЬНИЙ АНАЛІЗ =============
+
+void comparative_analysis() {
+    printf("\n=== ПОРІВНЯЛЬНИЙ АНАЛІЗ C vs C++ ===\n");
+
+    printf("\nC (НЕТИПІЗОВАНИЙ ПІДХІД):\n");
+    printf("ПЕРЕВАГИ:\n");
+    printf("+ Універсальність - один код для всіх типів\n");
+    printf("+ Контроль над пам'яттю\n");
+    printf("+ Компактність бінарного коду\n");
+    printf("+ Сумісність з C\n");
+    printf("+ Менше вимог до компілятора\n\n");
+
+    printf("НЕДОЛІКИ:\n");
+    printf("- Відсутність типобезпеки на етапі компіляції\n");
+    printf("- Складність у використанні (багато параметрів)\n");
+    printf("- Потреба в функціях порівняння/виведення\n");
+    printf("- Ручне управління пам'яттю\n");
+    printf("- Складність налагодження\n");
+    printf("- Можливі помилки касту типів\n\n");
+
+    printf("C++ (ТИПІЗОВАНИЙ ПІДХІД):\n");
+    printf("ПЕРЕВАГИ:\n");
+    printf("+ Типобезпека на етапі компіляції\n");
+    printf("+ Простота використання\n");
+    printf("+ Автоматичне управління пам'яттю\n");
+    printf("+ Перевантаження операторів\n");
+    printf("+ RAII (Resource Acquisition Is Initialization)\n");
+    printf("+ Кращі повідомлення про помилки\n");
+    printf("+ STL інтеграція\n\n");
+
+    printf("НЕДОЛІКИ:\n");
+    printf("- Більший розмір бінарного коду (code bloat)\n");
+    printf("- Довший час компіляції\n");
+    printf("- Складніші повідомлення про помилки шаблонів\n");
+    printf("- Потреба в C++ компіляторі\n");
+    printf("- Менший контроль над пам'яттю\n\n");
+
+    printf("ПРОДУКТИВНІСТЬ:\n");
+    printf("C версія:   Менший розмір коду, більше runtime перевірок\n");
+    printf("C++ версія: Більший розмір коду, більше compile-time оптимізацій\n\n");
+
+    printf("БЕЗПЕКА:\n");
+    printf("C версія:   Помилки виявляються під час виконання\n");
+    printf("C++ версія: Більшість помилок виявляється під час компіляції\n\n");
+
+    printf("ЗРУЧНІСТЬ ВИКОРИСТАННЯ:\n");
+    printf("C версія:   Складна ініціалізація, багато boilerplate коду\n");
+    printf("C++ версія: Проста ініціалізація, мінімум зайвого коду\n");
+}
+
+void usage_recommendations() {
+    printf("\n=== РЕКОМЕНДАЦІЇ ПО ВИКОРИСТАННЮ ===\n");
+
+    printf("ВИКОРИСТОВУЙТЕ C ПІДХІД КОЛИ:\n");
+    printf("• Потрібна максимальна сумісність\n");
+    printf("• Критично важливий розмір бінарного файлу\n");
+    printf("• Робота з embedded системами\n");
+    printf("• Необхідний точний контроль над пам'яттю\n");
+    printf("• Інтеграція з C бібліотеками\n\n");
+
+    printf("ВИКОРИСТОВУЙТЕ C++ ПІДХІД КОЛИ:\n");
+    printf("• Безпека типів критично важлива\n");
+    printf("• Швидкість розробки має пріоритет\n");
+    printf("• Потрібна інтеграція з STL\n");
+    printf("• Команда знайома з C++\n");
+    printf("• Складні типи даних з деструкторами\n\n");
+
+    printf("ЗАГАЛЬНА РЕКОМЕНДАЦІЯ:\n");
+    printf("Для нових проектів на C++ використовуйте шаблони.\n");
+    printf("Для C проектів або legacy коду - void* підхід.\n");
+    printf("В обох випадках забезпечте належне тестування!\n");
+}
+
+int main(void) {
+    printf("=== Завдання 12: Нетипізовані vs Типізовані списки ===\n");
+
+    demonstrate_c_version();
+
+#ifdef __cplusplus
+    demonstrate_cpp_version();
+#else
+    printf("\nC++ версія доступна тільки при компіляції з C++ компілятором\n");
+    printf("Для тестування C++ частини скомпілюйте з g++ замість gcc\n");
+#endif
+
+    comparative_analysis();
+    usage_recommendations();
+
+    printf("\n=== ВИСНОВКИ ===\n");
+    printf("1. C підхід надає універсальність за рахунок безпеки\n");
+    printf("2. C++ підхід надає безпеку за рахунок розміру коду\n");
+    printf("3. Обидва підходи мають своє місце в розробці\n");
+    printf("4. Вибір залежить від конкретних вимог проекту\n");
+    printf("5. Важливо розуміти trade-offs кожного підходу\n");
+
     return 0;
 }

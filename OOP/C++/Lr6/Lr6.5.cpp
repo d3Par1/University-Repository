@@ -117,6 +117,8 @@ int main() {
     
     cout << "Цикл з префіксним декрементом:\n";
     coord temp_counter = counter;
+    int x;
+    int y;
     while(temp_counter.get_xy(x, y), x > 0) {
         cout << "Поточне значення: "; temp_counter.show(); cout << "\n";
         --temp_counter;

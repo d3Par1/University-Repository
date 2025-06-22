@@ -1,295 +1,445 @@
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <ctime>
-#include <vector>
-#include <algorithm>
-#include <cmath>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <math.h>
 
-// Структура для вузла дерева
-typedef struct Tnode {
-    char* name;           // Ключ для пошуку
-    int value;            // Асоційоване значення
-    struct Tnode* left;   // Лівий нащадок
-    struct Tnode* right;  // Правий нащадок
-    int height;           // Висота піддерева (для перевірки збалансованості)
-} Tnode;
+/*
+ЗАВДАННЯ 14: Збалансовані бінарні дерева пошуку
 
-// Створення нового вузла дерева
-Tnode* newnode(char* name, int value) {
-    Tnode* node = (Tnode*)malloc(sizeof(Tnode));
-    if (node == NULL) {
+Реалізуємо генерацію потоку даних та перевірку збалансованості
+для двох варіантів:
+1. Випадковий порядок надходження елементів
+2. Відсортований порядок надходження елементів
+*/
+
+// ============= СТРУКТУРА БІНАРНОГО ДЕРЕВА =============
+
+typedef struct Treenode Treenode;
+
+struct Treenode {
+    char *word;
+    int count;
+    Treenode *left;
+    Treenode *right;
+};
+
+// ============= ОСНОВНІ ФУНКЦІЇ ДЕРЕВА =============
+
+// Створення нового вузла
+Treenode* newtree(char *word, int count) {
+    Treenode *newp = (Treenode *) malloc(sizeof(Treenode));
+    if (newp == NULL) return NULL;
+
+    newp->word = (char *) malloc(strlen(word) + 1);
+    if (newp->word == NULL) {
+        free(newp);
         return NULL;
     }
-    
-    node->name = strdup(name);
-    if (node->name == NULL) {
-        free(node);
-        return NULL;
+
+    strcpy(newp->word, word);
+    newp->count = count;
+    newp->left = newp->right = NULL;
+    return newp;
+}
+
+// Вставка елемента в дерево
+Treenode* insert(Treenode *treep, char *word, int count) {
+    int cmp;
+
+    if (treep == NULL) {
+        return newtree(word, count);
     }
-    
-    node->value = value;
-    node->left = NULL;
-    node->right = NULL;
-    node->height = 1; // Новий вузол має висоту 1
-    
-    return node;
+
+    cmp = strcmp(word, treep->word);
+    if (cmp == 0) {
+        treep->count += count;
+    } else if (cmp < 0) {
+        treep->left = insert(treep->left, word, count);
+    } else {
+        treep->right = insert(treep->right, word, count);
+    }
+
+    return treep;
 }
 
-// Функція для обчислення максимуму
-int max(int a, int b) {
-    return (a > b) ? a : b;
+// Пошук елемента в дереві
+Treenode* lookup(Treenode *treep, char *word) {
+    int cmp;
+
+    if (treep == NULL)
+        return NULL;
+
+    cmp = strcmp(word, treep->word);
+    if (cmp == 0)
+        return treep;
+    else if (cmp < 0)
+        return lookup(treep->left, word);
+    else
+        return lookup(treep->right, word);
 }
 
-// Функція для оновлення висоти вузла
-void update_height(Tnode* node) {
-    if (node == NULL) {
+// Звільнення пам'яті дерева
+void freetree(Treenode *treep) {
+    if (treep == NULL) return;
+
+    freetree(treep->left);
+    freetree(treep->right);
+    free(treep->word);
+    free(treep);
+}
+
+// ============= ФУНКЦІЇ АНАЛІЗУ ЗБАЛАНСОВАНОСТІ =============
+
+// Обчислення висоти дерева
+int tree_height(Treenode *treep) {
+    if (treep == NULL) return 0;
+
+    int left_height = tree_height(treep->left);
+    int right_height = tree_height(treep->right);
+
+    return 1 + (left_height > right_height ? left_height : right_height);
+}
+
+// Підрахунок кількості вузлів
+int tree_size(Treenode *treep) {
+    if (treep == NULL) return 0;
+    return 1 + tree_size(treep->left) + tree_size(treep->right);
+}
+
+// Обчислення мінімальної та максимальної глибини
+void depth_analysis(Treenode *treep, int current_depth, int *min_depth, int *max_depth) {
+    if (treep == NULL) {
+        if (*min_depth == -1 || current_depth < *min_depth) {
+            *min_depth = current_depth;
+        }
+        if (current_depth > *max_depth) {
+            *max_depth = current_depth;
+        }
         return;
     }
-    
-    int left_height = (node->left != NULL) ? node->left->height : 0;
-    int right_height = (node->right != NULL) ? node->right->height : 0;
-    
-    node->height = 1 + max(left_height, right_height);
+
+    // Якщо це листок
+    if (treep->left == NULL && treep->right == NULL) {
+        if (*min_depth == -1 || current_depth < *min_depth) {
+            *min_depth = current_depth;
+        }
+        if (current_depth > *max_depth) {
+            *max_depth = current_depth;
+        }
+        return;
+    }
+
+    if (treep->left != NULL) {
+        depth_analysis(treep->left, current_depth + 1, min_depth, max_depth);
+    }
+    if (treep->right != NULL) {
+        depth_analysis(treep->right, current_depth + 1, min_depth, max_depth);
+    }
 }
 
-// Функція для додавання вузла до дерева
-Tnode* addtree(Tnode* tree, char* name, int value) {
-    // Якщо дерево порожнє, створюємо новий вузол
-    if (tree == NULL) {
-        return newnode(name, value);
+// Розрахунок коефіцієнта збалансованості
+typedef struct {
+    int size;
+    int height;
+    int min_depth;
+    int max_depth;
+    double balance_factor;
+    double ideal_height;
+    int is_balanced;
+    char balance_description[200];
+} BalanceInfo;
+
+BalanceInfo analyze_balance(Treenode *treep) {
+    BalanceInfo info = {0};
+
+    if (treep == NULL) {
+        strcpy(info.balance_description, "Порожнє дерево");
+        info.is_balanced = 1;
+        return info;
     }
-    
-    // Рекурсивно додаємо вузол у відповідне піддерево
-    int cmp = strcmp(name, tree->name);
-    if (cmp < 0) {
-        tree->left = addtree(tree->left, name, value);
-    } else if (cmp > 0) {
-        tree->right = addtree(tree->right, name, value);
+
+    info.size = tree_size(treep);
+    info.height = tree_height(treep);
+    info.min_depth = -1;
+    info.max_depth = 0;
+
+    depth_analysis(treep, 0, &info.min_depth, &info.max_depth);
+
+    // Ідеальна висота для збалансованого дерева
+    info.ideal_height = log2(info.size + 1);
+
+    // Коефіцієнт збалансованості (чим ближче до 1, тим краще)
+    info.balance_factor = info.ideal_height / info.height;
+
+    // Визначення рівня збалансованості
+    if (info.balance_factor >= 0.9) {
+        info.is_balanced = 1;
+        strcpy(info.balance_description, "Добре збалансоване");
+    } else if (info.balance_factor >= 0.7) {
+        info.is_balanced = 1;
+        strcpy(info.balance_description, "Помірно збалансоване");
+    } else if (info.balance_factor >= 0.5) {
+        info.is_balanced = 0;
+        strcpy(info.balance_description, "Слабко збалансоване");
     } else {
-        // Елемент вже існує, оновлюємо значення
-        tree->value = value;
+        info.is_balanced = 0;
+        strcpy(info.balance_description, "Незбалансоване (схоже на список)");
     }
-    
-    // Оновлюємо висоту вузла
-    update_height(tree);
-    
+
+    return info;
+}
+
+// Виведення детальної інформації про збалансованість
+void print_balance_info(BalanceInfo info, const char *title) {
+    printf("\n=== %s ===\n", title);
+    printf("Кількість вузлів: %d\n", info.size);
+    printf("Висота дерева: %d\n", info.height);
+    printf("Мінімальна глибина листків: %d\n", info.min_depth);
+    printf("Максимальна глибина листків: %d\n", info.max_depth);
+    printf("Ідеальна висота: %.2f\n", info.ideal_height);
+    printf("Коефіцієнт збалансованості: %.3f\n", info.balance_factor);
+    printf("Оцінка: %s\n", info.balance_description);
+
+    if (info.size > 0) {
+        printf("Ефективність пошуку: O(%.1f) замість ідеального O(%.1f)\n",
+               (double)info.height, info.ideal_height);
+    }
+}
+
+// ============= ГЕНЕРАТОРИ ДАНИХ =============
+
+// Генератор випадкових слів
+void generate_random_word(char *word, int max_length) {
+    int length = 3 + rand() % (max_length - 3); // Довжина від 3 до max_length
+
+    for (int i = 0; i < length; i++) {
+        word[i] = 'a' + rand() % 26;
+    }
+    word[length] = '\0';
+}
+
+// Генерація випадкового набору даних
+Treenode* generate_random_tree(int count) {
+    printf("Генеруємо дерево з %d випадкових елементів...\n", count);
+
+    Treenode *tree = NULL;
+    char word[20];
+
+    for (int i = 0; i < count; i++) {
+        generate_random_word(word, 15);
+        tree = insert(tree, word, 1);
+
+        if (i % (count / 10) == 0 || count < 20) {
+            printf("  Додано: %s (елемент %d/%d)\n", word, i + 1, count);
+        }
+    }
+
     return tree;
 }
 
-// Функція для пошуку вузла за ім'ям
-Tnode* lookup(Tnode* tree, char* name) {
-    if (tree == NULL) {
-        return NULL;
-    }
-    
-    int cmp = strcmp(name, tree->name);
-    if (cmp == 0) {
-        return tree;
-    } else if (cmp < 0) {
-        return lookup(tree->left, name);
-    } else {
-        return lookup(tree->right, name);
-    }
-}
+// Генерація відсортованого набору даних
+Treenode* generate_sorted_tree(int count) {
+    printf("Генеруємо дерево з %d відсортованих елементів...\n", count);
 
-// Функція для звільнення пам'яті дерева
-void freetree(Tnode* tree) {
-    if (tree == NULL) {
-        return;
-    }
-    
-    freetree(tree->left);
-    freetree(tree->right);
-    free(tree->name);
-    free(tree);
-}
+    Treenode *tree = NULL;
+    char word[20];
 
-// Функція для обчислення коефіцієнта збалансованості (balance factor)
-int get_balance_factor(Tnode* node) {
-    if (node == NULL) {
-        return 0;
-    }
-    
-    int left_height = (node->left != NULL) ? node->left->height : 0;
-    int right_height = (node->right != NULL) ? node->right->height : 0;
-    
-    return left_height - right_height;
-}
-
-// Функція для перевірки збалансованості дерева
-bool is_balanced(Tnode* tree) {
-    if (tree == NULL) {
-        return true;
-    }
-    
-    // Перевіряємо баланс поточного вузла
-    int balance = get_balance_factor(tree);
-    if (balance < -1 || balance > 1) {
-        return false;
-    }
-    
-    // Рекурсивно перевіряємо піддерева
-    return is_balanced(tree->left) && is_balanced(tree->right);
-}
-
-// Функція для обчислення висоти дерева
-int get_tree_height(Tnode* tree) {
-    if (tree == NULL) {
-        return 0;
-    }
-    
-    return tree->height;
-}
-
-// Функція для обчислення кількості вузлів у дереві
-int count_nodes(Tnode* tree) {
-    if (tree == NULL) {
-        return 0;
-    }
-    
-    return 1 + count_nodes(tree->left) + count_nodes(tree->right);
-}
-
-// Функція для виведення дерева (in-order traversal)
-void print_tree(Tnode* tree, int level = 0) {
-    if (tree == NULL) {
-        return;
-    }
-    
-    print_tree(tree->right, level + 1);
-    
-    for (int i = 0; i < level; i++) {
-        std::cout << "    ";
-    }
-    std::cout << tree->name << " (" << tree->value << ")" << std::endl;
-    
-    print_tree(tree->left, level + 1);
-}
-
-// Функція для аналізу збалансованості дерева
-void analyze_tree_balance(Tnode* tree) {
-    int node_count = count_nodes(tree);
-    int height = get_tree_height(tree);
-    double optimal_height = log2(node_count + 1);
-    
-    std::cout << "Аналіз дерева:" << std::endl;
-    std::cout << "  Кількість вузлів: " << node_count << std::endl;
-    std::cout << "  Висота дерева: " << height << std::endl;
-    std::cout << "  Оптимальна висота для збалансованого дерева: ~" 
-              << optimal_height << std::endl;
-    std::cout << "  Коефіцієнт ефективності: " 
-              << optimal_height / height << " (ближче до 1 - краще)" << std::endl;
-    
-    if (is_balanced(tree)) {
-        std::cout << "  Дерево є збалансованим (різниця висот підерев не більше 1)" << std::endl;
-    } else {
-        std::cout << "  Дерево не є збалансованим" << std::endl;
-    }
-}
-
-// Генерація випадкових даних
-std::vector<std::pair<std::string, int>> generate_random_data(int count) {
-    std::vector<std::pair<std::string, int>> data;
-    
     for (int i = 0; i < count; i++) {
-        char buffer[20];
-        sprintf(buffer, "item%d", i);
-        data.push_back(std::make_pair(buffer, i * 10));
+        sprintf(word, "word%04d", i);  // word0000, word0001, ...
+        tree = insert(tree, word, 1);
+
+        if (i % (count / 10) == 0 || count < 20) {
+            printf("  Додано: %s (елемент %d/%d)\n", word, i + 1, count);
+        }
     }
-    
-    // Перемішуємо дані для випадкового порядку
-    std::random_shuffle(data.begin(), data.end());
-    
-    return data;
+
+    return tree;
 }
 
-// Генерація відсортованих даних
-std::vector<std::pair<std::string, int>> generate_sorted_data(int count) {
-    std::vector<std::pair<std::string, int>> data;
-    
-    for (int i = 0; i < count; i++) {
-        char buffer[20];
-        sprintf(buffer, "item%d", i);
-        data.push_back(std::make_pair(buffer, i * 10));
+// ============= ВІЗУАЛІЗАЦІЯ СТРУКТУРИ ДЕРЕВА =============
+
+// Виведення структури дерева (спрощена версія)
+void print_tree_structure(Treenode *treep, int depth, char *prefix) {
+    if (treep == NULL) return;
+
+    if (depth < 4) { // Обмежуємо глибину для читабельності
+        printf("%s%s%s (count: %d)\n", prefix,
+               (depth > 0) ? "├── " : "", treep->word, treep->count);
+
+        if (treep->left != NULL || treep->right != NULL) {
+            char new_prefix[100];
+            sprintf(new_prefix, "%s%s", prefix, (depth > 0) ? "│   " : "");
+
+            if (treep->left != NULL) {
+                print_tree_structure(treep->left, depth + 1, new_prefix);
+            }
+            if (treep->right != NULL) {
+                print_tree_structure(treep->right, depth + 1, new_prefix);
+            }
+        }
+    } else if (depth == 4) {
+        printf("%s├── ... (більше вузлів на глибині %d+)\n", prefix, depth);
     }
-    
-    return data;
 }
 
-int main() {
-    // Ініціалізуємо генератор випадкових чисел
+// ============= ДЕМОНСТРАЦІЇ =============
+
+void demonstrate_random_tree() {
+    printf("\n=== ВАРІАНТ 1: ВИПАДКОВИЙ ПОРЯДОК ЕЛЕМЕНТІВ ===\n");
+
     srand(time(NULL));
-    
-    const int DATA_SIZE = 100; // Розмір набору даних
-    
-    std::cout << "=== Варіант 1: Елементи надходять у випадковому порядку ===" << std::endl;
-    
-    // Створюємо набір випадкових даних
-    std::vector<std::pair<std::string, int>> random_data = generate_random_data(DATA_SIZE);
-    
-    // Будуємо дерево з випадкових даних
-    Tnode* random_tree = NULL;
-    for (const auto& item : random_data) {
-        random_tree = addtree(random_tree, (char*)item.first.c_str(), item.second);
+
+    // Тестуємо різні розміри
+    int sizes[] = {10, 50, 100, 500};
+    int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+
+    for (int i = 0; i < num_sizes; i++) {
+        printf("\n--- Тест з %d випадковими елементами ---\n", sizes[i]);
+
+        Treenode *tree = generate_random_tree(sizes[i]);
+        BalanceInfo info = analyze_balance(tree);
+
+        print_balance_info(info, "Аналіз випадкового дерева");
+
+        if (sizes[i] <= 20) {
+            printf("\nСтруктура дерева:\n");
+            print_tree_structure(tree, 0, "");
+        }
+
+        freetree(tree);
     }
-    
-    // Аналізуємо збалансованість дерева
-    analyze_tree_balance(random_tree);
-    
-    // Виводимо структуру дерева (для невеликих дерев)
-    if (DATA_SIZE <= 10) {
-        std::cout << "\nСтруктура дерева:" << std::endl;
-        print_tree(random_tree);
+
+    printf("\n=== ВИСНОВКИ ДЛЯ ВИПАДКОВИХ ДАНИХ ===\n");
+    printf("Твердження: 'Якщо елементи надходять у випадковому порядку,\n");
+    printf("то дерево буде більш-менш збалансованим'\n\n");
+    printf("РЕЗУЛЬТАТ: ЧАСТКОВО ПІДТВЕРДЖЕНО\n");
+    printf("• Випадкові дані дають кращу збалансованість ніж відсортовані\n");
+    printf("• Але збалансованість не гарантована і може варіюватися\n");
+    printf("• В середньому висота близька до O(log n), але може бути гірше\n");
+    printf("• Великі дерева мають тенденцію до кращої збалансованості\n");
+}
+
+void demonstrate_sorted_tree() {
+    printf("\n\n=== ВАРІАНТ 2: ВІДСОРТОВАНИЙ ПОРЯДОК ЕЛЕМЕНТІВ ===\n");
+
+    // Тестуємо різні розміри
+    int sizes[] = {10, 50, 100, 200};
+    int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
+
+    for (int i = 0; i < num_sizes; i++) {
+        printf("\n--- Тест з %d відсортованими елементами ---\n", sizes[i]);
+
+        Treenode *tree = generate_sorted_tree(sizes[i]);
+        BalanceInfo info = analyze_balance(tree);
+
+        print_balance_info(info, "Аналіз відсортованого дерева");
+
+        if (sizes[i] <= 20) {
+            printf("\nСтруктура дерева:\n");
+            print_tree_structure(tree, 0, "");
+        }
+
+        freetree(tree);
     }
-    
-    // Звільняємо пам'ять
+
+    printf("\n=== ВИСНОВКИ ДЛЯ ВІДСОРТОВАНИХ ДАНИХ ===\n");
+    printf("Твердження: 'Якщо елементи прибувають у відсортованому вигляді,\n");
+    printf("то спуск завжди буде до самого низу однієї гілки,\n");
+    printf("представляючи собою список за вказівником right'\n\n");
+    printf("РЕЗУЛЬТАТ: ПОВНІСТЮ ПІДТВЕРДЖЕНО\n");
+    printf("• Відсортовані дані створюють вироджене дерево\n");
+    printf("• Структура стає лінійним списком (тільки праві діти)\n");
+    printf("• Висота дорівнює кількості елементів O(n)\n");
+    printf("• Ефективність пошуку деградує до O(n) замість O(log n)\n");
+    printf("• Це найгірший сценарій для бінарного дерева пошуку\n");
+}
+
+void compare_scenarios() {
+    printf("\n=== ПОРІВНЯЛЬНИЙ АНАЛІЗ ===\n");
+
+    const int TEST_SIZE = 100;
+
+    printf("Порівнюємо дерева з %d елементів:\n\n", TEST_SIZE);
+
+    // Випадкове дерево
+    srand(42); // Фіксований seed для відтворюваності
+    Treenode *random_tree = generate_random_tree(TEST_SIZE);
+    BalanceInfo random_info = analyze_balance(random_tree);
+
+    // Відсортоване дерево
+    Treenode *sorted_tree = generate_sorted_tree(TEST_SIZE);
+    BalanceInfo sorted_info = analyze_balance(sorted_tree);
+
+    printf("┌─────────────────────────┬─────────────┬─────────────┐\n");
+    printf("│ Характеристика          │ Випадкове   │ Відсортоване│\n");
+    printf("├─────────────────────────┼─────────────┼─────────────┤\n");
+    printf("│ Кількість вузлів        │ %-11d │ %-11d │\n",
+           random_info.size, sorted_info.size);
+    printf("│ Висота дерева           │ %-11d │ %-11d │\n",
+           random_info.height, sorted_info.height);
+    printf("│ Ідеальна висота         │ %-11.1f │ %-11.1f │\n",
+           random_info.ideal_height, sorted_info.ideal_height);
+    printf("│ Коефіцієнт балансу      │ %-11.3f │ %-11.3f │\n",
+           random_info.balance_factor, sorted_info.balance_factor);
+    printf("│ Мін. глибина листків    │ %-11d │ %-11d │\n",
+           random_info.min_depth, sorted_info.min_depth);
+    printf("│ Макс. глибина листків   │ %-11d │ %-11d │\n",
+           random_info.max_depth, sorted_info.max_depth);
+    printf("└─────────────────────────┴─────────────┴─────────────┘\n");
+
+    printf("\nЕфективність пошуку:\n");
+    printf("• Випадкове: в середньому %d порівнянь\n", random_info.height);
+    printf("• Відсортоване: в середньому %d порівнянь\n", sorted_info.height);
+    printf("• Різниця: у %.1f разів повільніше для відсортованого\n",
+           (double)sorted_info.height / random_info.height);
+
     freetree(random_tree);
-    
-    std::cout << "\n=== Варіант 2: Елементи надходять у відсортованому вигляді ===" << std::endl;
-    
-    // Створюємо набір відсортованих даних
-    std::vector<std::pair<std::string, int>> sorted_data = generate_sorted_data(DATA_SIZE);
-    
-    // Будуємо дерево з відсортованих даних
-    Tnode* sorted_tree = NULL;
-    for (const auto& item : sorted_data) {
-        sorted_tree = addtree(sorted_tree, (char*)item.first.c_str(), item.second);
-    }
-    
-    // Аналізуємо збалансованість дерева
-    analyze_tree_balance(sorted_tree);
-    
-    // Виводимо структуру дерева (для невеликих дерев)
-    if (DATA_SIZE <= 10) {
-        std::cout << "\nСтруктура дерева:" << std::endl;
-        print_tree(sorted_tree);
-    }
-    
-    // Звільняємо пам'ять
     freetree(sorted_tree);
-    
-    std::cout << "\n=== Порівняння та висновки ===" << std::endl;
-    std::cout << "1. Випадковий порядок:" << std::endl;
-    std::cout << "   - При випадковому порядку надходження даних дерево з високою" << std::endl;
-    std::cout << "     імовірністю буде більш-менш збалансованим." << std::endl;
-    std::cout << "   - Це пояснюється тим, що випадковий порядок дозволяє елементам" << std::endl;
-    std::cout << "     рівномірно розподілятися між лівим і правим піддеревами." << std::endl;
-    
-    std::cout << "\n2. Відсортований порядок:" << std::endl;
-    std::cout << "   - При відсортованому порядку надходження даних дерево" << std::endl;
-    std::cout << "     виродиться в фактично однобічний зв'язаний список." << std::endl;
-    std::cout << "   - Кожен новий елемент буде додаватися до правого піддерева," << std::endl;
-    std::cout << "     що призведе до глибокої структури з максимальною висотою O(n)." << std::endl;
-    std::cout << "   - Це підтверджує твердження, що при відсортованому порядку" << std::endl;
-    std::cout << "     дерево має проблеми швидкодії, властиві спискам." << std::endl;
-    
-    std::cout << "\nЗагальний висновок:" << std::endl;
-    std::cout << "   Порядок додавання елементів критично впливає на збалансованість" << std::endl;
-    std::cout << "   та ефективність двійкового дерева пошуку. Для гарантованого" << std::endl;
-    std::cout << "   збереження збалансованості потрібно використовувати спеціальні" << std::endl;
-    std::cout << "   самобалансуючі дерева, такі як AVL або Red-Black дерева, які" << std::endl;
-    std::cout << "   автоматично перебудовуються для збереження балансу." << std::endl;
-    
+}
+
+void practical_recommendations() {
+    printf("\n=== ПРАКТИЧНІ РЕКОМЕНДАЦІЇ ===\n");
+
+    printf("ПРОБЛЕМА:\n");
+    printf("Звичайні бінарні дерева пошуку деградують на відсортованих даних\n\n");
+
+    printf("РІШЕННЯ:\n");
+    printf("1. Самобалансуючі дерева:\n");
+    printf("   • AVL-дерева (строга збалансованість)\n");
+    printf("   • Червоно-чорні дерева (послаблена збалансованість)\n");
+    printf("   • Splay-дерева (адаптивна збалансованість)\n\n");
+
+    printf("2. Попередня обробка даних:\n");
+    printf("   • Перемішування даних перед вставкою\n");
+    printf("   • Рекурсивна побудова з середніх елементів\n\n");
+
+    printf("3. Альтернативні структури:\n");
+    printf("   • B-дерева для роботи з диском\n");
+    printf("   • Хеш-таблиці для O(1) пошуку\n");
+    printf("   • Skip Lists як альтернатива\n\n");
+
+    printf("ВИБІР СТРАТЕГІЇ:\n");
+    printf("• Якщо дані випадкові → звичайне BST\n");
+    printf("• Якщо дані можуть бути відсортовані → самобалансуюче дерево\n");
+    printf("• Якщо пріоритет швидкості → хеш-таблиця\n");
+    printf("• Якщо потрібен впорядкований обхід → збалансоване дерево\n");
+}
+
+int main(void) {
+    printf("=== Завдання 14: Аналіз збалансованості бінарних дерев ===\n");
+
+    demonstrate_random_tree();
+    demonstrate_sorted_tree();
+    compare_scenarios();
+    practical_recommendations();
+
+    printf("\n=== ЗАГАЛЬНІ ВИСНОВКИ ===\n");
+    printf("1. Порядок вставки критично впливає на структуру BST\n");
+    printf("2. Випадкові дані зазвичай дають прийнятну збалансованість\n");
+    printf("3. Відсортовані дані завжди створюють вироджене дерево\n");
+    printf("4. Для гарантованої продуктивності використовуйте самобалансуючі дерева\n");
+    printf("5. Аналіз збалансованості допомагає виявити проблеми продуктивності\n");
+
     return 0;
 }

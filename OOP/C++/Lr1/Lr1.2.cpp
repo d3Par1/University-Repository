@@ -1,221 +1,183 @@
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-typedef struct Nameval {
+/*
+ЗАВДАННЯ 2: Аналіз функції delname та використання realloc
+
+ПИТАННЯ:
+1. Чи правильно не використовувати realloc в delname?
+2. Чи можливо реалізувати задачі іншим шляхом?
+3. Який варіант буде кращим?
+
+ВІДПОВІДІ:
+
+1. ТАК, правильно не використовувати realloc в delname з наступних причин:
+   - Операція зменшення масиву через realloc є дорогою операцією
+   - Ймовірно, що скоро знову буде потрібно додавати елементи
+   - Фрагментація пам'яті може зростати при частих realloc
+   - Продуктивність буде краща без зайвих перерозподілів
+
+2. Альтернативні підходи:
+   - Позначення елементів як "видалених" замість фізичного видалення
+   - Використання порогового значення для зменшення масиву
+   - Стратегія "ледачого" видалення з періодичною очисткою
+
+3. Кращий варіант залежить від паттерну використання:
+   - Для частих операцій додавання/видалення - не використовувати realloc
+   - Для рідкісних видалень - можна використати realloc з порогом
+*/
+
+typedef struct Nameval Nameval;
+
+struct Nameval {
     char *name;
     int value;
-} Nameval;
+};
 
-typedef struct NVtab {
-    Nameval *nameval;
-    int size;
+struct NVtab {
+    int nval;
     int max;
-} NVtab;
+    Nameval *nameval;
+} nvtab;
 
-#define NVGROW 10
+enum {NVINIT = 1, NVGROW = 2};
 
-// Функція для ініціалізації масиву
-void init_nvtab(NVtab *nvtptr) {
-    nvtptr->nameval = NULL;
-    nvtptr->size = 0;
-    nvtptr->max = 0;
-}
-
-// Стандартна функція addname
-int addname(NVtab *nvtptr, Nameval newname) {
-    Nameval *newval;
-    
-    if (nvtptr->size >= nvtptr->max) {
-        newval = (Nameval *) realloc(nvtptr->nameval, 
-                                    (nvtptr->max + NVGROW) * sizeof(Nameval));
-        if (newval == NULL)
-            return -1;
-        
-        nvtptr->max += NVGROW;
-        nvtptr->nameval = newval;
-    }
-    
-    nvtptr->nameval[nvtptr->size] = newname;
-    nvtptr->size++;
-    
-    return nvtptr->size - 1;
-}
-
-// Стандартна функція delname (не використовує realloc для зменшення масиву)
-int delname(NVtab *nvtptr, char *name) {
-    int i;
-    
-    for (i = 0; i < nvtptr->size; i++) {
-        if (strcmp(nvtptr->nameval[i].name, name) == 0) {
-            memmove(&nvtptr->nameval[i], &nvtptr->nameval[i+1], 
-                   (nvtptr->size - i - 1) * sizeof(Nameval));
-            nvtptr->size--;
+// Оригінальна версія delname (без realloc)
+int delname_original(struct NVtab *tab, char *name) {
+    for (int i = 0; i < tab->nval; i++) {
+        if (strcmp(tab->nameval[i].name, name) == 0) {
+            memmove(tab->nameval + i, tab->nameval + (i + 1),
+                   (tab->nval - (i + 1)) * sizeof(Nameval));
+            tab->nval--;
             return 1;
         }
     }
-    
     return 0;
 }
 
-// Покращена функція delname, яка використовує realloc для зменшення масиву
-int delname_improved(NVtab *nvtptr, char *name) {
-    int i;
-    Nameval *newval;
-    
-    for (i = 0; i < nvtptr->size; i++) {
-        if (strcmp(nvtptr->nameval[i].name, name) == 0) {
-            // Спочатку зсуваємо елементи
-            memmove(&nvtptr->nameval[i], &nvtptr->nameval[i+1], 
-                   (nvtptr->size - i - 1) * sizeof(Nameval));
-            nvtptr->size--;
-            
-            // Перевіряємо, чи можна зменшити масив
-            if (nvtptr->size > 0 && nvtptr->max - nvtptr->size >= NVGROW * 2) {
-                newval = (Nameval *) realloc(nvtptr->nameval, 
-                                          (nvtptr->max - NVGROW) * sizeof(Nameval));
-                if (newval != NULL) {
-                    nvtptr->nameval = newval;
-                    nvtptr->max -= NVGROW;
+// Альтернативна версія з realloc (для демонстрації)
+int delname_with_realloc(struct NVtab *tab, char *name) {
+    for (int i = 0; i < tab->nval; i++) {
+        if (strcmp(tab->nameval[i].name, name) == 0) {
+            memmove(tab->nameval + i, tab->nameval + (i + 1),
+                   (tab->nval - (i + 1)) * sizeof(Nameval));
+            tab->nval--;
+
+            // Зменшуємо масив, якщо використовується менше половини
+            if (tab->nval <= tab->max / 4 && tab->max > NVINIT) {
+                int new_size = tab->max / 2;
+                Nameval *nvp = (Nameval *) realloc(tab->nameval,
+                                                 new_size * sizeof(Nameval));
+                if (nvp != NULL) {
+                    tab->nameval = nvp;
+                    tab->max = new_size;
+                    printf("Масив зменшено до %d елементів\n", new_size);
                 }
-                // Якщо realloc не вдалося, ми просто продовжуємо з поточним масивом
             }
-            
             return 1;
         }
     }
-    
     return 0;
 }
 
-// Альтернативна реалізація з використанням списку замість масиву
-typedef struct NamevalNode {
-    Nameval data;
-    struct NamevalNode *next;
-} NamevalNode;
-
-typedef struct {
-    NamevalNode *head;
-    int size;
-} NamevalList;
-
-// Ініціалізація списку
-void init_list(NamevalList *list) {
-    list->head = NULL;
-    list->size = 0;
-}
-
-// Додавання елемента до списку
-void add_to_list(NamevalList *list, Nameval newname) {
-    NamevalNode *newnode = (NamevalNode *)malloc(sizeof(NamevalNode));
-    newnode->data = newname;
-    newnode->next = list->head;
-    list->head = newnode;
-    list->size++;
-}
-
-// Видалення елемента зі списку
-int delete_from_list(NamevalList *list, char *name) {
-    NamevalNode *current = list->head;
-    NamevalNode *prev = NULL;
-    
-    while (current != NULL) {
-        if (strcmp(current->data.name, name) == 0) {
-            if (prev == NULL) {
-                list->head = current->next;
-            } else {
-                prev->next = current->next;
-            }
-            free(current);
-            list->size--;
+// Версія з позначенням як видалений
+int delname_mark_deleted(struct NVtab *tab, char *name) {
+    for (int i = 0; i < tab->nval; i++) {
+        if (tab->nameval[i].name != NULL &&
+            strcmp(tab->nameval[i].name, name) == 0) {
+            // Позначаємо як видалений
+            tab->nameval[i].name = NULL;
+            printf("Елемент '%s' позначено як видалений\n", name);
             return 1;
         }
-        prev = current;
-        current = current->next;
     }
-    
     return 0;
 }
 
-// Звільнення пам'яті списку
-void free_list(NamevalList *list) {
-    NamevalNode *current = list->head;
-    NamevalNode *next;
-    
-    while (current != NULL) {
-        next = current->next;
-        free(current->data.name);
-        free(current);
-        current = next;
+int addname(struct NVtab *tab, Nameval newname) {
+    Nameval *nvp;
+    if (tab->nameval == NULL) {
+        tab->nameval = (Nameval *) malloc(NVINIT * sizeof(Nameval));
+        if (tab->nameval == NULL)
+            return -1;
+        tab->max = NVINIT;
+        tab->nval = 0;
+    } else if (tab->nval >= tab->max) {
+        nvp = (Nameval *) realloc(tab->nameval,
+                                (NVGROW * tab->max) * sizeof(Nameval));
+        if (nvp == NULL)
+            return -1;
+        tab->max *= NVGROW;
+        tab->nameval = nvp;
+        printf("Масив розширено до %d елементів\n", tab->max);
     }
-    
-    list->head = NULL;
-    list->size = 0;
+    tab->nameval[tab->nval] = newname;
+    return tab->nval++;
 }
 
-int main() {
-    // Демонстрація використання різних підходів
-    NVtab nvtab;
-    init_nvtab(&nvtab);
-    
-    Nameval item;
-    
-    // Додаємо елементи до масиву
-    for (int i = 0; i < 25; i++) {
-        char buf[20];
-        sprintf(buf, "item%d", i);
-        item.name = strdup(buf);
-        item.value = i;
+void print_array_info(struct NVtab *tab) {
+    printf("Стан масиву: nval=%d, max=%d, використання=%.1f%%\n",
+           tab->nval, tab->max,
+           tab->max > 0 ? (double)tab->nval / tab->max * 100 : 0);
+}
+
+int main(void) {
+    printf("=== Завдання 2: Аналіз функції delname ===\n\n");
+
+    // Ініціалізація
+    nvtab.nval = 0;
+    nvtab.max = 0;
+    nvtab.nameval = NULL;
+
+    // Створюємо багато елементів для демонстрації
+    char names[][10] = {"Andy", "Billy", "Charlie", "David", "Eve",
+                       "Frank", "Grace", "Henry", "Ivy", "Jack"};
+
+    printf("1. Демонстрація оригінальної версії (без realloc):\n");
+    for (int i = 0; i < 10; i++) {
+        Nameval item = {names[i], i * 10};
         addname(&nvtab, item);
     }
-    
-    std::cout << "Початковий розмір масиву: " << nvtab.size << ", макс: " << nvtab.max << std::endl;
-    
+    print_array_info(&nvtab);
+
     // Видаляємо кілька елементів
-    delname(&nvtab, (char*)"item5");
-    delname(&nvtab, (char*)"item10");
-    delname(&nvtab, (char*)"item15");
-    
-    std::cout << "Після видалення (стандартний delname): " << nvtab.size << ", макс: " << nvtab.max << std::endl;
-    
-    // Видаляємо ще кілька елементів з покращеною функцією
-    delname_improved(&nvtab, (char*)"item1");
-    delname_improved(&nvtab, (char*)"item2");
-    delname_improved(&nvtab, (char*)"item3");
-    delname_improved(&nvtab, (char*)"item4");
-    delname_improved(&nvtab, (char*)"item6");
-    delname_improved(&nvtab, (char*)"item7");
-    delname_improved(&nvtab, (char*)"item8");
-    delname_improved(&nvtab, (char*)"item9");
-    
-    std::cout << "Після видалення (покращений delname): " << nvtab.size << ", макс: " << nvtab.max << std::endl;
-    
-    // Демонстрація використання списку
-    NamevalList list;
-    init_list(&list);
-    
-    for (int i = 0; i < 10; i++) {
-        char buf[20];
-        sprintf(buf, "list_item%d", i);
-        item.name = strdup(buf);
-        item.value = i * 10;
-        add_to_list(&list, item);
-    }
-    
-    std::cout << "Розмір списку: " << list.size << std::endl;
-    
-    delete_from_list(&list, (char*)"list_item3");
-    delete_from_list(&list, (char*)"list_item7");
-    
-    std::cout << "Розмір списку після видалення: " << list.size << std::endl;
-    
-    // Звільнення пам'яті
-    for (int i = 0; i < nvtab.size; i++) {
-        free(nvtab.nameval[i].name);
-    }
+    delname_original(&nvtab, "Billy");
+    delname_original(&nvtab, "David");
+    delname_original(&nvtab, "Frank");
+    delname_original(&nvtab, "Henry");
+    delname_original(&nvtab, "Jack");
+
+    printf("Після видалення 5 елементів:\n");
+    print_array_info(&nvtab);
+    printf("Зауваження: Пам'ять не звільнена, але готова для нових елементів\n\n");
+
+    // Скидаємо для наступного тесту
     free(nvtab.nameval);
-    
-    free_list(&list);
-    
+    nvtab.nval = 0;
+    nvtab.max = 0;
+    nvtab.nameval = NULL;
+
+    printf("2. Демонстрація версії з realloc:\n");
+    for (int i = 0; i < 10; i++) {
+        Nameval item = {names[i], i * 10};
+        addname(&nvtab, item);
+    }
+    print_array_info(&nvtab);
+
+    delname_with_realloc(&nvtab, "Billy");
+    delname_with_realloc(&nvtab, "David");
+    delname_with_realloc(&nvtab, "Frank");
+    delname_with_realloc(&nvtab, "Henry");
+    delname_with_realloc(&nvtab, "Jack");
+
+    printf("Після видалення з realloc:\n");
+    print_array_info(&nvtab);
+
+    printf("\nВИСНОВОК:\n");
+    printf("Оригінальний підхід (без realloc) є кращим для більшості випадків,\n");
+    printf("оскільки зберігає продуктивність і готовність до нових додавань.\n");
+
+    free(nvtab.nameval);
     return 0;
 }

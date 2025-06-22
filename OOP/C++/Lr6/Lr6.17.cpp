@@ -288,7 +288,7 @@ int main() {
     
     three_d zero1(0, 0, 0);
     three_d zero2(0, 0, 0);
-    three_d non_zero(1, 2, 3);
+    three_d non_zero1(1, 2, 3);
     
     cout << "zero1: "; zero1.show(); cout << " is_zero: " << zero1.is_zero() << "\n";
     cout << "zero2: "; zero2.show(); cout << " is_zero: " << zero2.is_zero() << "\n";

@@ -1,537 +1,710 @@
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <cassert>
-#include <vector>
-#include <algorithm>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include <time.h>
 
-// Структура для вузла дерева пошуку
-typedef struct Tnode {
-    char* name;           // Ключ для пошуку
-    int value;            // Асоційоване значення
-    struct Tnode* left;   // Лівий нащадок
-    struct Tnode* right;  // Правий нащадок
-} Tnode;
+/*
+ЗАВДАННЯ 17: Тестування функцій роботи з бінарними деревами
 
-// Структура для вузла з візитором (використовується в Tree-traverser)
-typedef struct Treenode {
-    char* word;                  // Слово
-    struct Treenode* left;       // Лівий нащадок
-    struct Treenode* right;      // Правий нащадок
-    void (*visit)(struct Treenode*); // Функція для обходу
-} Treenode;
+Комплексна система тестування для функцій з прикладів
+"Binary search tree" та "Tree-traverser":
+- Вставка, пошук, видалення
+- Різні види обходу дерева
+- Крайні випадки та стрес-тестування
+*/
 
-// ========== Функції для Binary Search Tree ==========
+// ============= СТРУКТУРА ДЕРЕВА =============
 
-// Створення нового вузла дерева пошуку
-Tnode* newnode(char* name, int value) {
-    Tnode* node = (Tnode*)malloc(sizeof(Tnode));
-    if (node == NULL) {
+typedef struct Treenode Treenode;
+
+struct Treenode {
+    char *word;
+    int count;
+    Treenode *left;
+    Treenode *right;
+};
+
+// ============= ОСНОВНІ ФУНКЦІЇ ДЕРЕВА =============
+
+Treenode* newtree(char *word, int count) {
+    Treenode *newp = (Treenode *) malloc(sizeof(Treenode));
+    if (newp == NULL) return NULL;
+
+    newp->word = (char *) malloc(strlen(word) + 1);
+    if (newp->word == NULL) {
+        free(newp);
         return NULL;
     }
-    
-    node->name = strdup(name);
-    if (node->name == NULL) {
-        free(node);
-        return NULL;
-    }
-    
-    node->value = value;
-    node->left = NULL;
-    node->right = NULL;
-    
-    return node;
+
+    strcpy(newp->word, word);
+    newp->count = count;
+    newp->left = newp->right = NULL;
+    return newp;
 }
 
-// Функція для додавання вузла до дерева пошуку
-Tnode* addtree(Tnode* tree, char* name, int value) {
-    // Якщо дерево порожнє, створюємо новий вузол
-    if (tree == NULL) {
-        return newnode(name, value);
-    }
-    
-    // Рекурсивно додаємо вузол у відповідне піддерево
-    int cmp = strcmp(name, tree->name);
-    if (cmp < 0) {
-        tree->left = addtree(tree->left, name, value);
-    } else if (cmp > 0) {
-        tree->right = addtree(tree->right, name, value);
-    } else {
-        // Елемент вже існує, оновлюємо значення
-        tree->value = value;
-    }
-    
-    return tree;
-}
+Treenode* insert(Treenode *treep, char *word, int count) {
+    int cmp;
 
-// Рекурсивна функція пошуку
-Tnode* lookup(Tnode* tree, char* name) {
-    if (tree == NULL) {
-        return NULL;
+    if (treep == NULL) {
+        return newtree(word, count);
     }
-    
-    int cmp = strcmp(name, tree->name);
+
+    cmp = strcmp(word, treep->word);
     if (cmp == 0) {
-        return tree;
+        treep->count += count;
     } else if (cmp < 0) {
-        return lookup(tree->left, name);
+        treep->left = insert(treep->left, word, count);
     } else {
-        return lookup(tree->right, name);
+        treep->right = insert(treep->right, word, count);
     }
+
+    return treep;
 }
 
-// Ітераційна функція пошуку
-Tnode* nvlookup(Tnode* tree, char* name) {
-    while (tree != NULL) {
-        int cmp = strcmp(name, tree->name);
-        if (cmp == 0) {
-            return tree; // Знайдено
-        } else if (cmp < 0) {
-            tree = tree->left; // Ліве піддерево
-        } else {
-            tree = tree->right; // Праве піддерево
-        }
-    }
-    
-    return NULL; // Не знайдено
-}
+Treenode* lookup(Treenode *treep, char *word) {
+    int cmp;
 
-// Функція для звільнення пам'яті дерева пошуку
-void freetree(Tnode* tree) {
-    if (tree == NULL) {
-        return;
-    }
-    
-    freetree(tree->left);
-    freetree(tree->right);
-    free(tree->name);
-    free(tree);
-}
-
-// ========== Функції для Tree-traverser ==========
-
-// Створення нового вузла для дерева з візитором
-Treenode* newtnode(char* word) {
-    Treenode* node = (Treenode*)malloc(sizeof(Treenode));
-    if (node == NULL) {
+    if (treep == NULL)
         return NULL;
-    }
-    
-    node->word = strdup(word);
-    if (node->word == NULL) {
-        free(node);
-        return NULL;
-    }
-    
-    node->left = NULL;
-    node->right = NULL;
-    node->visit = NULL;
-    
-    return node;
+
+    cmp = strcmp(word, treep->word);
+    if (cmp == 0)
+        return treep;
+    else if (cmp < 0)
+        return lookup(treep->left, word);
+    else
+        return lookup(treep->right, word);
 }
 
-// Додавання вузла до дерева з візитором
-Treenode* addtnode(Treenode* tree, char* word) {
-    // Якщо дерево порожнє, створюємо новий вузол
-    if (tree == NULL) {
-        return newtnode(word);
+// Функція видалення вузла
+Treenode* find_min(Treenode *treep) {
+    while (treep && treep->left) {
+        treep = treep->left;
     }
-    
-    // Рекурсивно додаємо вузол у відповідне піддерево
-    int cmp = strcmp(word, tree->word);
+    return treep;
+}
+
+Treenode* delete_node(Treenode *treep, char *word) {
+    if (treep == NULL) return NULL;
+
+    int cmp = strcmp(word, treep->word);
+
     if (cmp < 0) {
-        tree->left = addtnode(tree->left, word);
+        treep->left = delete_node(treep->left, word);
     } else if (cmp > 0) {
-        tree->right = addtnode(tree->right, word);
+        treep->right = delete_node(treep->right, word);
+    } else {
+        // Знайшли вузол для видалення
+        if (treep->left == NULL) {
+            Treenode *temp = treep->right;
+            free(treep->word);
+            free(treep);
+            return temp;
+        } else if (treep->right == NULL) {
+            Treenode *temp = treep->left;
+            free(treep->word);
+            free(treep);
+            return temp;
+        }
+
+        // Вузол з двома дітьми
+        Treenode *temp = find_min(treep->right);
+
+        // Копіюємо дані
+        free(treep->word);
+        treep->word = (char *) malloc(strlen(temp->word) + 1);
+        strcpy(treep->word, temp->word);
+        treep->count = temp->count;
+
+        // Видаляємо наступника
+        treep->right = delete_node(treep->right, temp->word);
     }
-    // Дублікати ігноруємо
-    
-    return tree;
+
+    return treep;
 }
 
-// Функції обходу дерева (на основі Tree-traverser)
-void preorder(Treenode* tree) {
-    if (tree == NULL) {
-        return;
-    }
-    
-    if (tree->visit != NULL) {
-        tree->visit(tree);
-    }
-    preorder(tree->left);
-    preorder(tree->right);
+void freetree(Treenode *treep) {
+    if (treep == NULL) return;
+    freetree(treep->left);
+    freetree(treep->right);
+    free(treep->word);
+    free(treep);
 }
 
-void inorder(Treenode* tree) {
-    if (tree == NULL) {
-        return;
-    }
-    
-    inorder(tree->left);
-    if (tree->visit != NULL) {
-        tree->visit(tree);
-    }
-    inorder(tree->right);
+// ============= ФУНКЦІЇ ОБХОДУ =============
+
+// Симетричний обхід (in-order)
+void inorder_traverse(Treenode *treep, char **result, int *index) {
+    if (treep == NULL) return;
+
+    inorder_traverse(treep->left, result, index);
+    result[*index] = treep->word;
+    (*index)++;
+    inorder_traverse(treep->right, result, index);
 }
 
-void postorder(Treenode* tree) {
-    if (tree == NULL) {
-        return;
-    }
-    
-    postorder(tree->left);
-    postorder(tree->right);
-    if (tree->visit != NULL) {
-        tree->visit(tree);
-    }
+// Прямий обхід (pre-order)
+void preorder_traverse(Treenode *treep, char **result, int *index) {
+    if (treep == NULL) return;
+
+    result[*index] = treep->word;
+    (*index)++;
+    preorder_traverse(treep->left, result, index);
+    preorder_traverse(treep->right, result, index);
 }
 
-// Функція для звільнення пам'яті дерева з візитором
-void freetnode(Treenode* tree) {
-    if (tree == NULL) {
-        return;
-    }
-    
-    freetnode(tree->left);
-    freetnode(tree->right);
-    free(tree->word);
-    free(tree);
+// Зворотний обхід (post-order)
+void postorder_traverse(Treenode *treep, char **result, int *index) {
+    if (treep == NULL) return;
+
+    postorder_traverse(treep->left, result, index);
+    postorder_traverse(treep->right, result, index);
+    result[*index] = treep->word;
+    (*index)++;
 }
 
-// ========== Тести для Binary Search Tree ==========
+// ============= ДОПОМІЖНІ ФУНКЦІЇ ДЛЯ ТЕСТУВАННЯ =============
 
-// Допоміжні функції для тестування
+int tree_size(Treenode *treep) {
+    if (treep == NULL) return 0;
+    return 1 + tree_size(treep->left) + tree_size(treep->right);
+}
 
-// Підрахунок кількості вузлів у дереві
-int count_nodes(Tnode* tree) {
-    if (tree == NULL) {
+int tree_height(Treenode *treep) {
+    if (treep == NULL) return 0;
+
+    int left_height = tree_height(treep->left);
+    int right_height = tree_height(treep->right);
+
+    return 1 + (left_height > right_height ? left_height : right_height);
+}
+
+int is_valid_bst(Treenode *treep, char *min_val, char *max_val) {
+    if (treep == NULL) return 1;
+
+    // Перевіряємо поточний вузол
+    if ((min_val && strcmp(treep->word, min_val) <= 0) ||
+        (max_val && strcmp(treep->word, max_val) >= 0)) {
         return 0;
     }
-    
-    return 1 + count_nodes(tree->left) + count_nodes(tree->right);
-}
 
-// Перевірка властивості бінарного дерева пошуку
-bool is_bst(Tnode* tree) {
-    if (tree == NULL) {
-        return true;
-    }
-    
-    // Перевіряємо лівого нащадка
-    if (tree->left != NULL && strcmp(tree->left->name, tree->name) >= 0) {
-        return false;
-    }
-    
-    // Перевіряємо правого нащадка
-    if (tree->right != NULL && strcmp(tree->right->name, tree->name) <= 0) {
-        return false;
-    }
-    
     // Рекурсивно перевіряємо піддерева
-    return is_bst(tree->left) && is_bst(tree->right);
+    return is_valid_bst(treep->left, min_val, treep->word) &&
+           is_valid_bst(treep->right, treep->word, max_val);
 }
 
-// Тест для функції addtree
-void test_addtree() {
-    std::cout << "Тест функції addtree:" << std::endl;
-    
-    // Створення нового дерева
-    Tnode* tree = NULL;
-    
-    // Додавання елементів
-    tree = addtree(tree, (char*)"banana", 1);
-    tree = addtree(tree, (char*)"apple", 2);
-    tree = addtree(tree, (char*)"orange", 3);
-    tree = addtree(tree, (char*)"grape", 4);
-    tree = addtree(tree, (char*)"kiwi", 5);
-    
-    // Перевірка властивостей
-    assert(count_nodes(tree) == 5);
-    assert(is_bst(tree));
-    
-    // Перевірка оновлення значення
-    tree = addtree(tree, (char*)"apple", 10);
-    assert(count_nodes(tree) == 5); // Кількість вузлів не змінилася
-    assert(lookup(tree, (char*)"apple")->value == 10); // Значення оновлено
-    
-    // Звільнення пам'яті
-    freetree(tree);
-    
-    std::cout << "  Успішно: Додавання елементів працює правильно" << std::endl;
+// ============= ТЕСТУВАЛЬНА СИСТЕМА =============
+
+typedef struct {
+    int total_tests;
+    int passed_tests;
+    int failed_tests;
+    char current_test[256];
+} TestSuite;
+
+TestSuite test_suite = {0, 0, 0, ""};
+
+void test_start(const char *test_name) {
+    strcpy(test_suite.current_test, test_name);
+    test_suite.total_tests++;
+    printf("Тест: %s ... ", test_name);
 }
 
-// Тест для функції lookup
-void test_lookup() {
-    std::cout << "Тест функції lookup:" << std::endl;
-    
-    // Створення тестового дерева
-    Tnode* tree = NULL;
-    tree = addtree(tree, (char*)"banana", 1);
-    tree = addtree(tree, (char*)"apple", 2);
-    tree = addtree(tree, (char*)"orange", 3);
-    tree = addtree(tree, (char*)"grape", 4);
-    tree = addtree(tree, (char*)"kiwi", 5);
-    
-    // Пошук існуючих елементів
-    Tnode* node;
-    
-    node = lookup(tree, (char*)"apple");
-    assert(node != NULL);
-    assert(strcmp(node->name, "apple") == 0);
-    assert(node->value == 2);
-    
-    node = lookup(tree, (char*)"kiwi");
-    assert(node != NULL);
-    assert(strcmp(node->name, "kiwi") == 0);
-    assert(node->value == 5);
-    
-    // Пошук неіснуючого елемента
-    node = lookup(tree, (char*)"nonexistent");
-    assert(node == NULL);
-    
-    // Звільнення пам'яті
-    freetree(tree);
-    
-    std::cout << "  Успішно: Пошук елементів працює правильно" << std::endl;
-}
-
-// Тест для функції nvlookup
-void test_nvlookup() {
-    std::cout << "Тест функції nvlookup:" << std::endl;
-    
-    // Створення тестового дерева
-    Tnode* tree = NULL;
-    tree = addtree(tree, (char*)"banana", 1);
-    tree = addtree(tree, (char*)"apple", 2);
-    tree = addtree(tree, (char*)"orange", 3);
-    tree = addtree(tree, (char*)"grape", 4);
-    tree = addtree(tree, (char*)"kiwi", 5);
-    
-    // Пошук існуючих елементів
-    Tnode* node;
-    
-    node = nvlookup(tree, (char*)"apple");
-    assert(node != NULL);
-    assert(strcmp(node->name, "apple") == 0);
-    assert(node->value == 2);
-    
-    node = nvlookup(tree, (char*)"kiwi");
-    assert(node != NULL);
-    assert(strcmp(node->name, "kiwi") == 0);
-    assert(node->value == 5);
-    
-    // Пошук неіснуючого елемента
-    node = nvlookup(tree, (char*)"nonexistent");
-    assert(node == NULL);
-    
-    // Звільнення пам'яті
-    freetree(tree);
-    
-    std::cout << "  Успішно: Ітераційний пошук працює правильно" << std::endl;
-}
-
-// Тест для порівняння результатів lookup і nvlookup
-void test_lookup_comparison() {
-    std::cout << "Тест порівняння lookup і nvlookup:" << std::endl;
-    
-    // Створення великого тестового дерева
-    Tnode* tree = NULL;
-    for (int i = 0; i < 100; i++) {
-        char buffer[20];
-        sprintf(buffer, "item%d", i);
-        tree = addtree(tree, buffer, i);
-    }
-    
-    // Порівнюємо результати для існуючих елементів
-    for (int i = 0; i < 100; i += 10) {
-        char buffer[20];
-        sprintf(buffer, "item%d", i);
-        
-        Tnode* result1 = lookup(tree, buffer);
-        Tnode* result2 = nvlookup(tree, buffer);
-        
-        assert(result1 != NULL);
-        assert(result2 != NULL);
-        assert(result1 == result2);
-        assert(result1->value == i);
-    }
-    
-    // Порівнюємо результати для неіснуючих елементів
-    {
-        Tnode* result1 = lookup(tree, (char*)"nonexistent");
-        Tnode* result2 = nvlookup(tree, (char*)"nonexistent");
-        
-        assert(result1 == NULL);
-        assert(result2 == NULL);
-    }
-    
-    // Звільнення пам'яті
-    freetree(tree);
-    
-    std::cout << "  Успішно: Обидві функції пошуку дають однакові результати" << std::endl;
-}
-
-// ========== Тести для Tree-traverser ==========
-
-// Глобальні змінні для тестування обходу дерева
-std::vector<std::string> traversal_result;
-
-// Функція-візитор для тестування
-void test_visitor(Treenode* node) {
-    if (node != NULL && node->word != NULL) {
-        traversal_result.push_back(node->word);
+void test_assert(int condition, const char *message) {
+    if (condition) {
+        printf("ПРОЙДЕНО\n");
+        test_suite.passed_tests++;
+    } else {
+        printf("ПРОВАЛЕНО - %s\n", message);
+        test_suite.failed_tests++;
     }
 }
 
-// Функція для перевірки, чи масив відсортований
-bool is_array_sorted(const std::vector<std::string>& arr) {
-    for (size_t i = 1; i < arr.size(); i++) {
-        if (arr[i-1] > arr[i]) {
-            return false;
+void test_summary() {
+    printf("\n=== ПІДСУМОК ТЕСТУВАННЯ ===\n");
+    printf("Загалом тестів: %d\n", test_suite.total_tests);
+    printf("Пройшло: %d\n", test_suite.passed_tests);
+    printf("Провалилося: %d\n", test_suite.failed_tests);
+    printf("Успішність: %.1f%%\n",
+           (double)test_suite.passed_tests / test_suite.total_tests * 100);
+
+    if (test_suite.failed_tests == 0) {
+        printf("🎉 Всі тести пройшли успішно!\n");
+    } else {
+        printf("❌ Є проблеми, які потребують виправлення\n");
+    }
+}
+
+// ============= ТЕСТИ ОСНОВНИХ ФУНКЦІЙ =============
+
+void test_tree_creation() {
+    test_start("Створення вузла дерева");
+
+    Treenode *node = newtree("test", 5);
+    int result = (node != NULL &&
+                  strcmp(node->word, "test") == 0 &&
+                  node->count == 5 &&
+                  node->left == NULL &&
+                  node->right == NULL);
+
+    test_assert(result, "Вузол створений некоректно");
+
+    if (node) {
+        free(node->word);
+        free(node);
+    }
+}
+
+void test_insertion_and_lookup() {
+    test_start("Вставка та пошук елементів");
+
+    Treenode *tree = NULL;
+
+    // Вставляємо елементи
+    tree = insert(tree, "dog", 1);
+    tree = insert(tree, "cat", 1);
+    tree = insert(tree, "elephant", 1);
+    tree = insert(tree, "bird", 1);
+
+    // Перевіряємо пошук
+    Treenode *found_dog = lookup(tree, "dog");
+    Treenode *found_cat = lookup(tree, "cat");
+    Treenode *found_missing = lookup(tree, "zebra");
+
+    int result = (found_dog != NULL && strcmp(found_dog->word, "dog") == 0 &&
+                  found_cat != NULL && strcmp(found_cat->word, "cat") == 0 &&
+                  found_missing == NULL);
+
+    test_assert(result, "Вставка або пошук працює некоректно");
+
+    freetree(tree);
+}
+
+void test_duplicate_insertion() {
+    test_start("Вставка дублікатів");
+
+    Treenode *tree = NULL;
+    tree = insert(tree, "word", 1);
+    tree = insert(tree, "word", 3);
+    tree = insert(tree, "word", 2);
+
+    Treenode *found = lookup(tree, "word");
+    int result = (found != NULL && found->count == 6); // 1+3+2
+
+    test_assert(result, "Дублікати обробляються некоректно");
+
+    freetree(tree);
+}
+
+void test_tree_structure() {
+    test_start("Структура BST");
+
+    Treenode *tree = NULL;
+    char *words[] = {"dog", "cat", "elephant", "bird", "fish"};
+    int word_count = sizeof(words) / sizeof(words[0]);
+
+    for (int i = 0; i < word_count; i++) {
+        tree = insert(tree, words[i], 1);
+    }
+
+    // Перевіряємо, чи дерево є валідним BST
+    int is_valid = is_valid_bst(tree, NULL, NULL);
+    int size = tree_size(tree);
+
+    int result = (is_valid && size == word_count);
+
+    test_assert(result, "Структура BST порушена");
+
+    freetree(tree);
+}
+
+void test_deletion() {
+    test_start("Видалення вузлів");
+
+    Treenode *tree = NULL;
+    char *words[] = {"dog", "cat", "elephant", "bird", "fish", "ant", "zebra"};
+    int word_count = sizeof(words) / sizeof(words[0]);
+
+    // Створюємо дерево
+    for (int i = 0; i < word_count; i++) {
+        tree = insert(tree, words[i], 1);
+    }
+
+    int original_size = tree_size(tree);
+
+    // Видаляємо листок
+    tree = delete_node(tree, "ant");
+
+    // Видаляємо вузол з одним дитям
+    tree = delete_node(tree, "zebra");
+
+    // Видаляємо вузол з двома дітьми
+    tree = delete_node(tree, "dog");
+
+    int new_size = tree_size(tree);
+    int still_valid = is_valid_bst(tree, NULL, NULL);
+
+    // Перевіряємо, що видалені елементи відсутні
+    int ant_absent = (lookup(tree, "ant") == NULL);
+    int zebra_absent = (lookup(tree, "zebra") == NULL);
+    int dog_absent = (lookup(tree, "dog") == NULL);
+
+    int result = (new_size == original_size - 3 &&
+                  still_valid &&
+                  ant_absent && zebra_absent && dog_absent);
+
+    test_assert(result, "Видалення працює некоректно");
+
+    freetree(tree);
+}
+
+// ============= ТЕСТИ ОБХОДУ =============
+
+void test_inorder_traversal() {
+    test_start("Симетричний обхід (in-order)");
+
+    Treenode *tree = NULL;
+    char *words[] = {"dog", "cat", "elephant", "bird"};
+    int word_count = sizeof(words) / sizeof(words[0]);
+
+    for (int i = 0; i < word_count; i++) {
+        tree = insert(tree, words[i], 1);
+    }
+
+    char *result[10];
+    int index = 0;
+    inorder_traverse(tree, result, &index);
+
+    // In-order обхід BST повинен дати відсортований порядок
+    int is_sorted = 1;
+    for (int i = 1; i < index; i++) {
+        if (strcmp(result[i-1], result[i]) >= 0) {
+            is_sorted = 0;
+            break;
         }
     }
-    return true;
+
+    test_assert(is_sorted && index == word_count,
+                "In-order обхід не дає відсортованого порядку");
+
+    freetree(tree);
 }
 
-// Тест для функцій обходу дерева
-void test_tree_traversal() {
-    std::cout << "Тест функцій обходу дерева:" << std::endl;
-    
-    // Створення тестового дерева
-    Treenode* tree = NULL;
-    const char* words[] = {"banana", "apple", "orange", "grape", "kiwi"};
-    for (int i = 0; i < 5; i++) {
-        tree = addtnode(tree, (char*)words[i]);
+void test_preorder_traversal() {
+    test_start("Прямий обхід (pre-order)");
+
+    // Створюємо просте дерево для перевірки порядку
+    Treenode *tree = newtree("B", 1);
+    tree->left = newtree("A", 1);
+    tree->right = newtree("C", 1);
+
+    char *result[10];
+    int index = 0;
+    preorder_traverse(tree, result, &index);
+
+    // Pre-order: корінь, ліве, праве -> B, A, C
+    int correct_order = (index == 3 &&
+                        strcmp(result[0], "B") == 0 &&
+                        strcmp(result[1], "A") == 0 &&
+                        strcmp(result[2], "C") == 0);
+
+    test_assert(correct_order, "Pre-order обхід працює некоректно");
+
+    freetree(tree);
+}
+
+void test_postorder_traversal() {
+    test_start("Зворотний обхід (post-order)");
+
+    // Створюємо просте дерево для перевірки порядку
+    Treenode *tree = newtree("B", 1);
+    tree->left = newtree("A", 1);
+    tree->right = newtree("C", 1);
+
+    char *result[10];
+    int index = 0;
+    postorder_traverse(tree, result, &index);
+
+    // Post-order: ліве, праве, корінь -> A, C, B
+    int correct_order = (index == 3 &&
+                        strcmp(result[0], "A") == 0 &&
+                        strcmp(result[1], "C") == 0 &&
+                        strcmp(result[2], "B") == 0);
+
+    test_assert(correct_order, "Post-order обхід працює некоректно");
+
+    freetree(tree);
+}
+
+// ============= ТЕСТИ КРАЙНІХ ВИПАДКІВ =============
+
+void test_empty_tree() {
+    test_start("Операції з порожнім деревом");
+
+    Treenode *empty_tree = NULL;
+
+    // Пошук в порожньому дереві
+    Treenode *found = lookup(empty_tree, "anything");
+
+    // Видалення з порожнього дерева
+    empty_tree = delete_node(empty_tree, "anything");
+
+    // Розмір порожнього дерева
+    int size = tree_size(empty_tree);
+    int height = tree_height(empty_tree);
+
+    int result = (found == NULL && empty_tree == NULL &&
+                  size == 0 && height == 0);
+
+    test_assert(result, "Операції з порожнім деревом працюють некоректно");
+}
+
+void test_single_node() {
+    test_start("Дерево з одним вузлом");
+
+    Treenode *tree = newtree("single", 1);
+
+    // Пошук
+    Treenode *found = lookup(tree, "single");
+    Treenode *not_found = lookup(tree, "other");
+
+    // Розмір та висота
+    int size = tree_size(tree);
+    int height = tree_height(tree);
+
+    // Валідність BST
+    int is_valid = is_valid_bst(tree, NULL, NULL);
+
+    int result = (found == tree && not_found == NULL &&
+                  size == 1 && height == 1 && is_valid);
+
+    test_assert(result, "Дерево з одним вузлом працює некоректно");
+
+    // Видалення єдиного вузла
+    tree = delete_node(tree, "single");
+    int empty_after_delete = (tree == NULL);
+
+    test_start("Видалення єдиного вузла");
+    test_assert(empty_after_delete, "Видалення єдиного вузла залишає дерево не порожнім");
+}
+
+void test_linear_tree() {
+    test_start("Лінійне дерево (найгірший випадок)");
+
+    Treenode *tree = NULL;
+
+    // Створюємо лінійне дерево (тільки праві діти)
+    for (int i = 1; i <= 5; i++) {
+        char word[10];
+        sprintf(word, "word%d", i);
+        tree = insert(tree, word, 1);
     }
-    
-    // Встановлюємо візитора для всіх вузлів
-    std::vector<Treenode*> nodes;
-    std::vector<Treenode*> to_process;
-    to_process.push_back(tree);
-    
-    while (!to_process.empty()) {
-        Treenode* node = to_process.back();
-        to_process.pop_back();
-        
-        if (node != NULL) {
-            nodes.push_back(node);
-            to_process.push_back(node->left);
-            to_process.push_back(node->right);
+
+    int size = tree_size(tree);
+    int height = tree_height(tree);
+    int is_valid = is_valid_bst(tree, NULL, NULL);
+
+    // Лінійне дерево має висоту рівну розміру
+    int result = (size == 5 && height == 5 && is_valid);
+
+    test_assert(result, "Лінійне дерево обробляється некоректно");
+
+    freetree(tree);
+}
+
+// ============= СТРЕС-ТЕСТУВАННЯ =============
+
+void stress_test_insertion() {
+    test_start("Стрес-тест вставки (1000 елементів)");
+
+    Treenode *tree = NULL;
+    const int COUNT = 1000;
+
+    // Вставляємо багато елементів
+    for (int i = 0; i < COUNT; i++) {
+        char word[20];
+        sprintf(word, "item%04d", rand() % (COUNT * 2));
+        tree = insert(tree, word, 1);
+    }
+
+    int size = tree_size(tree);
+    int is_valid = is_valid_bst(tree, NULL, NULL);
+
+    int result = (size > 0 && size <= COUNT && is_valid);
+
+    test_assert(result, "Стрес-тест вставки провалився");
+
+    freetree(tree);
+}
+
+void stress_test_mixed_operations() {
+    test_start("Стрес-тест змішаних операцій");
+
+    Treenode *tree = NULL;
+    const int OPERATIONS = 500;
+    int operations_passed = 0;
+
+    for (int i = 0; i < OPERATIONS; i++) {
+        char word[20];
+        sprintf(word, "item%03d", rand() % 100);
+
+        int operation = rand() % 3;
+
+        switch (operation) {
+            case 0: // Вставка
+                tree = insert(tree, word, 1);
+                operations_passed++;
+                break;
+
+            case 1: // Пошук
+                lookup(tree, word);
+                operations_passed++;
+                break;
+
+            case 2: // Видалення
+                tree = delete_node(tree, word);
+                operations_passed++;
+                break;
+        }
+
+        // Перевіряємо валідність після кожної операції
+        if (!is_valid_bst(tree, NULL, NULL)) {
+            break;
         }
     }
-    
-    for (Treenode* node : nodes) {
-        node->visit = test_visitor;
-    }
-    
-    // Тестування preorder обходу
-    traversal_result.clear();
-    preorder(tree);
-    assert(traversal_result.size() == 5);
-    // У pre-order першим буде корінь
-    assert(traversal_result[0] == "banana");
-    
-    // Тестування inorder обходу
-    traversal_result.clear();
-    inorder(tree);
-    assert(traversal_result.size() == 5);
-    assert(is_array_sorted(traversal_result));
-    // У відсортованому масиві "apple" буде першим
-    assert(traversal_result[0] == "apple");
-    
-    // Тестування postorder обходу
-    traversal_result.clear();
-    postorder(tree);
-    assert(traversal_result.size() == 5);
-    // У post-order корінь буде останнім
-    assert(traversal_result[traversal_result.size() - 1] == "banana");
-    
-    // Звільнення пам'яті
-    freetnode(tree);
-    
-    std::cout << "  Успішно: Функції обходу дерева працюють правильно" << std::endl;
+
+    int result = (operations_passed == OPERATIONS &&
+                  is_valid_bst(tree, NULL, NULL));
+
+    test_assert(result, "Стрес-тест змішаних операцій провалився");
+
+    freetree(tree);
 }
 
-// Запуск всіх тестів
+// ============= ТЕСТ ПРОДУКТИВНОСТІ =============
+
+void performance_test() {
+    printf("\n=== ТЕСТИ ПРОДУКТИВНОСТІ ===\n");
+
+    const int SIZES[] = {100, 500, 1000, 2000};
+    const int SIZE_COUNT = sizeof(SIZES) / sizeof(SIZES[0]);
+
+    printf("%-8s %-12s %-12s %-12s %-10s\n",
+           "Розмір", "Вставка(с)", "Пошук(с)", "Висота", "Валідний");
+    printf("─────────────────────────────────────────────────────────\n");
+
+    for (int s = 0; s < SIZE_COUNT; s++) {
+        int size = SIZES[s];
+        Treenode *tree = NULL;
+
+        // Тест вставки
+        clock_t start = clock();
+        for (int i = 0; i < size; i++) {
+            char word[20];
+            sprintf(word, "item%05d", rand() % (size * 2));
+            tree = insert(tree, word, 1);
+        }
+        clock_t end = clock();
+        double insert_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+        // Тест пошуку
+        start = clock();
+        for (int i = 0; i < size / 10; i++) {
+            char word[20];
+            sprintf(word, "item%05d", rand() % (size * 2));
+            lookup(tree, word);
+        }
+        end = clock();
+        double search_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+        int height = tree_height(tree);
+        int is_valid = is_valid_bst(tree, NULL, NULL);
+
+        printf("%-8d %-12.6f %-12.6f %-12d %-10s\n",
+               size, insert_time, search_time, height,
+               is_valid ? "Так" : "Ні");
+
+        freetree(tree);
+    }
+}
+
+// ============= ГОЛОВНА ФУНКЦІЯ ТЕСТУВАННЯ =============
+
 void run_all_tests() {
-    std::cout << "Запуск всіх тестів для функцій роботи з деревами\n" << std::endl;
-    
-    // Тести для Binary Search Tree
-    test_addtree();
-    test_lookup();
-    test_nvlookup();
-    test_lookup_comparison();
-    
-    // Тести для Tree-traverser
-    test_tree_traversal();
-    
-    std::cout << "\nВсі тести успішно пройдені!" << std::endl;
+    printf("=== ЗАПУСК ПОВНОГО НАБОРУ ТЕСТІВ ===\n\n");
+
+    // Тести основних функцій
+    printf("=== ТЕСТИ ОСНОВНИХ ФУНКЦІЙ ===\n");
+    test_tree_creation();
+    test_insertion_and_lookup();
+    test_duplicate_insertion();
+    test_tree_structure();
+    test_deletion();
+
+    // Тести обходу
+    printf("\n=== ТЕСТИ ОБХОДУ ДЕРЕВА ===\n");
+    test_inorder_traversal();
+    test_preorder_traversal();
+    test_postorder_traversal();
+
+    // Тести крайніх випадків
+    printf("\n=== ТЕСТИ КРАЙНІХ ВИПАДКІВ ===\n");
+    test_empty_tree();
+    test_single_node();
+    test_linear_tree();
+
+    // Стрес-тестування
+    printf("\n=== СТРЕС-ТЕСТУВАННЯ ===\n");
+    stress_test_insertion();
+    stress_test_mixed_operations();
+
+    // Підсумок
+    test_summary();
+
+    // Тести продуктивності
+    performance_test();
 }
 
-// Тест для перевірки ефективності сортування за допомогою дерева
-void test_tree_sorting() {
-    std::cout << "\nТест сортування за допомогою бінарного дерева:" << std::endl;
-    
-    // Створення невідсортованого масиву
-    std::vector<std::string> words = {
-        "zebra", "monkey", "elephant", "tiger", "lion", "giraffe", 
-        "hippo", "rhino", "gazelle", "cheetah"
-    };
-    
-    std::cout << "Початковий масив:" << std::endl;
-    for (const auto& word : words) {
-        std::cout << word << " ";
-    }
-    std::cout << std::endl;
-    
-    // Створення дерева та додавання слів
-    Treenode* tree = NULL;
-    for (const auto& word : words) {
-        tree = addtnode(tree, (char*)word.c_str());
-    }
-    
-    // Встановлення візитора
-    std::vector<Treenode*> nodes;
-    std::vector<Treenode*> to_process;
-    to_process.push_back(tree);
-    
-    while (!to_process.empty()) {
-        Treenode* node = to_process.back();
-        to_process.pop_back();
-        
-        if (node != NULL) {
-            nodes.push_back(node);
-            to_process.push_back(node->left);
-            to_process.push_back(node->right);
-        }
-    }
-    
-    for (Treenode* node : nodes) {
-        node->visit = test_visitor;
-    }
-    
-    // Сортування за допомогою inorder обходу
-    traversal_result.clear();
-    inorder(tree);
-    
-    std::cout << "Відсортований масив:" << std::endl;
-    for (const auto& word : traversal_result) {
-        std::cout << word << " ";
-    }
-    std::cout << std::endl;
-    
-    // Перевірка сортування
-    assert(is_array_sorted(traversal_result));
-    
-    // Звільнення пам'яті
-    freetnode(tree);
-    
-    std::cout << "  Успішно: Сортування за допомогою дерева працює правильно" << std::endl;
-}
+int main(void) {
+    printf("=== Завдання 17: Тестування функцій роботи з деревами ===\n\n");
 
-int main() {
+    srand(time(NULL));
+
     run_all_tests();
-    test_tree_sorting();
-    
-    return 0;
+
+    printf("\n=== РЕКОМЕНДАЦІЇ ПО ТЕСТУВАННЮ ДЕРЕВ ===\n");
+    printf("1. ОСНОВНІ ФУНКЦІЇ:\n");
+    printf("   • Тестуйте створення, вставку, пошук, видалення\n");
+    printf("   • Перевіряйте обробку дублікатів\n");
+    printf("   • Валідуйте структуру BST після кожної операції\n\n");
+
+    printf("2. ОБХОДИ ДЕРЕВА:\n");
+    printf("   • In-order повинен давати відсортований порядок\n");
+    printf("   • Pre-order та post-order мають специфічні порядки\n");
+    printf("   • Тестуйте на різних формах дерев\n\n");
+
+    printf("3. КРАЙНІ ВИПАДКИ:\n");
+    printf("   • Порожнє дерево\n");
+    printf("   • Дерево з одним вузлом\n");
+    printf("   • Лінійне дерево (найгірший випадок)\n");
+    printf("   • Збалансоване дерево (найкращий випадок)\n\n");
+
+    printf("4. СТРЕС-ТЕСТУВАННЯ:\n");
+    printf("   • Великі обсяги даних\n");
+    printf("   • Змішані операції\n");
+    printf("   • Випадкові та патологічні дані\n\n");
+
+    printf("5. ПРОДУКТИВНІСТЬ:\n");
+    printf("   • Вимірюйте час операцій\n");
+    printf("   • Перевіряйте висоту дерева\n");
+    printf("   • Моніторьте використання пам'яті\n\n");
+
+    printf("6. ІНСТРУМЕНТИ:\n");
+    printf("   • valgrind для перевірки пам'яті\n");
+    printf("   • Unit testing frameworks\n");
+    printf("   • Автоматизація тестів\n");
+    printf("   • Continuous integration\n");
+
+    return (test_suite.failed_tests == 0) ? 0 : 1;
 }

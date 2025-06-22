@@ -1,150 +1,192 @@
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-typedef struct Nameval {
+/*
+ЗАВДАННЯ 3: Чому звертатися до елементів слід по індексам?
+
+ВІДПОВІДЬ:
+При перерозподілі пам'яті (realloc) адреса масиву може змінитися!
+Якщо ми зберігаємо вказівники на елементи масиву, то після realloc
+ці вказівники стануть недійсними і будуть вказувати на звільнену пам'ять.
+
+Індекси завжди залишаються дійсними, оскільки вони відносні від початку масиву.
+*/
+
+typedef struct Nameval Nameval;
+
+struct Nameval {
     char *name;
     int value;
-} Nameval;
+};
 
-typedef struct NVtab {
-    Nameval *nameval;
-    int size;
+struct NVtab {
+    int nval;
     int max;
-} NVtab;
+    Nameval *nameval;
+} nvtab;
 
-#define NVGROW 10
+enum {NVINIT = 1, NVGROW = 2};
 
-// Ініціалізація масиву
-void init_nvtab(NVtab *nvtptr) {
-    nvtptr->nameval = NULL;
-    nvtptr->size = 0;
-    nvtptr->max = 0;
-}
-
-// Додавання елемента
-int addname(NVtab *nvtptr, Nameval newname) {
-    Nameval *newval;
-    
-    if (nvtptr->size >= nvtptr->max) {
-        newval = (Nameval *) realloc(nvtptr->nameval, 
-                                    (nvtptr->max + NVGROW) * sizeof(Nameval));
-        if (newval == NULL)
+int addname(struct NVtab *tab, Nameval newname) {
+    Nameval *nvp;
+    if (tab->nameval == NULL) {
+        tab->nameval = (Nameval *) malloc(NVINIT * sizeof(Nameval));
+        if (tab->nameval == NULL)
             return -1;
-        
-        nvtptr->max += NVGROW;
-        nvtptr->nameval = newval;
+        tab->max = NVINIT;
+        tab->nval = 0;
+    } else if (tab->nval >= tab->max) {
+        printf("Перерозподіл пам'яті! Старий адрес: %p\n", (void*)tab->nameval);
+        nvp = (Nameval *) realloc(tab->nameval,
+                                (NVGROW * tab->max) * sizeof(Nameval));
+        if (nvp == NULL)
+            return -1;
+        tab->max *= NVGROW;
+        tab->nameval = nvp;
+        printf("Новий адрес: %p\n", (void*)tab->nameval);
+        printf("Адреса змінилася: %s\n", (nvp != tab->nameval) ? "ТАК" : "НІ");
     }
-    
-    nvtptr->nameval[nvtptr->size] = newname;
-    nvtptr->size++;
-    
-    return nvtptr->size - 1;
+    tab->nameval[tab->nval] = newname;
+    return tab->nval++;
 }
 
-// Видалення елемента
-int delname(NVtab *nvtptr, char *name) {
-    int i;
-    
-    for (i = 0; i < nvtptr->size; i++) {
-        if (strcmp(nvtptr->nameval[i].name, name) == 0) {
-            memmove(&nvtptr->nameval[i], &nvtptr->nameval[i+1], 
-                   (nvtptr->size - i - 1) * sizeof(Nameval));
-            nvtptr->size--;
-            return 1;
-        }
+// Демонстрація НЕБЕЗПЕЧНОГО використання вказівників
+void demonstrate_pointer_danger() {
+    printf("=== ДЕМОНСТРАЦІЯ НЕБЕЗПЕКИ ВКАЗІВНИКІВ ===\n");
+
+    nvtab.nval = 0;
+    nvtab.max = 0;
+    nvtab.nameval = NULL;
+
+    // Додаємо перший елемент
+    Nameval item1 = {"Andy", 12};
+    addname(&nvtab, item1);
+
+    // НЕБЕЗПЕКА: зберігаємо вказівник на елемент
+    Nameval *dangerous_ptr = &nvtab.nameval[0];
+    printf("\nВказівник на перший елемент: %p\n", (void*)dangerous_ptr);
+    printf("Значення через вказівник: %s = %d\n",
+           dangerous_ptr->name, dangerous_ptr->value);
+
+    // Додаємо більше елементів, що призведе до realloc
+    Nameval item2 = {"Billy", 18};
+    printf("\nДодаємо другий елемент (спричинить realloc):\n");
+    addname(&nvtab, item2);
+
+    printf("\nПеревіряємо вказівник після realloc:\n");
+    printf("Старий вказівник все ще вказує на: %p\n", (void*)dangerous_ptr);
+    printf("Новий адрес першого елемента: %p\n", (void*)&nvtab.nameval[0]);
+
+    if (dangerous_ptr != &nvtab.nameval[0]) {
+        printf("УВАГА! Вказівник став недійсним!\n");
+        printf("Спроба доступу через старий вказівник може призвести до краху!\n");
     }
-    
-    return 0;
+
+    // Безпечний доступ через індекс
+    printf("\nБезпечний доступ через індекс [0]:\n");
+    printf("Значення: %s = %d\n", nvtab.nameval[0].name, nvtab.nameval[0].value);
 }
 
-// Демонстрація доступу до елементів через індекси (безпечно)
-void access_by_index(NVtab *nvtptr) {
-    std::cout << "Доступ за індексами:" << std::endl;
-    for (int i = 0; i < nvtptr->size; i++) {
-        std::cout << "Елемент [" << i << "]: " << nvtptr->nameval[i].name 
-                  << " = " << nvtptr->nameval[i].value << std::endl;
-    }
-}
+// Демонстрація ПРАВИЛЬНОГО використання індексів
+void demonstrate_safe_indexing() {
+    printf("\n=== ДЕМОНСТРАЦІЯ БЕЗПЕЧНИХ ІНДЕКСІВ ===\n");
 
-// Демонстрація доступу до елементів через вказівники (небезпечно)
-void access_by_pointer(NVtab *nvtptr) {
-    std::cout << "Доступ через вказівники:" << std::endl;
-    Nameval *ptr = nvtptr->nameval;
-    for (int i = 0; i < nvtptr->size; i++) {
-        std::cout << "Елемент " << i << ": " << ptr->name 
-                  << " = " << ptr->value << std::endl;
-        ptr++; // переміщення вказівника до наступного елементу
-    }
-}
+    // Скидаємо масив
+    free(nvtab.nameval);
+    nvtab.nval = 0;
+    nvtab.max = 0;
+    nvtab.nameval = NULL;
 
-// Демонстрація проблеми з вказівниками при перерозподілі пам'яті
-void demonstrate_pointer_problem(NVtab *nvtptr) {
-    // Зберігаємо вказівник на перший елемент
-    Nameval *first_element_ptr = &nvtptr->nameval[0];
-    
-    std::cout << "Адреса першого елемента до перерозподілу: " 
-              << (void*)first_element_ptr << std::endl;
-    
-    // Додаємо багато елементів, щоб викликати перерозподіл пам'яті
-    Nameval newitem;
-    for (int i = 0; i < NVGROW + 5; i++) {
-        char buffer[20];
-        sprintf(buffer, "new_item%d", i);
-        newitem.name = strdup(buffer);
-        newitem.value = 100 + i;
-        addname(nvtptr, newitem);
-    }
-    
-    // Порівнюємо адресу першого елемента після перерозподілу
-    std::cout << "Адреса першого елемента після перерозподілу: " 
-              << (void*)&nvtptr->nameval[0] << std::endl;
-    
-    // Зверніть увагу, що якби ми використали first_element_ptr після перерозподілу,
-    // це могло б призвести до невизначеної поведінки, оскільки пам'ять могла бути
-    // переміщена в інше місце і перший вказівник більше не вказує на правильну адресу
-    
-    if (first_element_ptr != &nvtptr->nameval[0]) {
-        std::cout << "УВАГА: Адреса змінилася! Використання вказівника first_element_ptr було б небезпечним!" << std::endl;
-        
-        // Наступний рядок може призвести до збою, тому він закоментований для безпеки
-        // std::cout << "Небезпечний доступ: " << first_element_ptr->name << std::endl;
-    }
-}
+    // Зберігаємо індекси замість вказівників
+    int first_element_index = 0;
 
-int main() {
-    NVtab nvtab;
-    init_nvtab(&nvtab);
-    
-    Nameval item;
-    
-    // Додаємо кілька елементів
-    item.name = strdup("item1");
-    item.value = 1;
-    addname(&nvtab, item);
-    
-    item.name = strdup("item2");
-    item.value = 2;
-    addname(&nvtab, item);
-    
-    item.name = strdup("item3");
-    item.value = 3;
-    addname(&nvtab, item);
-    
-    // Демонструємо доступ за індексами (безпечно)
-    access_by_index(&nvtab);
-    
-    // Демонструємо доступ через вказівники (небезпечно)
-    access_by_pointer(&nvtab);
-    
-    // Демонструємо проблему з вказівниками при перерозподілі пам'яті
-    demonstrate_pointer_problem(&nvtab);
-    
-    // Звільнення пам'яті
-    for (int i = 0; i < nvtab.size; i++) {
+    Nameval item1 = {"Charlie", 25};
+    addname(&nvtab, item1);
+    printf("Індекс першого елемента: %d\n", first_element_index);
+    printf("Адрес масиву: %p\n", (void*)nvtab.nameval);
+
+    // Додаємо більше елементів
+    for (int i = 0; i < 5; i++) {
+        char name[20];
+        sprintf(name, "Person%d", i);
+        Nameval item = {strdup(name), i * 10};
+        printf("\nДодаємо елемент %d:\n", i);
+        addname(&nvtab, item);
+        printf("Адрес масиву: %p\n", (void*)nvtab.nameval);
+    }
+
+    printf("\nДоступ до першого елемента через збережений індекс:\n");
+    printf("nvtab.nameval[%d] = %s, %d\n",
+           first_element_index,
+           nvtab.nameval[first_element_index].name,
+           nvtab.nameval[first_element_index].value);
+
+    printf("\nІндекс завжди працює правильно, незалежно від realloc!\n");
+
+    // Звільняємо динамічну пам'ять для імен
+    for (int i = 1; i < nvtab.nval; i++) {
         free(nvtab.nameval[i].name);
     }
+}
+
+void demonstrate_multiple_pointers() {
+    printf("\n=== ДЕМОНСТРАЦІЯ З КІЛЬКОМА ВКАЗІВНИКАМИ ===\n");
+
     free(nvtab.nameval);
-    
+    nvtab.nval = 0;
+    nvtab.max = 0;
+    nvtab.nameval = NULL;
+
+    // Створюємо кілька елементів
+    Nameval items[] = {
+        {"Alice", 100},
+        {"Bob", 200},
+        {"Carol", 300}
+    };
+
+    for (int i = 0; i < 3; i++) {
+        addname(&nvtab, items[i]);
+    }
+
+    // Зберігаємо вказівники на всі елементи (НЕБЕЗПЕЧНО!)
+    Nameval *ptrs[3];
+    for (int i = 0; i < 3; i++) {
+        ptrs[i] = &nvtab.nameval[i];
+        printf("Вказівник %d: %p -> %s\n", i, (void*)ptrs[i], ptrs[i]->name);
+    }
+
+    // Форсуємо realloc додаванням елементів
+    printf("\nФорсуємо realloc додаванням нових елементів:\n");
+    for (int i = 3; i < 10; i++) {
+        Nameval item = {"NewPerson", i * 10};
+        addname(&nvtab, item);
+    }
+
+    printf("\nПеревіряємо старі вказівники:\n");
+    for (int i = 0; i < 3; i++) {
+        printf("Старий вказівник %d: %p\n", i, (void*)ptrs[i]);
+        printf("Новий адрес елемента %d: %p\n", i, (void*)&nvtab.nameval[i]);
+        printf("Співпадають: %s\n", (ptrs[i] == &nvtab.nameval[i]) ? "ТАК" : "НІ");
+    }
+
+    printf("\nВИСНОВОК: Всі старі вказівники стали недійсними!\n");
+}
+
+int main(void) {
+    printf("=== Завдання 3: Індекси vs Вказівники ===\n\n");
+
+    demonstrate_pointer_danger();
+    demonstrate_safe_indexing();
+    demonstrate_multiple_pointers();
+
+    printf("\n=== ЗАГАЛЬНИЙ ВИСНОВОК ===\n");
+    printf("При роботі з динамічними масивами, які можуть змінювати розмір:\n");
+    printf("1. Використовуйте ІНДЕКСИ для доступу до елементів\n");
+    printf("2. НЕ зберігайте вказівники на елементи масиву\n");
+    printf("3. Після кожного potencial realloc оновлюйте всі вказівники\n");
+    printf("4. Індекси залишаються дійсними незалежно від realloc\n");
+
+    free(nvtab.nameval);
     return 0;
 }

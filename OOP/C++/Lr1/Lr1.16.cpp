@@ -1,279 +1,544 @@
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <vector>
-#include <algorithm>
-#include <chrono>
-#include <random>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
-// Структура для вузла дерева
-typedef struct Tnode {
-    char* name;           // Ключ для пошуку
-    int value;            // Асоційоване значення
-    struct Tnode* left;   // Лівий нащадок
-    struct Tnode* right;  // Правий нащадок
-} Tnode;
+/*
+ЗАВДАННЯ 16: Функція сортування з симетричним обходом
 
-// Створення нового вузла дерева
-Tnode* newnode(char* name, int value) {
-    Tnode* node = (Tnode*)malloc(sizeof(Tnode));
-    if (node == NULL) {
+Реалізуємо сортування через бінарне дерево пошуку з симетричним обходом
+та порівнюємо з іншими алгоритмами сортування.
+*/
+
+// ============= СТРУКТУРА ДЕРЕВА =============
+
+typedef struct Treenode Treenode;
+
+struct Treenode {
+    char *word;
+    int count;
+    Treenode *left;
+    Treenode *right;
+};
+
+// ============= ОСНОВНІ ФУНКЦІЇ ДЕРЕВА =============
+
+Treenode* newtree(char *word, int count) {
+    Treenode *newp = (Treenode *) malloc(sizeof(Treenode));
+    if (newp == NULL) return NULL;
+
+    newp->word = (char *) malloc(strlen(word) + 1);
+    if (newp->word == NULL) {
+        free(newp);
         return NULL;
     }
-    
-    node->name = strdup(name);
-    if (node->name == NULL) {
-        free(node);
-        return NULL;
-    }
-    
-    node->value = value;
-    node->left = NULL;
-    node->right = NULL;
-    
-    return node;
+
+    strcpy(newp->word, word);
+    newp->count = count;
+    newp->left = newp->right = NULL;
+    return newp;
 }
 
-// Функція для додавання вузла до дерева
-Tnode* addtree(Tnode* tree, char* name, int value) {
-    // Якщо дерево порожнє, створюємо новий вузол
-    if (tree == NULL) {
-        return newnode(name, value);
+Treenode* insert(Treenode *treep, char *word, int count) {
+    int cmp;
+
+    if (treep == NULL) {
+        return newtree(word, count);
     }
-    
-    // Рекурсивно додаємо вузол у відповідне піддерево
-    int cmp = strcmp(name, tree->name);
-    if (cmp < 0) {
-        tree->left = addtree(tree->left, name, value);
-    } else if (cmp > 0) {
-        tree->right = addtree(tree->right, name, value);
+
+    cmp = strcmp(word, treep->word);
+    if (cmp == 0) {
+        treep->count += count;  // Збільшуємо лічильник для дублікатів
+    } else if (cmp < 0) {
+        treep->left = insert(treep->left, word, count);
     } else {
-        // Елемент вже існує, оновлюємо значення
-        tree->value = value;
+        treep->right = insert(treep->right, word, count);
     }
-    
-    return tree;
+
+    return treep;
 }
 
-// Функція для звільнення пам'яті дерева
-void freetree(Tnode* tree) {
-    if (tree == NULL) {
-        return;
-    }
-    
-    freetree(tree->left);
-    freetree(tree->right);
-    free(tree->name);
-    free(tree);
+void freetree(Treenode *treep) {
+    if (treep == NULL) return;
+    freetree(treep->left);
+    freetree(treep->right);
+    free(treep->word);
+    free(treep);
 }
 
-// Функція для симетричного обходу дерева (in-order traversal)
-// Додає елементи до вектора в відсортованому порядку
-void inorder_traversal(Tnode* tree, std::vector<std::pair<std::string, int>>& result) {
-    if (tree == NULL) {
-        return;
-    }
-    
-    // Спочатку обходимо ліве піддерево
-    inorder_traversal(tree->left, result);
-    
-    // Додаємо поточний вузол
-    result.push_back(std::make_pair(std::string(tree->name), tree->value));
-    
-    // Потім обходимо праве піддерево
-    inorder_traversal(tree->right, result);
+// ============= СИМЕТРИЧНИЙ ОБХІД (IN-ORDER TRAVERSAL) =============
+
+// Базовий симетричний обхід з виведенням
+void inorder_print(Treenode *treep) {
+    if (treep == NULL) return;
+
+    inorder_print(treep->left);
+    printf("%s ", treep->word);
+    inorder_print(treep->right);
 }
 
-// Функція сортування з використанням бінарного дерева
-std::vector<std::pair<std::string, int>> tree_sort(const std::vector<std::pair<std::string, int>>& data) {
-    // Створюємо дерево і додаємо всі елементи
-    Tnode* tree = NULL;
-    for (const auto& item : data) {
-        tree = addtree(tree, (char*)item.first.c_str(), item.second);
+// Симетричний обхід з записом у масив
+void inorder_to_array(Treenode *treep, char **result, int *index) {
+    if (treep == NULL) return;
+
+    inorder_to_array(treep->left, result, index);
+
+    // Додаємо елемент стільки разів, скільки він зустрічається
+    for (int i = 0; i < treep->count; i++) {
+        result[*index] = (char *) malloc(strlen(treep->word) + 1);
+        strcpy(result[*index], treep->word);
+        (*index)++;
     }
-    
-    // Виконуємо симетричний обхід для отримання відсортованого результату
-    std::vector<std::pair<std::string, int>> result;
-    inorder_traversal(tree, result);
-    
-    // Звільняємо пам'ять
+
+    inorder_to_array(treep->right, result, index);
+}
+
+// Симетричний обхід з викликом функції для кожного елемента
+void inorder_apply(Treenode *treep, void (*func)(char *word, int count, void *arg), void *arg) {
+    if (treep == NULL) return;
+
+    inorder_apply(treep->left, func, arg);
+    func(treep->word, treep->count, arg);
+    inorder_apply(treep->right, func, arg);
+}
+
+// ============= СОРТУВАННЯ ЧЕРЕЗ ДЕРЕВО =============
+
+// Основна функція сортування через BST
+char** tree_sort(char **words, int n, int *result_count) {
+    if (words == NULL || n <= 0) {
+        *result_count = 0;
+        return NULL;
+    }
+
+    // Крок 1: Побудова дерева
+    Treenode *tree = NULL;
+    for (int i = 0; i < n; i++) {
+        tree = insert(tree, words[i], 1);
+    }
+
+    // Крок 2: Підрахунок загальної кількості елементів
+    *result_count = n; // В нашому випадку кількість не змінюється
+
+    // Крок 3: Виділення пам'яті для результату
+    char **result = (char **) malloc(n * sizeof(char *));
+    if (result == NULL) {
+        freetree(tree);
+        *result_count = 0;
+        return NULL;
+    }
+
+    // Крок 4: Симетричний обхід з записом у масив
+    int index = 0;
+    inorder_to_array(tree, result, &index);
+
+    // Крок 5: Очищення пам'яті дерева
     freetree(tree);
-    
+
     return result;
 }
 
-// Функція для генерації випадкових даних
-std::vector<std::pair<std::string, int>> generate_random_data(int count) {
-    std::vector<std::pair<std::string, int>> data;
-    
+// Функція для звільнення результату tree_sort
+void free_sorted_array(char **array, int count) {
+    if (array == NULL) return;
+
     for (int i = 0; i < count; i++) {
-        char buffer[20];
-        sprintf(buffer, "item%d", rand() % 10000); // Випадкові імена
-        data.push_back(std::make_pair(buffer, rand() % 1000)); // Випадкові значення
+        free(array[i]);
     }
-    
-    return data;
+    free(array);
 }
 
-// Функція для генерації даних у зворотному порядку
-std::vector<std::pair<std::string, int>> generate_reverse_data(int count) {
-    std::vector<std::pair<std::string, int>> data;
-    
-    for (int i = count - 1; i >= 0; i--) {
-        char buffer[20];
-        sprintf(buffer, "item%d", i);
-        data.push_back(std::make_pair(buffer, i));
-    }
-    
-    return data;
+// ============= ПОРІВНЯННЯ З ІНШИМИ АЛГОРИТМАМИ =============
+
+// Швидке сортування (quicksort)
+int string_compare(const void *a, const void *b) {
+    return strcmp(*(char **)a, *(char **)b);
 }
 
-// Функція для перевірки, чи відсортовано масив
-bool is_sorted(const std::vector<std::pair<std::string, int>>& data) {
-    for (size_t i = 1; i < data.size(); i++) {
-        if (data[i-1].first > data[i].first) {
-            return false;
+char** quick_sort(char **words, int n) {
+    // Створюємо копію масиву
+    char **result = (char **) malloc(n * sizeof(char *));
+    if (result == NULL) return NULL;
+
+    for (int i = 0; i < n; i++) {
+        result[i] = (char *) malloc(strlen(words[i]) + 1);
+        strcpy(result[i], words[i]);
+    }
+
+    // Сортуємо
+    qsort(result, n, sizeof(char *), string_compare);
+
+    return result;
+}
+
+// Сортування вставками (для порівняння)
+char** insertion_sort(char **words, int n) {
+    // Створюємо копію масиву
+    char **result = (char **) malloc(n * sizeof(char *));
+    if (result == NULL) return NULL;
+
+    for (int i = 0; i < n; i++) {
+        result[i] = (char *) malloc(strlen(words[i]) + 1);
+        strcpy(result[i], words[i]);
+    }
+
+    // Сортування вставками
+    for (int i = 1; i < n; i++) {
+        char *key = result[i];
+        int j = i - 1;
+
+        while (j >= 0 && strcmp(result[j], key) > 0) {
+            result[j + 1] = result[j];
+            j--;
         }
+        result[j + 1] = key;
     }
-    return true;
+
+    return result;
 }
 
-// Порівняння різних методів сортування
-void compare_sorting_methods() {
-    const int DATA_SIZE = 10000;
-    
-    std::cout << "Генерація " << DATA_SIZE << " випадкових елементів..." << std::endl;
-    auto random_data = generate_random_data(DATA_SIZE);
-    
-    // Копії даних для різних методів сортування
-    auto data_copy1 = random_data;
-    auto data_copy2 = random_data;
-    
-    // Сортування з використанням дерева
-    std::cout << "Сортування з використанням бінарного дерева..." << std::endl;
-    auto start_time = std::chrono::high_resolution_clock::now();
-    auto sorted_data_tree = tree_sort(random_data);
-    auto end_time = std::chrono::high_resolution_clock::now();
-    auto tree_sort_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-    
-    // Перевірка коректності сортування
-    bool tree_sort_correct = is_sorted(sorted_data_tree);
-    
-    // Сортування з використанням std::sort
-    std::cout << "Сортування з використанням std::sort..." << std::endl;
-    start_time = std::chrono::high_resolution_clock::now();
-    std::sort(data_copy1.begin(), data_copy1.end(), 
-             [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-                 return a.first < b.first;
-             });
-    end_time = std::chrono::high_resolution_clock::now();
-    auto std_sort_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-    
-    // Сортування злиттям (через std::stable_sort)
-    std::cout << "Сортування з використанням std::stable_sort (сортування злиттям)..." << std::endl;
-    start_time = std::chrono::high_resolution_clock::now();
-    std::stable_sort(data_copy2.begin(), data_copy2.end(), 
-                    [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-                        return a.first < b.first;
-                    });
-    end_time = std::chrono::high_resolution_clock::now();
-    auto merge_sort_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-    
-    // Виведення результатів
-    std::cout << "\nРезультати порівняння методів сортування для " << DATA_SIZE << " елементів:" << std::endl;
-    std::cout << "1. Сортування з використанням бінарного дерева: " << tree_sort_duration << " мс";
-    std::cout << (tree_sort_correct ? " (коректно)" : " (некоректно)") << std::endl;
-    std::cout << "2. Стандартне швидке сортування (std::sort): " << std_sort_duration << " мс" << std::endl;
-    std::cout << "3. Сортування злиттям (std::stable_sort): " << merge_sort_duration << " мс" << std::endl;
-    
-    // Аналіз швидкодії для неоптимальних даних
-    std::cout << "\nАналіз швидкодії для неоптимальних даних (зворотний порядок):" << std::endl;
-    auto reverse_data = generate_reverse_data(DATA_SIZE);
-    
-    // Сортування з використанням дерева
-    start_time = std::chrono::high_resolution_clock::now();
-    auto sorted_reverse_tree = tree_sort(reverse_data);
-    end_time = std::chrono::high_resolution_clock::now();
-    auto tree_reverse_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-    
-    // Сортування з використанням std::sort
-    auto reverse_copy = reverse_data;
-    start_time = std::chrono::high_resolution_clock::now();
-    std::sort(reverse_copy.begin(), reverse_copy.end(), 
-             [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-                 return a.first < b.first;
-             });
-    end_time = std::chrono::high_resolution_clock::now();
-    auto std_reverse_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
-    
-    std::cout << "1. Сортування з використанням бінарного дерева: " << tree_reverse_duration << " мс" << std::endl;
-    std::cout << "2. Стандартне швидке сортування (std::sort): " << std_reverse_duration << " мс" << std::endl;
+// ============= ТЕСТУВАННЯ ПРОДУКТИВНОСТІ =============
+
+typedef struct {
+    double tree_sort_time;
+    double quick_sort_time;
+    double insertion_sort_time;
+    int array_size;
+    char scenario[50];
+} PerformanceTest;
+
+PerformanceTest measure_sorting_performance(char **words, int n, const char *scenario) {
+    PerformanceTest result = {0};
+    strcpy(result.scenario, scenario);
+    result.array_size = n;
+
+    clock_t start, end;
+
+    // Тестування tree sort
+    start = clock();
+    int tree_count;
+    char **tree_result = tree_sort(words, n, &tree_count);
+    end = clock();
+    result.tree_sort_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    // Тестування quicksort
+    start = clock();
+    char **quick_result = quick_sort(words, n);
+    end = clock();
+    result.quick_sort_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    // Тестування insertion sort (тільки для невеликих масивів)
+    if (n <= 1000) {
+        start = clock();
+        char **insertion_result = insertion_sort(words, n);
+        end = clock();
+        result.insertion_sort_time = ((double)(end - start)) / CLOCKS_PER_SEC;
+        free_sorted_array(insertion_result, n);
+    } else {
+        result.insertion_sort_time = -1; // Позначаємо як не тестувалося
+    }
+
+    // Очищення пам'яті
+    free_sorted_array(tree_result, tree_count);
+    free_sorted_array(quick_result, n);
+
+    return result;
 }
 
-// Аналіз часової складності
-void analyze_time_complexity() {
-    std::cout << "\nАналіз часової складності дерев'яного сортування:" << std::endl;
-    
-    std::cout << "Порядок складності дерев'яного сортування:" << std::endl;
-    std::cout << "- Побудова дерева: O(n log n) для випадкового порядку даних" << std::endl;
-    std::cout << "- Побудова дерева: O(n²) для відсортованих даних (виродження в список)" << std::endl;
-    std::cout << "- Симетричний обхід: O(n)" << std::endl;
-    std::cout << "- Загальна складність: O(n log n) для випадкового порядку даних" << std::endl;
-    std::cout << "- Загальна складність: O(n²) для відсортованих даних" << std::endl;
-    
-    std::cout << "\nУмови, при яких сортування дерева працює погано:" << std::endl;
-    std::cout << "1. Дані вже відсортовані або майже відсортовані (дерево вироджується в список)" << std::endl;
-    std::cout << "2. Дані в зворотному порядку (дерево також вироджується в список)" << std::endl;
-    std::cout << "3. Велика кількість дублікатів ключів (ефективність залежить від реалізації)" << std::endl;
-    
-    std::cout << "\nХарактеристики в порівнянні з іншими алгоритмами:" << std::endl;
-    std::cout << "- Швидке сортування (std::sort): краще для загального випадку з часовою" << std::endl;
-    std::cout << "  складністю O(n log n) і просторовою складністю O(log n)" << std::endl;
-    std::cout << "- Сортування злиттям: стабільне сортування з часовою складністю O(n log n)" << std::endl;
-    std::cout << "  і просторовою складністю O(n)" << std::endl;
-    std::cout << "- Сортування деревом: простота реалізації, стабільність, але потенційно" << std::endl;
-    std::cout << "  більше використання пам'яті (O(n) для зберігання дерева)" << std::endl;
-    
-    std::cout << "\nОсобливості дерев'яного сортування:" << std::endl;
-    std::cout << "- Просте і природне відображення процесу сортування" << std::endl;
-    std::cout << "- Можливість використання для інших задач (пошук, перевірка, інше)" << std::endl;
-    std::cout << "- Отримання доступу до даних в відсортованому порядку без зберігання" << std::endl;
-    std::cout << "  всього відсортованого масиву" << std::endl;
-    std::cout << "- Додавання нових елементів не вимагає повного пересортування" << std::endl;
+// ============= ГЕНЕРАТОРИ ТЕСТОВИХ ДАНИХ =============
+
+// Випадкові дані
+char** generate_random_data(int n) {
+    char **words = (char **) malloc(n * sizeof(char *));
+    if (words == NULL) return NULL;
+
+    for (int i = 0; i < n; i++) {
+        words[i] = (char *) malloc(20);
+        sprintf(words[i], "word%04d", rand() % (n * 2));
+    }
+
+    return words;
 }
 
-int main() {
-    // Ініціалізація генератора випадкових чисел
-    srand(time(NULL));
-    
-    // Демонстрація сортування простого масиву
-    std::cout << "Демонстрація сортування з симетричним обходом дерева:" << std::endl;
-    std::vector<std::pair<std::string, int>> data = {
-        {"banana", 2},
-        {"apple", 5},
-        {"orange", 3},
-        {"grape", 1},
-        {"kiwi", 4}
+// Відсортовані дані (найгірший випадок для BST)
+char** generate_sorted_data(int n) {
+    char **words = (char **) malloc(n * sizeof(char *));
+    if (words == NULL) return NULL;
+
+    for (int i = 0; i < n; i++) {
+        words[i] = (char *) malloc(20);
+        sprintf(words[i], "word%04d", i);
+    }
+
+    return words;
+}
+
+// Зворотно відсортовані дані
+char** generate_reverse_sorted_data(int n) {
+    char **words = (char **) malloc(n * sizeof(char *));
+    if (words == NULL) return NULL;
+
+    for (int i = 0; i < n; i++) {
+        words[i] = (char *) malloc(20);
+        sprintf(words[i], "word%04d", n - i - 1);
+    }
+
+    return words;
+}
+
+// Майже відсортовані дані
+char** generate_nearly_sorted_data(int n) {
+    char **words = generate_sorted_data(n);
+    if (words == NULL) return NULL;
+
+    // Робимо кілька випадкових перестановок
+    for (int i = 0; i < n / 10; i++) {
+        int idx1 = rand() % n;
+        int idx2 = rand() % n;
+
+        char *temp = words[idx1];
+        words[idx1] = words[idx2];
+        words[idx2] = temp;
+    }
+
+    return words;
+}
+
+void free_test_data(char **words, int n) {
+    if (words == NULL) return;
+
+    for (int i = 0; i < n; i++) {
+        free(words[i]);
+    }
+    free(words);
+}
+
+// ============= ДЕМОНСТРАЦІЇ =============
+
+void demonstrate_basic_sorting() {
+    printf("=== БАЗОВА ДЕМОНСТРАЦІЯ СОРТУВАННЯ ЧЕРЕЗ ДЕРЕВО ===\n");
+
+    char *test_words[] = {
+        "banana", "apple", "cherry", "date", "elderberry",
+        "fig", "grape", "apple", "banana"  // З дублікатами
     };
-    
-    std::cout << "Початкові дані:" << std::endl;
-    for (const auto& item : data) {
-        std::cout << item.first << ": " << item.second << std::endl;
+    int n = sizeof(test_words) / sizeof(test_words[0]);
+
+    printf("Вхідні дані: ");
+    for (int i = 0; i < n; i++) {
+        printf("%s ", test_words[i]);
     }
-    
-    auto sorted_data = tree_sort(data);
-    
-    std::cout << "\nВідсортовані дані:" << std::endl;
-    for (const auto& item : sorted_data) {
-        std::cout << item.first << ": " << item.second << std::endl;
+    printf("\n");
+
+    // Створюємо дерево та виводимо симетричний обхід
+    printf("\nБудуємо дерево та виконуємо симетричний обхід:\n");
+    Treenode *tree = NULL;
+    for (int i = 0; i < n; i++) {
+        tree = insert(tree, test_words[i], 1);
     }
-    
-    // Порівняння методів сортування
-    std::cout << "\n======================================" << std::endl;
-    compare_sorting_methods();
-    
-    // Аналіз часової складності
-    analyze_time_complexity();
-    
+
+    printf("Відсортований порядок: ");
+    inorder_print(tree);
+    printf("\n");
+
+    // Тестуємо функцію tree_sort
+    int sorted_count;
+    char **sorted = tree_sort(test_words, n, &sorted_count);
+
+    printf("Результат tree_sort: ");
+    for (int i = 0; i < sorted_count; i++) {
+        printf("%s ", sorted[i]);
+    }
+    printf("\n");
+
+    freetree(tree);
+    free_sorted_array(sorted, sorted_count);
+}
+
+void analyze_complexity() {
+    printf("\n=== АНАЛІЗ СКЛАДНОСТІ TREE SORT ===\n");
+
+    printf("ТЕОРЕТИЧНА СКЛАДНІСТЬ:\n");
+    printf("1. Побудова дерева: O(n log n) - середній випадок\n");
+    printf("                    O(n²) - найгірший випадок (відсортовані дані)\n");
+    printf("2. Симетричний обхід: O(n) - завжди\n");
+    printf("3. Загальна складність: O(n log n) - середній випадок\n");
+    printf("                        O(n²) - найгірший випадок\n\n");
+
+    printf("ВИКОРИСТАННЯ ПАМ'ЯТІ:\n");
+    printf("• Дерево: O(n) для зберігання вузлів\n");
+    printf("• Стек рекурсії: O(log n) - середній, O(n) - найгірший\n");
+    printf("• Результуючий масив: O(n)\n");
+    printf("• Загалом: O(n) + простір для дерева\n\n");
+
+    // Практичне тестування на різних розмірах
+    printf("ПРАКТИЧНЕ ТЕСТУВАННЯ:\n");
+    printf("%-8s %-12s %-12s %-12s\n", "Розмір", "Tree Sort", "Quick Sort", "Різниця");
+    printf("─────────────────────────────────────────────────\n");
+
+    int sizes[] = {100, 500, 1000, 2000};
+    int size_count = sizeof(sizes) / sizeof(sizes[0]);
+
+    for (int i = 0; i < size_count; i++) {
+        char **random_data = generate_random_data(sizes[i]);
+        PerformanceTest result = measure_sorting_performance(random_data, sizes[i], "random");
+
+        double ratio = result.tree_sort_time / result.quick_sort_time;
+
+        printf("%-8d %-12.6f %-12.6f %-12.2fx\n",
+               sizes[i], result.tree_sort_time, result.quick_sort_time, ratio);
+
+        free_test_data(random_data, sizes[i]);
+    }
+}
+
+void test_worst_case_scenarios() {
+    printf("\n=== ТЕСТУВАННЯ НАЙГІРШИХ СЦЕНАРІЇВ ===\n");
+
+    const int TEST_SIZE = 1000;
+
+    // Тест 1: Відсортовані дані
+    printf("1. Відсортовані дані (найгірший випадок для BST):\n");
+    char **sorted_data = generate_sorted_data(TEST_SIZE);
+    PerformanceTest sorted_result = measure_sorting_performance(sorted_data, TEST_SIZE, "sorted");
+
+    printf("   Tree Sort: %.6f сек\n", sorted_result.tree_sort_time);
+    printf("   Quick Sort: %.6f сек\n", sorted_result.quick_sort_time);
+    printf("   Tree Sort повільніше у %.2f разів\n",
+           sorted_result.tree_sort_time / sorted_result.quick_sort_time);
+
+    // Тест 2: Зворотно відсортовані дані
+    printf("\n2. Зворотно відсортовані дані:\n");
+    char **reverse_data = generate_reverse_sorted_data(TEST_SIZE);
+    PerformanceTest reverse_result = measure_sorting_performance(reverse_data, TEST_SIZE, "reverse");
+
+    printf("   Tree Sort: %.6f сек\n", reverse_result.tree_sort_time);
+    printf("   Quick Sort: %.6f сек\n", reverse_result.quick_sort_time);
+    printf("   Tree Sort повільніше у %.2f разів\n",
+           reverse_result.tree_sort_time / reverse_result.quick_sort_time);
+
+    // Тест 3: Випадкові дані (кращий випадок для BST)
+    printf("\n3. Випадкові дані (кращий випадок для BST):\n");
+    char **random_data = generate_random_data(TEST_SIZE);
+    PerformanceTest random_result = measure_sorting_performance(random_data, TEST_SIZE, "random");
+
+    printf("   Tree Sort: %.6f сек\n", random_result.tree_sort_time);
+    printf("   Quick Sort: %.6f сек\n", random_result.quick_sort_time);
+    printf("   Співвідношення: %.2f\n",
+           random_result.tree_sort_time / random_result.quick_sort_time);
+
+    printf("\nВИСНОВКИ:\n");
+    printf("• Tree Sort ДУЖЕ повільний на відсортованих даних\n");
+    printf("• Випадкові дані дають прийнятну продуктивність\n");
+    printf("• Quick Sort стабільно швидший в усіх випадках\n");
+
+    free_test_data(sorted_data, TEST_SIZE);
+    free_test_data(reverse_data, TEST_SIZE);
+    free_test_data(random_data, TEST_SIZE);
+}
+
+void compare_with_library_functions() {
+    printf("\n=== ПОРІВНЯННЯ З БІБЛІОТЕЧНИМИ ФУНКЦІЯМИ ===\n");
+
+    const int TEST_SIZE = 5000;
+    char **test_data = generate_random_data(TEST_SIZE);
+
+    printf("Тестування на %d випадкових елементах:\n\n", TEST_SIZE);
+
+    PerformanceTest result = measure_sorting_performance(test_data, TEST_SIZE, "library_comparison");
+
+    printf("Результати:\n");
+    printf("• Tree Sort:      %.6f сек\n", result.tree_sort_time);
+    printf("• Quick Sort:     %.6f сек\n", result.quick_sort_time);
+    if (result.insertion_sort_time >= 0) {
+        printf("• Insertion Sort: %.6f сек\n", result.insertion_sort_time);
+    }
+
+    printf("\nВідносна швидкість (Quick Sort = 1.0):\n");
+    printf("• Tree Sort:      %.2fx\n", result.tree_sort_time / result.quick_sort_time);
+    if (result.insertion_sort_time >= 0) {
+        printf("• Insertion Sort: %.2fx\n", result.insertion_sort_time / result.quick_sort_time);
+    }
+
+    printf("\nХАРАКТЕРИСТИКИ АЛГОРИТМІВ:\n");
+    printf("Tree Sort:\n");
+    printf("  + Стабільний (зберігає порядок однакових елементів)\n");
+    printf("  + Легко видаляти дублікати\n");
+    printf("  + Природний для рекурсивних структур\n");
+    printf("  - O(n²) в найгіршому випадку\n");
+    printf("  - Додаткова пам'ять для дерева\n");
+    printf("  - Не in-place\n\n");
+
+    printf("Quick Sort (qsort):\n");
+    printf("  + O(n log n) в середньому\n");
+    printf("  + Оптимізований в бібліотеці\n");
+    printf("  + Швидкий для більшості даних\n");
+    printf("  - Не стабільний\n");
+    printf("  - O(n²) в найгіршому випадку\n");
+    printf("  - Потребує додаткову функцію порівняння\n");
+
+    free_test_data(test_data, TEST_SIZE);
+}
+
+void when_tree_sort_fails() {
+    printf("\n=== КОЛИ TREE SORT ПРАЦЮЄ ПОГАНО ===\n");
+
+    printf("1. ВІДСОРТОВАНІ АБО МАЙЖЕ ВІДСОРТОВАНІ ДАНІ:\n");
+    printf("   Причина: Дерево вироджується в список\n");
+    printf("   Складність: O(n²) замість O(n log n)\n\n");
+
+    printf("2. ВЕЛИКІ ОБСЯГИ ДАНИХ:\n");
+    printf("   Причина: Додаткові накладні витрати на дерево\n");
+    printf("   Проблема: Фрагментація пам'яті\n\n");
+
+    printf("3. ОБМЕЖЕНА ПАМ'ЯТЬ:\n");
+    printf("   Причина: Потребує O(n) додаткової пам'яті\n");
+    printf("   Проблема: Стек рекурсії може переповнитися\n\n");
+
+    printf("4. ЧАСТІ ОПЕРАЦІЇ СОРТУВАННЯ:\n");
+    printf("   Причина: Побудова дерева займає час\n");
+    printf("   Рішення: Використовувати готові алгоритми\n\n");
+
+    printf("АЛЬТЕРНАТИВИ:\n");
+    printf("• Merge Sort - стабільний O(n log n)\n");
+    printf("• Heap Sort - гарантований O(n log n)\n");
+    printf("• Quick Sort - швидкий в середньому\n");
+    printf("• Radix Sort - для цілих чисел O(n)\n");
+    printf("• Tim Sort - оптимізований для реальних даних\n");
+}
+
+int main(void) {
+    printf("=== Завдання 16: Сортування з симетричним обходом ===\n");
+
+    srand(time(NULL));
+
+    demonstrate_basic_sorting();
+    analyze_complexity();
+    test_worst_case_scenarios();
+    compare_with_library_functions();
+    when_tree_sort_fails();
+
+    printf("\n=== ЗАГАЛЬНІ ВИСНОВКИ ===\n");
+    printf("ПОРЯДОК ШВИДКОДІЇ:\n");
+    printf("• Середній випадок: O(n log n)\n");
+    printf("• Найгірший випадок: O(n²) для відсортованих даних\n");
+    printf("• Найкращий випадок: O(n log n) для збалансованих дерев\n\n");
+
+    printf("КОЛИ ПРАЦЮЄ ПОГАНО:\n");
+    printf("• Відсортовані або зворотно відсортовані дані\n");
+    printf("• Великі обсяги даних з обмеженою пам'яттю\n");
+    printf("• Коли потрібна максимальна швидкість\n\n");
+
+    printf("ПОРІВНЯННЯ З QUICKSORT:\n");
+    printf("• Tree Sort: стабільний, але повільніший\n");
+    printf("• Quick Sort: швидший, але не стабільний\n");
+    printf("• Бібліотечні функції оптимізовані та швидші\n\n");
+
+    printf("ПРАКТИЧНІ РЕКОМЕНДАЦІЇ:\n");
+    printf("• Використовуйте Tree Sort для навчальних цілей\n");
+    printf("• Для продакшн коду застосовуйте qsort() або std::sort()\n");
+    printf("• Tree Sort корисний коли потрібно видалити дублікати\n");
+    printf("• Розгляньте самобалансуючі дерева для стабільної продуктивності\n");
+
     return 0;
 }
