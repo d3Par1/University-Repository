@@ -241,9 +241,6 @@ public class Lr1 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("=== Лабораторна робота 1 - Клас Triangle ===");
-        System.out.println("Студент групи ТВ-43, прізвище Step, варіант 16\n");
-
         // Створення трьох різних трикутників для демонстрації
         Triangle[] triangles = {
             new Triangle(new Point(0, 0), new Point(3, 0), new Point(0, 4)),      // Прямокутний

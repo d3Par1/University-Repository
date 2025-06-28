@@ -2,11 +2,10 @@
 #include <cstring>
 #include <cstdlib>
 #include <ctime>
-#include <chrono>
+#include <chrono>      // ДОДАНО: потрібно для std::chrono
 #include <vector>
 #include <random>
 #include <algorithm>
-
 // Структура для вузла дерева
 typedef struct Tnode {
     char* name;           // Ключ для пошуку

@@ -12,6 +12,7 @@
 #define LOAD_THRESHOLD 0.7 // Поріг середньої довжини ланцюжка для розширення
 #define GROWTH_FACTOR 2    // Коефіцієнт розширення
 
+
 // Структура для елемента хеш-таблиці
 typedef struct Nameval {
     char *name;             // Ключ

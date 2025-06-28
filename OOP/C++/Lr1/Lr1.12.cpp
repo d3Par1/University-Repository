@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
+#include <vector>
+#include <functional>
 
 // ======= Частина 1: Нетипізований список на C =======
 
