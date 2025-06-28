@@ -1,167 +1,227 @@
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-typedef struct Nameval {
+
+typedef struct Nameval Nameval;
+
+struct Nameval {
     char *name;
     int value;
-} Nameval;
+};
 
-typedef struct NVtab {
-    Nameval *nameval;
-    int size;
+struct NVtab {
+    int nval;
     int max;
-} NVtab;
+    Nameval *nameval;
+} nvtab;
 
-#define NVGROW 10
+enum {NVINIT = 1, NVGROW = 2};
 
-// Ініціалізація масиву
-void init_nvtab(NVtab *nvtptr) {
-    nvtptr->nameval = NULL;
-    nvtptr->size = 0;
-    nvtptr->max = 0;
-}
-
-// Функція додавання елемента
-int addname(NVtab *nvtptr, Nameval newname) {
-    Nameval *newval;
-    
-    if (nvtptr->size >= nvtptr->max) {
-        newval = (Nameval *) realloc(nvtptr->nameval, 
-                                    (nvtptr->max + NVGROW) * sizeof(Nameval));
-        if (newval == NULL)
+int addname(struct NVtab *tab, Nameval newname) {
+    Nameval *nvp;
+    if (tab->nameval == NULL) {
+        tab->nameval = (Nameval *) malloc(NVINIT * sizeof(Nameval));
+        if (tab->nameval == NULL)
             return -1;
-        
-        nvtptr->max += NVGROW;
-        nvtptr->nameval = newval;
+        tab->max = NVINIT;
+        tab->nval = 0;
+    } else if (tab->nval >= tab->max) {
+        nvp = (Nameval *) realloc(tab->nameval,
+                                (NVGROW * tab->max) * sizeof(Nameval));
+        if (nvp == NULL)
+            return -1;
+        tab->max *= NVGROW;
+        tab->nameval = nvp;
     }
-    
-    nvtptr->nameval[nvtptr->size] = newname;
-    nvtptr->size++;
-    
-    return nvtptr->size - 1;
+    tab->nameval[tab->nval] = newname;
+    return tab->nval++;
 }
 
-// Стандартна функція видалення (зі зсувом елементів)
-int delname_shift(NVtab *nvtptr, char *name) {
-    int i;
-    
-    for (i = 0; i < nvtptr->size; i++) {
-        if (strcmp(nvtptr->nameval[i].name, name) == 0) {
-            // Зсув елементів
-            memmove(&nvtptr->nameval[i], &nvtptr->nameval[i+1], 
-                   (nvtptr->size - i - 1) * sizeof(Nameval));
-            nvtptr->size--;
+// Оригінальна версія delname (зберігає порядок)
+int delname_preserve_order(struct NVtab *tab, char *name) {
+    for (int i = 0; i < tab->nval; i++) {
+        if (strcmp(tab->nameval[i].name, name) == 0) {
+            printf("Видаляємо '%s' з позиції %d\n", name, i);
+            printf("Зсуваємо %d елементів ліворуч\n", tab->nval - i - 1);
+
+            // Зсуваємо всі елементи після видаленого
+            memmove(tab->nameval + i, tab->nameval + (i + 1),
+                   (tab->nval - (i + 1)) * sizeof(Nameval));
+            tab->nval--;
             return 1;
         }
     }
-    
     return 0;
 }
 
-// Функція видалення з перекиданням останнього елемента у вільну позицію
-int delname_swap(NVtab *nvtptr, char *name) {
-    int i;
-    
-    for (i = 0; i < nvtptr->size; i++) {
-        if (strcmp(nvtptr->nameval[i].name, name) == 0) {
-            // Замість зсуву елементів, просто копіюємо останній елемент у вільну позицію
-            // (якщо знайдений елемент не є останнім)
-            if (i < nvtptr->size - 1) {
-                // Звільняємо пам'ять від імені елемента, що видаляється
-                free(nvtptr->nameval[i].name);
-                
-                // Копіюємо останній елемент у вільну позицію
-                nvtptr->nameval[i] = nvtptr->nameval[nvtptr->size - 1];
+// НОВА версія delname (перекидає останній елемент)
+int delname_swap_last(struct NVtab *tab, char *name) {
+    for (int i = 0; i < tab->nval; i++) {
+        if (strcmp(tab->nameval[i].name, name) == 0) {
+            printf("Видаляємо '%s' з позиції %d\n", name, i);
+
+            if (i != tab->nval - 1) {
+                // Переміщуємо останній елемент на місце видаленого
+                printf("Переміщуємо останній елемент ('%s') з позиції %d на позицію %d\n",
+                       tab->nameval[tab->nval - 1].name, tab->nval - 1, i);
+                tab->nameval[i] = tab->nameval[tab->nval - 1];
+            } else {
+                printf("Видаляємо останній елемент - переміщення не потрібне\n");
             }
-            
-            // Зменшуємо розмір масиву
-            nvtptr->size--;
+
+            tab->nval--;
             return 1;
         }
     }
-    
     return 0;
 }
 
-// Функція для виведення елементів масиву
-void print_elements(NVtab *nvtptr) {
-    std::cout << "Елементи масиву (загалом " << nvtptr->size << "):" << std::endl;
-    for (int i = 0; i < nvtptr->size; i++) {
-        std::cout << "[" << i << "] " << nvtptr->nameval[i].name 
-                  << " = " << nvtptr->nameval[i].value << std::endl;
+void print_array(struct NVtab *tab, const char *title) {
+    printf("\n%s:\n", title);
+    for (int i = 0; i < tab->nval; i++) {
+        printf("  [%d] %s = %d\n", i, tab->nameval[i].name, tab->nameval[i].value);
     }
-    std::cout << std::endl;
+    printf("Кількість елементів: %d\n", tab->nval);
 }
 
-int main() {
-    // Демонстрація обох варіантів видалення елементів
-    
-    // 1. Варіант зі зсувом елементів (зберігає порядок)
-    NVtab shift_tab;
-    init_nvtab(&shift_tab);
-    
-    // Додаємо елементи
-    Nameval item;
-    for (int i = 1; i <= 5; i++) {
-        char buffer[20];
-        sprintf(buffer, "item%d", i);
-        item.name = strdup(buffer);
-        item.value = i * 10;
-        addname(&shift_tab, item);
+void demonstrate_preserve_order() {
+    printf("=== ДЕМОНСТРАЦІЯ ЗБЕРЕЖЕННЯ ПОРЯДКУ ===\n");
+
+    // Ініціалізація
+    nvtab.nval = 0;
+    nvtab.max = 0;
+    nvtab.nameval = NULL;
+
+    // Додаємо тестові дані
+    char names[][10] = {"Alice", "Bob", "Charlie", "David", "Eve"};
+    int values[] = {10, 20, 30, 40, 50};
+
+    for (int i = 0; i < 5; i++) {
+        Nameval item = {names[i], values[i]};
+        addname(&nvtab, item);
     }
-    
-    std::cout << "Демонстрація видалення зі зсувом (збереження порядку):" << std::endl;
-    std::cout << "---------------------------------------------------------" << std::endl;
-    std::cout << "Початковий стан:" << std::endl;
-    print_elements(&shift_tab);
-    
-    // Видаляємо середній елемент (item3)
-    delname_shift(&shift_tab, (char*)"item3");
-    
-    std::cout << "Після видалення 'item3' (зі зсувом):" << std::endl;
-    print_elements(&shift_tab);
-    
-    // 2. Варіант з перекиданням останнього елемента (не зберігає порядок)
-    NVtab swap_tab;
-    init_nvtab(&swap_tab);
-    
-    // Додаємо такі ж елементи
-    for (int i = 1; i <= 5; i++) {
-        char buffer[20];
-        sprintf(buffer, "item%d", i);
-        item.name = strdup(buffer);
-        item.value = i * 10;
-        addname(&swap_tab, item);
+
+    print_array(&nvtab, "Початковий масив");
+
+    // Видаляємо елемент з середини
+    printf("\n--- Видаляємо 'Charlie' (зберігаючи порядок) ---\n");
+    delname_preserve_order(&nvtab, "Charlie");
+    print_array(&nvtab, "Після видалення 'Charlie'");
+
+    printf("Порядок збережено: Alice, Bob, David, Eve\n");
+}
+
+void demonstrate_swap_last() {
+    printf("\n=== ДЕМОНСТРАЦІЯ ПЕРЕКИДАННЯ ОСТАННЬОГО ===\n");
+
+    // Скидаємо масив
+    free(nvtab.nameval);
+    nvtab.nval = 0;
+    nvtab.max = 0;
+    nvtab.nameval = NULL;
+
+    // Додаємо тестові дані
+    char names[][10] = {"Alice", "Bob", "Charlie", "David", "Eve"};
+    int values[] = {10, 20, 30, 40, 50};
+
+    for (int i = 0; i < 5; i++) {
+        Nameval item = {names[i], values[i]};
+        addname(&nvtab, item);
     }
-    
-    std::cout << "\nДемонстрація видалення з перекиданням (не зберігає порядок):" << std::endl;
-    std::cout << "-----------------------------------------------------------" << std::endl;
-    std::cout << "Початковий стан:" << std::endl;
-    print_elements(&swap_tab);
-    
-    // Видаляємо середній елемент (item3)
-    delname_swap(&swap_tab, (char*)"item3");
-    
-    std::cout << "Після видалення 'item3' (з перекиданням):" << std::endl;
-    print_elements(&swap_tab);
-    
-    // Додаємо ще одне видалення для наочності
-    delname_swap(&swap_tab, (char*)"item2");
-    
-    std::cout << "Після видалення 'item2' (з перекиданням):" << std::endl;
-    print_elements(&swap_tab);
-    
-    // Звільнення пам'яті
-    for (int i = 0; i < shift_tab.size; i++) {
-        free(shift_tab.nameval[i].name);
+
+    print_array(&nvtab, "Початковий масив");
+
+    // Видаляємо елемент з середини (швидкий спосіб)
+    printf("\n--- Видаляємо 'Charlie' (перекидаючи останній) ---\n");
+    delname_swap_last(&nvtab, "Charlie");
+    print_array(&nvtab, "Після видалення 'Charlie'");
+
+    printf("Порядок змінено: Alice, Bob, Eve, David\n");
+    printf("'Eve' перемістилася на місце 'Charlie'\n");
+}
+
+void demonstrate_performance_difference() {
+    printf("\n=== ПОРІВНЯННЯ ПРОДУКТИВНОСТІ ===\n");
+
+    const int ARRAY_SIZE = 1000;
+
+    // Тест 1: Збереження порядку
+    free(nvtab.nameval);
+    nvtab.nval = 0;
+    nvtab.max = 0;
+    nvtab.nameval = NULL;
+
+    printf("Створюємо масив з %d елементів для тесту збереження порядку...\n",
+           ARRAY_SIZE);
+
+    for (int i = 0; i < ARRAY_SIZE; i++) {
+        char name[20];
+        sprintf(name, "Item%d", i);
+        Nameval item = {strdup(name), i};
+        addname(&nvtab, item);
     }
-    free(shift_tab.nameval);
-    
-    for (int i = 0; i < swap_tab.size; i++) {
-        free(swap_tab.nameval[i].name);
+
+    printf("Видаляємо елемент з середини (індекс 500):\n");
+    printf("Операція збереження порядку: ");
+    printf("потрібно зсунути %d елементів\n", ARRAY_SIZE - 500 - 1);
+
+    // Тест 2: Перекидання останнього
+    printf("\nОперація перекидання останнього: ");
+    printf("потрібно перемістити 1 елемент\n");
+
+    printf("\nСкладність:\n");
+    printf("- Збереження порядку: O(n) - лінійна\n");
+    printf("- Перекидання останнього: O(1) - константна\n");
+
+    // Звільняємо динамічну пам'ять
+    for (int i = 0; i < nvtab.nval; i++) {
+        free(nvtab.nameval[i].name);
     }
-    free(swap_tab.nameval);
-    
+}
+
+void demonstrate_edge_cases() {
+    printf("\n=== КРАЙНІ ВИПАДКИ ===\n");
+
+    free(nvtab.nameval);
+    nvtab.nval = 0;
+    nvtab.max = 0;
+    nvtab.nameval = NULL;
+
+    // Один елемент
+    Nameval single = {"OnlyOne", 42};
+    addname(&nvtab, single);
+    print_array(&nvtab, "Масив з одним елементом");
+
+    printf("\n--- Видаляємо єдиний елемент ---\n");
+    delname_swap_last(&nvtab, "OnlyOne");
+    print_array(&nvtab, "Після видалення єдиного елемента");
+
+    // Два елементи
+    Nameval first = {"First", 1};
+    Nameval second = {"Second", 2};
+    addname(&nvtab, first);
+    addname(&nvtab, second);
+    print_array(&nvtab, "Масив з двома елементами");
+
+    printf("\n--- Видаляємо перший елемент ---\n");
+    delname_swap_last(&nvtab, "First");
+    print_array(&nvtab, "Після видалення першого");
+
+    printf("\n--- Видаляємо останній елемент ---\n");
+    delname_swap_last(&nvtab, "Second");
+    print_array(&nvtab, "Після видалення останнього");
+}
+
+int main(void) {
+    printf("=== Завдання 5: Перекидання останнього елемента ===\n\n");
+
+    demonstrate_preserve_order();
+    demonstrate_swap_last();
+    demonstrate_performance_difference();
+    demonstrate_edge_cases();
+
+
+    free(nvtab.nameval);
     return 0;
 }

@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 using namespace std;
 
@@ -74,10 +75,10 @@ public:
     }
     
     // Обчислення відстані до іншої точки
-    double distance_to(const three_d &other) const {
+    double distance_to(const three_d &other, int dz) const {
         int dx = x - other.x;
         int dy = y - other.y;
-        int dz = z - other.z;
+        // int dz = z - other.z;
         return sqrt(dx*dx + dy*dy + dz*dz);
     }
     

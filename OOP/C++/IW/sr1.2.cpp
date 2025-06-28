@@ -1,48 +1,6 @@
 #include <iostream>
 using namespace std;
 
-int main() {
-  LinkedList list1;
-  LinkedList list2;
-
-  // Заповнення першого списку з клавіатури
-  int n, value;
-  do {
-      cout << "Введіть кількість елементів для першого списку (від 5 до 10): ";
-      cin >> n;
-  } while (n < 5 || n > 10);
-
-  cout << "Введіть " << n << " елементів:" << endl;
-  for (int i = 0; i < n; i++) {
-      cout << "Елемент " << i+1 << ": ";
-      cin >> value;
-      list1.append(value);
-  }
-
-  // Виведення першого списку
-  cout << "Перший ";
-  list1.display();
-
-  // Заповнення другого списку заданими значеннями
-  int predefinedValues[] = {100, 200, 300, 400, 500};
-  for (int i = 0; i < 5; i++) {
-      list2.append(predefinedValues[i]);
-  }
-
-  // Виведення другого списку
-  cout << "Другий ";
-  list2.display();
-
-  // Злиття списків
-  list1.merge(list2);
-
-  // Виведення об'єднаного списку
-  cout << "Об'єднаний ";
-  list1.display();
-
-  return 0;
-}
-
 // Клас вузла списку
 class Node {
 public:
@@ -151,3 +109,50 @@ public:
         list2.setHead(nullptr);
     }
 };
+
+
+int main() {
+  LinkedList list1;
+  LinkedList list2;
+  
+  // Заповнення першого списку з клавіатури
+  int n, value;
+  do {
+      cout << "Введіть кількість елементів для першого списку (від 5 до 10): ";
+      cin >> n;
+  } while (n < 5 || n > 10);
+  
+  cout << "Введіть " << n << " елементів:" << endl;
+  for (int i = 0; i < n; i++) {
+      cout << "Елемент " << i+1 << ": ";
+      cin >> value;
+      list1.append(value);
+  }
+  
+  // Виведення першого списку
+  cout << "Перший ";
+  list1.display();
+  
+  // Заповнення другого списку заданими значеннями
+  int predefinedValues[] = {100, 200, 300, 400, 500};
+  for (int i = 0; i < 5; i++) {
+      list2.append(predefinedValues[i]);
+  }
+  
+  // Виведення другого списку
+  cout << "Другий ";
+  list2.display();
+  
+  // Злиття списків
+  list1.merge(list2);
+  
+  // Виведення об'єднаного списку
+  cout << "Об'єднаний ";
+  list1.display();
+  
+  return 0;
+}
+
+
+
+

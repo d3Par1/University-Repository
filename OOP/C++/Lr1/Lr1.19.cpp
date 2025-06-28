@@ -1,365 +1,488 @@
-#include <iostream>
-#include <cstring>
-#include <cstdlib>
-#include <vector>
-#include <string>
-#include <fstream>
-#include <algorithm>
-#include <iomanip>
-#include <cmath>
-#include <random>
-#include <unordered_map>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
-// Основні параметри для тестування
-#define NHASH 101 // Розмір хеш-таблиці за замовчуванням
-int CURRENT_MULTIPLIER = 31; // Поточний множник для хеш-функції
 
-// Хеш-функція з динамічним множником
-unsigned int hash(const char *str, int multiplier) {
+static int NHASH = 101;          // Розмір хеш-таблиці
+static int MULTIPLIER = 31;      // Змінний множник для тестування
+
+
+typedef struct Nameval Nameval;
+
+struct Nameval {
+    char *name;
+    int value;
+    Nameval *next;
+};
+
+
+// Основна хеш-функція (з можливістю зміни множника)
+unsigned int hash_with_multiplier(char *str, int multiplier) {
     unsigned int h = 0;
     unsigned char *p;
-    
-    for (p = (unsigned char *)str; *p != '\0'; p++) {
+
+    for (p = (unsigned char *) str; *p != '\0'; p++) {
         h = multiplier * h + *p;
     }
-    
+
     return h % NHASH;
 }
 
-// Функція для аналізу розподілу хеш-значень
-void analyze_hash_distribution(const std::vector<std::string>& strings, int multiplier, int table_size) {
-    std::vector<int> bucket_count(table_size, 0);
-    std::vector<std::vector<std::string>> buckets(table_size);
-    
-    // Розподіляємо рядки за хеш-значеннями
-    for (const auto& str : strings) {
-        unsigned int h = hash(str.c_str(), multiplier) % table_size;
-        bucket_count[h]++;
-        buckets[h].push_back(str);
+// Стандартна хеш-функція
+unsigned int hash(char *str) {
+    return hash_with_multiplier(str, MULTIPLIER);
+}
+
+// Альтернативна хеш-функція для порівняння (djb2)
+unsigned int hash_djb2(char *str) {
+    unsigned int hash = 5381;
+    unsigned char *p;
+
+    for (p = (unsigned char *) str; *p != '\0'; p++) {
+        hash = ((hash << 5) + hash) + *p; // hash * 33 + c
     }
-    
-    // Збираємо статистику
-    int total_strings = strings.size();
-    int empty_buckets = 0;
-    int max_bucket_size = 0;
-    double expected_per_bucket = (double)total_strings / table_size;
-    
-    for (int count : bucket_count) {
-        if (count == 0) {
-            empty_buckets++;
-        }
-        if (count > max_bucket_size) {
-            max_bucket_size = count;
+
+    return hash % NHASH;
+}
+
+
+typedef struct {
+    int total_items;
+    int used_buckets;
+    int empty_buckets;
+    int max_chain_length;
+    int total_collisions;
+    double load_factor;
+    double average_chain_length;
+    double uniformity_score;
+    char description[100];
+} HashQuality;
+
+// Обчислення якості розподілу
+HashQuality analyze_distribution(char **strings, int count,
+                                unsigned int (*hash_func)(char *),
+                                const char *func_name) {
+    HashQuality quality = {0};
+    strcpy(quality.description, func_name);
+
+    // Лічильники для кожного bucket
+    int bucket_counts[NHASH] = {0};
+
+    // Розподіляємо рядки по buckets
+    for (int i = 0; i < count; i++) {
+        unsigned int h = hash_func(strings[i]);
+        bucket_counts[h]++;
+    }
+
+    // Аналізуємо розподіл
+    quality.total_items = count;
+
+    for (int i = 0; i < NHASH; i++) {
+        if (bucket_counts[i] > 0) {
+            quality.used_buckets++;
+
+            if (bucket_counts[i] > quality.max_chain_length) {
+                quality.max_chain_length = bucket_counts[i];
+            }
+
+            if (bucket_counts[i] > 1) {
+                quality.total_collisions += (bucket_counts[i] - 1);
+            }
+        } else {
+            quality.empty_buckets++;
         }
     }
-    
-    // Обчислюємо середньоквадратичне відхилення
+
+    quality.load_factor = (double)count / NHASH;
+    quality.average_chain_length = quality.used_buckets > 0 ?
+        (double)count / quality.used_buckets : 0.0;
+
+    // Розрахунок однорідності (наскільки рівномірний розподіл)
+    double expected_per_bucket = (double)count / NHASH;
     double variance = 0.0;
-    for (int count : bucket_count) {
-        double diff = count - expected_per_bucket;
+
+    for (int i = 0; i < NHASH; i++) {
+        double diff = bucket_counts[i] - expected_per_bucket;
         variance += diff * diff;
     }
-    variance /= table_size;
-    double std_deviation = sqrt(variance);
-    
-    // Обчислюємо коефіцієнт варіації (CV) - відносна міра дисперсії
-    double cv = (expected_per_bucket > 0) ? std_deviation / expected_per_bucket : 0;
-    
-    // Знаходимо найзавантаженіші кошики
-    std::vector<std::pair<int, int>> bucket_sizes;
-    for (int i = 0; i < table_size; i++) {
-        bucket_sizes.push_back(std::make_pair(bucket_count[i], i));
-    }
-    std::sort(bucket_sizes.begin(), bucket_sizes.end(), std::greater<std::pair<int, int>>());
-    
-    // Виведення результатів
-    std::cout << "Аналіз хеш-функції з MULTIPLIER=" << multiplier << ", NHASH=" << table_size << std::endl;
-    std::cout << "  Загальна кількість рядків: " << total_strings << std::endl;
-    std::cout << "  Заповнені кошики: " << (table_size - empty_buckets) << " з " << table_size
-              << " (" << std::fixed << std::setprecision(2) 
-              << (double)(table_size - empty_buckets) / table_size * 100 << "%)" << std::endl;
-    std::cout << "  Порожні кошики: " << empty_buckets << std::endl;
-    std::cout << "  Очікувана кількість рядків на кошик: " << expected_per_bucket << std::endl;
-    std::cout << "  Максимальна кількість рядків у кошику: " << max_bucket_size << std::endl;
-    std::cout << "  Середньоквадратичне відхилення: " << std_deviation << std::endl;
-    std::cout << "  Коефіцієнт варіації (CV): " << cv << " (менше значення - краще)" << std::endl;
-    
-    // Виведення найзавантаженіших кошиків
-    std::cout << "  Найзавантаженіші кошики:" << std::endl;
-    int top_buckets = std::min(5, (int)bucket_sizes.size());
-    for (int i = 0; i < top_buckets; i++) {
-        int size = bucket_sizes[i].first;
-        int index = bucket_sizes[i].second;
-        if (size > 0) {
-            std::cout << "    Кошик " << index << ": " << size << " рядків" << std::endl;
-        }
-    }
-    
-    // Розподіл довжин ланцюжків
-    std::vector<int> chain_distribution(max_bucket_size + 1, 0);
-    for (int count : bucket_count) {
-        chain_distribution[count]++;
-    }
-    
-    std::cout << "  Розподіл довжин ланцюжків:" << std::endl;
-    for (int i = 0; i <= std::min(10, max_bucket_size); i++) {
-        std::cout << "    Довжина " << i << ": " << chain_distribution[i] << " кошиків" << std::endl;
-    }
-    if (max_bucket_size > 10) {
-        std::cout << "    ..." << std::endl;
-        std::cout << "    Довжина " << max_bucket_size << ": " << chain_distribution[max_bucket_size] << " кошиків" << std::endl;
+    variance /= NHASH;
+
+    // Нормалізуємо: 1.0 = ідеальний розподіл, 0.0 = найгірший
+    quality.uniformity_score = 1.0 / (1.0 + variance / expected_per_bucket);
+
+    return quality;
+}
+
+void print_hash_quality(HashQuality quality) {
+    printf("\n=== %s ===\n", quality.description);
+    printf("Загалом елементів: %d\n", quality.total_items);
+    printf("Використано buckets: %d/%d (%.1f%%)\n",
+           quality.used_buckets, NHASH,
+           (double)quality.used_buckets / NHASH * 100);
+    printf("Коефіцієнт завантаження: %.3f\n", quality.load_factor);
+    printf("Макс. довжина ланцюжка: %d\n", quality.max_chain_length);
+    printf("Середня довжина ланцюжка: %.2f\n", quality.average_chain_length);
+    printf("Колізій: %d\n", quality.total_collisions);
+    printf("Однорідність розподілу: %.3f\n", quality.uniformity_score);
+
+    // Оцінка якості
+    if (quality.uniformity_score >= 0.8 && quality.max_chain_length <= 3) {
+        printf("Оцінка: ВІДМІННО ✓\n");
+    } else if (quality.uniformity_score >= 0.6 && quality.max_chain_length <= 5) {
+        printf("Оцінка: ДОБРЕ\n");
+    } else if (quality.uniformity_score >= 0.4 && quality.max_chain_length <= 8) {
+        printf("Оцінка: ЗАДОВІЛЬНО\n");
+    } else {
+        printf("Оцінка: ПОГАНО ✗\n");
     }
 }
 
-// Функція для виявлення колізій між парами рядків
-void find_collisions(const std::vector<std::string>& strings, int multiplier, int table_size) {
-    std::unordered_map<unsigned int, std::vector<std::string>> hash_map;
-    
-    // Розподіляємо рядки за хеш-значеннями
-    for (const auto& str : strings) {
-        unsigned int h = hash(str.c_str(), multiplier) % table_size;
-        hash_map[h].push_back(str);
-    }
-    
-    // Виведення прикладів колізій
-    std::cout << "Приклади колізій (рядки з однаковим хеш-значенням):" << std::endl;
-    int count = 0;
-    for (const auto& pair : hash_map) {
-        if (pair.second.size() > 1) {
-            std::cout << "  Хеш " << pair.first << ": ";
-            for (size_t i = 0; i < std::min(size_t(3), pair.second.size()); i++) {
-                std::cout << "\"" << pair.second[i] << "\" ";
-            }
-            if (pair.second.size() > 3) {
-                std::cout << "... (усього " << pair.second.size() << " рядків)";
-            }
-            std::cout << std::endl;
-            
-            count++;
-            if (count >= 5) break; // Виводимо лише 5 прикладів
-        }
-    }
-}
 
-// Генерація рядків різної довжини
-std::vector<std::string> generate_strings_of_varying_length(int count) {
-    std::vector<std::string> strings;
-    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> length_dist(1, 20); // Довжина від 1 до 20
-    std::uniform_int_distribution<> char_dist(0, sizeof(charset) - 2);
-    
+// Короткі рядки (імена змінних)
+void generate_short_strings(char **strings, int count) {
+    char prefixes[][10] = {"i", "j", "k", "x", "y", "z", "tmp", "buf", "ptr", "val",
+                          "len", "max", "min", "sum", "cnt", "idx", "pos", "size"};
+    int prefix_count = sizeof(prefixes) / sizeof(prefixes[0]);
+
     for (int i = 0; i < count; i++) {
-        int length = length_dist(gen);
-        std::string str;
+        strings[i] = (char *) malloc(20);
+        if (i < prefix_count) {
+            strcpy(strings[i], prefixes[i]);
+        } else {
+            sprintf(strings[i], "%s%d", prefixes[i % prefix_count], i / prefix_count);
+        }
+    }
+}
+
+// Довгі рядки (URL-адреси)
+void generate_long_strings(char **strings, int count) {
+    char domains[][25] = {"example.com", "test.org", "demo.net", "site.info",
+                         "portal.edu", "service.gov", "shop.biz"};
+    char sections[][15] = {"api", "admin", "user", "content", "media", "docs", "help"};
+    char resources[][15] = {"page", "article", "post", "image", "video", "file", "data"};
+
+    int domain_count = sizeof(domains) / sizeof(domains[0]);
+    int section_count = sizeof(sections) / sizeof(sections[0]);
+    int resource_count = sizeof(resources) / sizeof(resources[0]);
+
+    for (int i = 0; i < count; i++) {
+        strings[i] = (char *) malloc(200);
+        sprintf(strings[i], "https://www.%s/%s/v%d/%s/%d/%s%d.html",
+                domains[i % domain_count],
+                sections[i % section_count],
+                (i / 10) % 5 + 1,
+                resources[i % resource_count],
+                i % 1000,
+                resources[(i + 1) % resource_count],
+                i % 100);
+    }
+}
+
+// Рядки однакової довжини з невеликими відмінностями
+void generate_similar_strings(char **strings, int count, int length) {
+    for (int i = 0; i < count; i++) {
+        strings[i] = (char *) malloc(length + 1);
+
+        // Базовий паттерн
         for (int j = 0; j < length; j++) {
-            str += charset[char_dist(gen)];
+            strings[i][j] = 'a' + (j % 26);
         }
-        strings.push_back(str);
+        strings[i][length] = '\0';
+
+        // Невеликі модифікації
+        int modifications = 1 + (i % 3); // 1-3 змін
+        for (int m = 0; m < modifications; m++) {
+            int pos = (i * 17 + m * 7) % length; // Псевдовипадкова позиція
+            strings[i][pos] = 'a' + ((strings[i][pos] - 'a' + i + m) % 26);
+        }
     }
-    
-    return strings;
 }
 
-// Генерація рядків фіксованої довжини з малими відмінностями
-std::vector<std::string> generate_similar_strings(int count, int length) {
-    std::vector<std::string> strings;
-    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> char_dist(0, sizeof(charset) - 2);
-    
-    // Генеруємо перший рядок
-    std::string base_string;
-    for (int j = 0; j < length; j++) {
-        base_string += charset[char_dist(gen)];
-    }
-    strings.push_back(base_string);
-    
-    // Генеруємо решту рядків з малими відмінностями
-    for (int i = 1; i < count; i++) {
-        std::string str = base_string;
-        
-        // Змінюємо 1-2 символи
-        std::uniform_int_distribution<> pos_dist(0, length - 1);
-        int pos1 = pos_dist(gen);
-        str[pos1] = charset[char_dist(gen)];
-        
-        // З імовірністю 50% змінюємо ще один символ
-        if (rand() % 2 == 0) {
-            int pos2;
-            do {
-                pos2 = pos_dist(gen);
-            } while (pos2 == pos1);
-            str[pos2] = charset[char_dist(gen)];
-        }
-        
-        strings.push_back(str);
-    }
-    
-    return strings;
-}
-
-// Генерація URL-адрес
-std::vector<std::string> generate_urls(int count) {
-    std::vector<std::string> urls;
-    const char* protocols[] = {"http://", "https://"};
-    const char* domains[] = {"example.com", "test.org", "sample.net", "demo.io", "app.co"};
-    const char* paths[] = {"/", "/home", "/about", "/contact", "/products", "/services", "/blog"};
-    const char* params[] = {"", "?id=123", "?page=1", "?q=test", "?user=admin", "?lang=en"};
-    
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> protocol_dist(0, sizeof(protocols) / sizeof(protocols[0]) - 1);
-    std::uniform_int_distribution<> domain_dist(0, sizeof(domains) / sizeof(domains[0]) - 1);
-    std::uniform_int_distribution<> path_dist(0, sizeof(paths) / sizeof(paths[0]) - 1);
-    std::uniform_int_distribution<> param_dist(0, sizeof(params) / sizeof(params[0]) - 1);
-    
+// Послідовні числа як рядки
+void generate_sequential_strings(char **strings, int count) {
     for (int i = 0; i < count; i++) {
-        std::string url = protocols[protocol_dist(gen)];
-        url += "www.";
-        url += domains[domain_dist(gen)];
-        url += paths[path_dist(gen)];
-        url += params[param_dist(gen)];
-        urls.push_back(url);
+        strings[i] = (char *) malloc(20);
+        sprintf(strings[i], "item_%06d", i);
     }
-    
-    return urls;
 }
 
-// Тестування хеш-функції з різними множниками
-void test_multipliers(const std::vector<std::string>& strings, int table_size) {
-    std::vector<int> multipliers = {31, 33, 37, 39, 41};
-    std::vector<double> cv_values;
-    
-    std::cout << "\nПорівняння множників MULTIPLIER від 31 до 41:" << std::endl;
-    std::cout << "=============================================" << std::endl;
-    
-    for (int multiplier : multipliers) {
-        std::vector<int> bucket_count(table_size, 0);
-        
-        // Розподіляємо рядки за хеш-значеннями
-        for (const auto& str : strings) {
-            unsigned int h = hash(str.c_str(), multiplier) % table_size;
-            bucket_count[h]++;
-        }
-        
-        // Збираємо статистику
-        int total_strings = strings.size();
-        int empty_buckets = 0;
-        int max_bucket_size = 0;
-        double expected_per_bucket = (double)total_strings / table_size;
-        
-        for (int count : bucket_count) {
-            if (count == 0) {
-                empty_buckets++;
-            }
-            if (count > max_bucket_size) {
-                max_bucket_size = count;
-            }
-        }
-        
-        // Обчислюємо середньоквадратичне відхилення
-        double variance = 0.0;
-        for (int count : bucket_count) {
-            double diff = count - expected_per_bucket;
-            variance += diff * diff;
-        }
-        variance /= table_size;
-        double std_deviation = sqrt(variance);
-        
-        // Обчислюємо коефіцієнт варіації (CV) - відносна міра дисперсії
-        double cv = (expected_per_bucket > 0) ? std_deviation / expected_per_bucket : 0;
-        cv_values.push_back(cv);
-        
-        // Виведення результатів
-        std::cout << "MULTIPLIER = " << multiplier << ":" << std::endl;
-        std::cout << "  Заповнені кошики: " << (table_size - empty_buckets) << " з " << table_size
-                  << " (" << std::fixed << std::setprecision(2) 
-                  << (double)(table_size - empty_buckets) / table_size * 100 << "%)" << std::endl;
-        std::cout << "  Максимальна довжина ланцюжка: " << max_bucket_size << std::endl;
-        std::cout << "  Коефіцієнт варіації (CV): " << cv << std::endl;
+// Рядки з загальними префіксами
+void generate_common_prefix_strings(char **strings, int count) {
+    char prefixes[][20] = {"function_", "variable_", "constant_", "method_", "class_"};
+    int prefix_count = sizeof(prefixes) / sizeof(prefixes[0]);
+
+    for (int i = 0; i < count; i++) {
+        strings[i] = (char *) malloc(50);
+        sprintf(strings[i], "%s%s_%d",
+                prefixes[i % prefix_count],
+                (i % 2) ? "long_name" : "short",
+                i / prefix_count);
     }
-    
-    // Знаходимо найкращий множник
-    int best_index = std::min_element(cv_values.begin(), cv_values.end()) - cv_values.begin();
-    int best_multiplier = multipliers[best_index];
-    
-    std::cout << "\nНайкращий множник: " << best_multiplier << " (CV = " << cv_values[best_index] << ")" << std::endl;
 }
 
-// Тестування якості хеш-функції для різних типів рядків
-void test_string_types() {
-    const int num_strings = 1000;
-    const int table_size = NHASH;
-    
-    // Тест 1: Короткі рядки різної довжини
-    std::cout << "\nТест 1: Короткі рядки різної довжини" << std::endl;
-    std::cout << "===================================" << std::endl;
-    auto short_strings = generate_strings_of_varying_length(num_strings);
-    analyze_hash_distribution(short_strings, CURRENT_MULTIPLIER, table_size);
-    find_collisions(short_strings, CURRENT_MULTIPLIER, table_size);
-    
-    // Тест 2: Довгі рядки (URL-адреси)
-    std::cout << "\nТест 2: Довгі рядки (URL-адреси)" << std::endl;
-    std::cout << "===============================" << std::endl;
-    auto urls = generate_urls(num_strings);
-    analyze_hash_distribution(urls, CURRENT_MULTIPLIER, table_size);
-    find_collisions(urls, CURRENT_MULTIPLIER, table_size);
-    
-    // Тест 3: Рядки однакової довжини з малими відмінностями
-    std::cout << "\nТест 3: Рядки однакової довжини з малими відмінностями" << std::endl;
-    std::cout << "===================================================" << std::endl;
-    auto similar_strings = generate_similar_strings(num_strings, 10);
-    analyze_hash_distribution(similar_strings, CURRENT_MULTIPLIER, table_size);
-    find_collisions(similar_strings, CURRENT_MULTIPLIER, table_size);
+
+void free_strings(char **strings, int count) {
+    for (int i = 0; i < count; i++) {
+        free(strings[i]);
+    }
+    free(strings);
 }
 
-int main() {
-    // Ініціалізація генератора випадкових чисел
+
+void test_short_vs_long_strings() {
+    printf("=== ТЕСТ: КОРОТКІ vs ДОВГІ РЯДКИ ===\n");
+
+    const int COUNT = 100;
+
+    // Тест коротких рядків
+    char **short_strings = (char **) malloc(COUNT * sizeof(char *));
+    generate_short_strings(short_strings, COUNT);
+
+    HashQuality short_quality = analyze_distribution(short_strings, COUNT, hash,
+                                                   "Короткі рядки (імена змінних)");
+    print_hash_quality(short_quality);
+
+    // Тест довгих рядків
+    char **long_strings = (char **) malloc(COUNT * sizeof(char *));
+    generate_long_strings(long_strings, COUNT);
+
+    HashQuality long_quality = analyze_distribution(long_strings, COUNT, hash,
+                                                  "Довгі рядки (URL-адреси)");
+    print_hash_quality(long_quality);
+
+    // Порівняння
+    printf("\n=== ПОРІВНЯННЯ КОРОТКИХ vs ДОВГИХ ===\n");
+    printf("Критерій               Короткі    Довгі      Переможець\n");
+    printf("──────────────────────────────────────────────────────────\n");
+    printf("Однорідність розподілу %.3f      %.3f      %s\n",
+           short_quality.uniformity_score, long_quality.uniformity_score,
+           (short_quality.uniformity_score > long_quality.uniformity_score) ? "Короткі" : "Довгі");
+    printf("Макс. довжина ланцюжка %-10d %-10d %s\n",
+           short_quality.max_chain_length, long_quality.max_chain_length,
+           (short_quality.max_chain_length < long_quality.max_chain_length) ? "Короткі" : "Довгі");
+    printf("Колізій                %-10d %-10d %s\n",
+           short_quality.total_collisions, long_quality.total_collisions,
+           (short_quality.total_collisions < long_quality.total_collisions) ? "Короткі" : "Довгі");
+
+    free_strings(short_strings, COUNT);
+    free_strings(long_strings, COUNT);
+}
+
+void test_similar_length_strings() {
+    printf("\n=== ТЕСТ: РЯДКИ ОДНАКОВОЇ ДОВЖИНИ ===\n");
+
+    const int COUNT = 100;
+    int lengths[] = {5, 10, 15, 20};
+    int length_count = sizeof(lengths) / sizeof(lengths[0]);
+
+    printf("Тестуємо рядки різної довжини з невеликими відмінностями:\n\n");
+
+    for (int l = 0; l < length_count; l++) {
+        char **similar_strings = (char **) malloc(COUNT * sizeof(char *));
+        generate_similar_strings(similar_strings, COUNT, lengths[l]);
+
+        char description[100];
+        sprintf(description, "Подібні рядки довжиною %d", lengths[l]);
+
+        HashQuality quality = analyze_distribution(similar_strings, COUNT, hash, description);
+        print_hash_quality(quality);
+
+        // Показуємо кілька прикладів
+        printf("Приклади рядків: ");
+        for (int i = 0; i < 5 && i < COUNT; i++) {
+            printf("'%s' ", similar_strings[i]);
+        }
+        printf("\n");
+
+        free_strings(similar_strings, COUNT);
+    }
+}
+
+void test_multiplier_variations() {
+    printf("\n=== ТЕСТ: РІЗНІ ЗНАЧЕННЯ MULTIPLIER (31-37) ===\n");
+
+    const int COUNT = 200;
+    int multipliers[] = {31, 32, 33, 34, 35, 36, 37};
+    int mult_count = sizeof(multipliers) / sizeof(multipliers[0]);
+
+    // Використовуємо змішані дані
+    char **test_strings = (char **) malloc(COUNT * sizeof(char *));
+    generate_short_strings(test_strings, COUNT / 2);
+    generate_long_strings(test_strings + COUNT / 2, COUNT / 2);
+
+    printf("Тестуємо різні множники на змішаних даних (%d рядків):\n\n", COUNT);
+    printf("%-10s %-12s %-12s %-15s %-12s %-10s\n",
+           "Multiplier", "Однорідність", "Макс.ланцюж", "Середн.ланцюж", "Колізії", "Оцінка");
+    printf("────────────────────────────────────────────────────────────────────────\n");
+
+    HashQuality best_quality = {0};
+    int best_multiplier = 31;
+
+    for (int m = 0; m < mult_count; m++) {
+        // Тимчасово змінюємо глобальний множник
+        int old_multiplier = MULTIPLIER;
+        MULTIPLIER = multipliers[m];
+
+        char description[100];
+        sprintf(description, "MULTIPLIER = %d", multipliers[m]);
+
+        HashQuality quality = analyze_distribution(test_strings, COUNT, hash, description);
+
+        printf("%-10d %-12.3f %-12d %-15.2f %-12d ",
+               multipliers[m], quality.uniformity_score, quality.max_chain_length,
+               quality.average_chain_length, quality.total_collisions);
+
+        // Оцінка
+        if (quality.uniformity_score >= 0.8 && quality.max_chain_length <= 3) {
+            printf("ВІДМІННО\n");
+        } else if (quality.uniformity_score >= 0.6 && quality.max_chain_length <= 5) {
+            printf("ДОБРЕ\n");
+        } else if (quality.uniformity_score >= 0.4) {
+            printf("ЗАДОВІЛЬНО\n");
+        } else {
+            printf("ПОГАНО\n");
+        }
+
+        // Зберігаємо найкращий результат
+        if (quality.uniformity_score > best_quality.uniformity_score) {
+            best_quality = quality;
+            best_multiplier = multipliers[m];
+        }
+
+        MULTIPLIER = old_multiplier; // Відновлюємо
+    }
+
+    printf("\nНАЙКРАЩИЙ РЕЗУЛЬТАТ: MULTIPLIER = %d\n", best_multiplier);
+    printf("Однорідність: %.3f, Макс. ланцюжок: %d\n",
+           best_quality.uniformity_score, best_quality.max_chain_length);
+
+    free_strings(test_strings, COUNT);
+}
+
+void test_pathological_cases() {
+    printf("\n=== ТЕСТ: ПАТОЛОГІЧНІ ВИПАДКИ ===\n");
+
+    const int COUNT = 100;
+
+    // Тест 1: Послідовні числа
+    printf("\n--- Тест 1: Послідовні числа ---\n");
+    char **sequential = (char **) malloc(COUNT * sizeof(char *));
+    generate_sequential_strings(sequential, COUNT);
+
+    HashQuality seq_quality = analyze_distribution(sequential, COUNT, hash,
+                                                 "Послідовні числа");
+    print_hash_quality(seq_quality);
+
+    // Тест 2: Загальні префікси
+    printf("\n--- Тест 2: Загальні префікси ---\n");
+    char **common_prefix = (char **) malloc(COUNT * sizeof(char *));
+    generate_common_prefix_strings(common_prefix, COUNT);
+
+    HashQuality prefix_quality = analyze_distribution(common_prefix, COUNT, hash,
+                                                    "Загальні префікси");
+    print_hash_quality(prefix_quality);
+
+    // Тест 3: Тільки цифри
+    printf("\n--- Тест 3: Тільки цифри різної довжини ---\n");
+    char **digit_strings = (char **) malloc(COUNT * sizeof(char *));
+    for (int i = 0; i < COUNT; i++) {
+        digit_strings[i] = (char *) malloc(20);
+        sprintf(digit_strings[i], "%d", i * i); // Квадрати чисел
+    }
+
+    HashQuality digit_quality = analyze_distribution(digit_strings, COUNT, hash,
+                                                   "Квадрати чисел");
+    print_hash_quality(digit_quality);
+
+    free_strings(sequential, COUNT);
+    free_strings(common_prefix, COUNT);
+    free_strings(digit_strings, COUNT);
+}
+
+void compare_hash_functions() {
+    printf("\n=== ПОРІВНЯННЯ РІЗНИХ ХЕШ-ФУНКЦІЙ ===\n");
+
+    const int COUNT = 150;
+
+    // Створюємо змішаний набір даних
+    char **mixed_data = (char **) malloc(COUNT * sizeof(char *));
+    generate_short_strings(mixed_data, COUNT / 3);
+    generate_long_strings(mixed_data + COUNT / 3, COUNT / 3);
+    generate_similar_strings(mixed_data + 2 * COUNT / 3, COUNT / 3, 12);
+
+    // Тестуємо стандартну хеш-функцію
+    HashQuality std_quality = analyze_distribution(mixed_data, COUNT, hash,
+                                                 "Стандартна (MULTIPLIER * h + c)");
+    print_hash_quality(std_quality);
+
+    // Тестуємо djb2 хеш-функцію
+    HashQuality djb2_quality = analyze_distribution(mixed_data, COUNT, hash_djb2,
+                                                   "DJB2 (hash * 33 + c)");
+    print_hash_quality(djb2_quality);
+
+    // Порівняння
+    printf("\n=== ПІДСУМОК ПОРІВНЯННЯ ===\n");
+    printf("Критерій                Стандартна   DJB2        Переможець\n");
+    printf("──────────────────────────────────────────────────────────────\n");
+    printf("Однорідність розподілу  %-12.3f %-12.3f %s\n",
+           std_quality.uniformity_score, djb2_quality.uniformity_score,
+           (std_quality.uniformity_score > djb2_quality.uniformity_score) ? "Стандартна" : "DJB2");
+    printf("Макс. довжина ланцюжка  %-12d %-12d %s\n",
+           std_quality.max_chain_length, djb2_quality.max_chain_length,
+           (std_quality.max_chain_length < djb2_quality.max_chain_length) ? "Стандартна" : "DJB2");
+    printf("Використано buckets     %-12d %-12d %s\n",
+           std_quality.used_buckets, djb2_quality.used_buckets,
+           (std_quality.used_buckets > djb2_quality.used_buckets) ? "Стандартна" : "DJB2");
+
+    free_strings(mixed_data, COUNT);
+}
+
+void practical_recommendations() {
+    printf("\n=== ПРАКТИЧНІ РЕКОМЕНДАЦІЇ ===\n");
+
+    printf("НА ОСНОВІ ПРОВЕДЕНИХ ТЕСТІВ:\n\n");
+
+    printf("1. ЯКІСТЬ ХЕШУВАННЯ КОРОТКИХ vs ДОВГИХ РЯДКІВ:\n");
+    printf("   • Довгі рядки зазвичай дають кращий розподіл\n");
+    printf("   • Більше інформації → краща ентропія → менше колізій\n");
+    printf("   • Короткі рядки можуть утворювати кластери\n\n");
+
+    printf("2. РЯДКИ ОДНАКОВОЇ ДОВЖИНИ:\n");
+    printf("   • Невеликі відмінності можуть призводити до колізій\n");
+    printf("   • Критичні позиції символів впливають на розподіл\n");
+    printf("   • Довші рядки дають більше можливостей для розрізнення\n\n");
+
+    printf("3. ОПТИМАЛЬНИЙ MULTIPLIER:\n");
+    printf("   • 31 - класичний вибір (використовується в Java)\n");
+    printf("   • 33 - добра альтернатива (використовується в djb2)\n");
+    printf("   • Уникайте парних чисел та степенів 2\n");
+    printf("   • Тестуйте на ваших реальних даних!\n\n");
+
+    printf("4. ПАТОЛОГІЧНІ ВИПАДКИ:\n");
+    printf("   • Послідовні дані можуть давати поганий розподіл\n");
+    printf("   • Загальні префікси збільшують ймовірність колізій\n");
+    printf("   • Розгляньте попередню обробку даних\n\n");
+
+    printf("5. ЗАГАЛЬНІ ПОРАДИ:\n");
+    printf("   • Моніторьте коефіцієнт завантаження (< 0.75)\n");
+    printf("   • Відстежуйте максимальну довжину ланцюжків (< 5)\n");
+    printf("   • Розгляньте збільшення таблиці при погіршенні\n");
+    printf("   • Тестуйте хеш-функцію на реальних даних\n");
+    printf("   • Використовуйте прості числа для розміру таблиці\n");
+}
+
+int main(void) {
+    printf("=== Завдання 19: Тестування хеш-функції ===\n");
+
     srand(time(NULL));
-    
-    std::cout << "Аналіз якості хеш-функції для різних типів даних\n" << std::endl;
-    
-    // Тестування для різних типів рядків
-    test_string_types();
-    
-    // Тестування з різними множниками
-    std::cout << "\n\nПорівняння якості хеш-функції з різними множниками" << std::endl;
-    std::cout << "===================================================" << std::endl;
-    
-    // Генеруємо збірний набір тестових даних
-    const int num_strings = 1000;
-    std::vector<std::string> test_data;
-    
-    // Додаємо різні типи рядків
-    auto short_strings = generate_strings_of_varying_length(num_strings / 3);
-    auto urls = generate_urls(num_strings / 3);
-    auto similar_strings = generate_similar_strings(num_strings / 3, 10);
-    
-    test_data.insert(test_data.end(), short_strings.begin(), short_strings.end());
-    test_data.insert(test_data.end(), urls.begin(), urls.end());
-    test_data.insert(test_data.end(), similar_strings.begin(), similar_strings.end());
-    
-    // Тестуємо з різними множниками
-    test_multipliers(test_data, NHASH);
-    
-    // Висновки
-    std::cout << "\n\nВисновки щодо якості хеш-функції:" << std::endl;
-    std::cout << "=================================" << std::endl;
-    std::cout << "1. Хеш-функція добре працює для коротких рядків різної довжини," << std::endl;
-    std::cout << "   забезпечуючи рівномірний розподіл хеш-значень." << std::endl;
-    std::cout << "2. Для довгих рядків (URL-адрес) розподіл менш рівномірний," << std::endl;
-    std::cout << "   але все ще прийнятний для більшості випадків." << std::endl;
-    std::cout << "3. Рядки однакової довжини з малими відмінностями створюють" << std::endl;
-    std::cout << "   найбільшу проблему - більше колізій через схожість рядків." << std::endl;
-    std::cout << "4. Оптимальний множник MULTIPLIER для цієї хеш-функції знаходиться" << std::endl;
-    std::cout << "   в діапазоні 31-41, з перевагою значень 31 і 33." << std::endl;
-    std::cout << "5. Розмір таблиці NHASH також має значний вплив на якість хешування -" << std::endl;
-    std::cout << "   рекомендується використовувати прості числа для зменшення колізій." << std::endl;
+
+    test_short_vs_long_strings();
+    test_similar_length_strings();
+    test_multiplier_variations();
+    test_pathological_cases();
+    compare_hash_functions();
+    practical_recommendations();
 
     return 0;
 }

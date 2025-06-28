@@ -34,7 +34,6 @@ int my_atoi(const char* str) {
 long my_atol(const char* str) {
     return std::atol(str);
 }
-
 // Компілятор не знатиме, яку з цих функцій викликати:
 /*
 double func(const char* str) { return 0.0; }
