@@ -33,6 +33,7 @@ int addname(struct NVtab *tab, Nameval newname) {
             return -1;
         tab->max *= NVGROW;
         tab->nameval = nvp;
+        printf("Масив розширено до %d елементів\n", tab->max);
     }
     tab->nameval[tab->nval] = newname;
     return tab->nval++;
