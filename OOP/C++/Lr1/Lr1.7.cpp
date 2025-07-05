@@ -10,6 +10,11 @@ struct Nameval {
     Nameval *next;  // вказівник на наступний елемент
 };
 
+// Структура для зберігання списку
+typedef struct {
+    Nameval *head;  // вказівник на перший елемент списку
+} NamevalList;
+
 // Глобальний вказівник на початок списку
 Nameval *nvlist = NULL;
 
