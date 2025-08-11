@@ -1,1 +1,0 @@
-CMakeLists.txt not found in D:\OneDrive - kpi.ua\Documents\GitHub\University-Repository Select CMakeLists.txt
