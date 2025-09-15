@@ -4,7 +4,10 @@
     {
         "label": "PIO Build (core)",
         "type": "shell",
-        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "command": "platformio",
+        "windows": { "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe" },
+        "osx": { "command": "platformio" },
+        "linux": { "command": "platformio" },
         "args": ["run", "-e", "uno"],
         "group": "build",
         "problemMatcher": [
@@ -17,7 +20,10 @@
     {
         "label": "PIO Upload (core)",
         "type": "shell",
-        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "command": "platformio",
+        "windows": { "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe" },
+        "osx": { "command": "platformio" },
+        "linux": { "command": "platformio" },
         "args": ["run", "-e", "uno", "-t", "upload"],
         "group": {
             "kind": "build",
@@ -33,14 +39,20 @@
     {
         "label": "PIO Monitor (core)",
         "type": "shell",
-        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "command": "platformio",
+        "windows": { "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe" },
+        "osx": { "command": "platformio" },
+        "linux": { "command": "platformio" },
         "args": ["device", "monitor", "-e", "uno"],
         "problemMatcher": []
     },
     {
         "label": "PIO Build (demo)",
         "type": "shell",
-        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "command": "platformio",
+        "windows": { "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe" },
+        "osx": { "command": "platformio" },
+        "linux": { "command": "platformio" },
         "args": ["run", "-e", "uno_demo"],
         "group": "build",
         "problemMatcher": [
@@ -53,7 +65,10 @@
     {
         "label": "PIO Upload (demo)",
         "type": "shell",
-        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "command": "platformio",
+        "windows": { "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe" },
+        "osx": { "command": "platformio" },
+        "linux": { "command": "platformio" },
         "args": ["run", "-e", "uno_demo", "-t", "upload"],
         "group": {
             "kind": "build",
@@ -69,7 +84,10 @@
     {
         "label": "PIO Monitor (demo)",
         "type": "shell",
-        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "command": "platformio",
+        "windows": { "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe" },
+        "osx": { "command": "platformio" },
+        "linux": { "command": "platformio" },
         "args": ["device", "monitor", "-e", "uno_demo"],
         "problemMatcher": []
     },
