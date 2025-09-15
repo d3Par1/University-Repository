@@ -1,0 +1,17 @@
+# Build artifacts
+build/
+*.o
+*.obj
+*.elf
+*.hex
+*.bin
+*.map
+.DS_Store
+*.log
+
+# Arduino
+*.ino.cpp
+*.arduino.*
+
+# VSCode
+.vscode/

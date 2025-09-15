@@ -1,0 +1,63 @@
+@startuml
+skinparam dpi 150
+skinparam classAttributeIconSize 0
+
+interface Device {
+  +init()
+  +update()
+  +printStatus(out)
+  +name(): const char*
+}
+
+class DeviceManager {
+  -devices_[0..*]
+  -count_
+  +add(device)
+  +initAll()
+  +updateAll()
+  +printAll(out)
+}
+
+abstract class AnalogSensorBase implements Device {
+  #pin_
+  #samples_
+  #raw_
+  #lastUpdateMs_
+  +raw()
+  +lastUpdate()
+}
+
+class Potentiometer extends AnalogSensorBase {
+  +normalized(): float
+}
+class PhotoSensor extends AnalogSensorBase {
+  +lightLevel(): float
+}
+
+class RGBLed implements Device {
+  -rPin_
+  -gPin_
+  -bPin_
+  -brightness_
+  -rCurrent_/gCurrent_/bCurrent_
+  +setColor(r,g,b)
+  +setBrightness(b)
+}
+
+interface PowerStrategy {
+  +name()
+  +sensorIntervalMs(): uint16_t
+  +ledMaxBrightness(): float
+}
+class NormalPowerStrategy implements PowerStrategy
+class LowPowerStrategy implements PowerStrategy
+
+DeviceManager --> Device
+AnalogSensorBase <|-- Potentiometer
+AnalogSensorBase <|-- PhotoSensor
+Device <|.. AnalogSensorBase
+Device <|.. RGBLed
+PowerStrategy <|.. NormalPowerStrategy
+PowerStrategy <|.. LowPowerStrategy
+
+@enduml
