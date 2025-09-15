@@ -1,0 +1,128 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+        "label": "PIO Build (core)",
+        "type": "shell",
+        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "args": ["run", "-e", "uno"],
+        "group": "build",
+        "problemMatcher": [
+            "$gcc"
+        ],
+        "presentation": {
+            "reveal": "always"
+        }
+    },
+    {
+        "label": "PIO Upload (core)",
+        "type": "shell",
+        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "args": ["run", "-e", "uno", "-t", "upload"],
+        "group": {
+            "kind": "build",
+            "isDefault": false
+        },
+        "problemMatcher": [
+            "$gcc"
+        ],
+        "presentation": {
+            "reveal": "always"
+        }
+    },
+    {
+        "label": "PIO Monitor (core)",
+        "type": "shell",
+        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "args": ["device", "monitor", "-e", "uno"],
+        "problemMatcher": []
+    },
+    {
+        "label": "PIO Build (demo)",
+        "type": "shell",
+        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "args": ["run", "-e", "uno_demo"],
+        "group": "build",
+        "problemMatcher": [
+            "$gcc"
+        ],
+        "presentation": {
+            "reveal": "always"
+        }
+    },
+    {
+        "label": "PIO Upload (demo)",
+        "type": "shell",
+        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "args": ["run", "-e", "uno_demo", "-t", "upload"],
+        "group": {
+            "kind": "build",
+            "isDefault": false
+        },
+        "problemMatcher": [
+            "$gcc"
+        ],
+        "presentation": {
+            "reveal": "always"
+        }
+    },
+    {
+        "label": "PIO Monitor (demo)",
+        "type": "shell",
+        "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe",
+        "args": ["device", "monitor", "-e", "uno_demo"],
+        "problemMatcher": []
+    },
+    {
+        "label": "PIO Core: Build+Upload",
+        "dependsOrder": "sequence",
+        "dependsOn": [
+            "PIO Build (core)",
+            "PIO Upload (core)"
+        ],
+        "problemMatcher": [
+            "$armcc5"
+        ]
+    },
+    {
+        "label": "PIO Core: Full (Build+Upload+Monitor)",
+        "dependsOrder": "sequence",
+        "dependsOn": [
+            "PIO Build (core)",
+            "PIO Upload (core)",
+            "PIO Monitor (core)"
+        ]
+    },
+    {
+        "label": "PIO Demo: Build+Upload",
+        "dependsOrder": "sequence",
+        "dependsOn": [
+            "PIO Build (demo)",
+            "PIO Upload (demo)"
+        ]
+    },
+    {
+        "label": "PIO Demo: Full (Build+Upload+Monitor)",
+        "dependsOrder": "sequence",
+        "dependsOn": [
+            "PIO Build (demo)",
+            "PIO Upload (demo)",
+            "PIO Monitor (demo)"
+        ],
+        "problemMatcher": [
+            "$armcc5"
+        ]
+    }
+    ,
+    {
+        "label": "PIO Core: Upload+Monitor",
+        "dependsOrder": "sequence",
+        "dependsOn": ["PIO Upload (core)", "PIO Monitor (core)"]
+    },
+    {
+        "label": "PIO Demo: Upload+Monitor",
+        "dependsOrder": "sequence",
+        "dependsOn": ["PIO Upload (demo)", "PIO Monitor (demo)"]
+    }
+]
+}
