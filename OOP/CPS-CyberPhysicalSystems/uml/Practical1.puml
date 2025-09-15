@@ -1,0 +1,72 @@
+@startuml Practical1
+skinparam classAttributeIconSize 0
+hide circle
+
+interface PowerStrategy {
+  +name() : const char*
+  +sensorIntervalMs() : uint16_t
+  +ledMaxBrightness() : float
+}
+class NormalPowerStrategy
+class LowPowerStrategy
+PowerStrategy <|-- NormalPowerStrategy
+PowerStrategy <|-- LowPowerStrategy
+
+abstract class Device {
+  +init()
+  +update()
+  +printStatus(out: Stream)
+  +name() : const char*
+}
+
+class AnalogSensorBase {
+  -pin_ : uint8_t
+  -samples_ : uint8_t
+  -raw_ : uint16_t
+  +raw() : uint16_t
+}
+Device <|-- AnalogSensorBase
+AnalogSensorBase <|-- Potentiometer
+AnalogSensorBase <|-- PhotoSensor
+
+class Potentiometer {
+  +normalized() : float
+}
+class PhotoSensor {
+  +lightLevel() : float
+}
+
+class RGBLed {
+  -rPin_, gPin_, bPin_ : uint8_t
+  +setColor(r,g,b)
+  +setBrightness(b:float)
+  +update()
+}
+Device <|-- RGBLed
+
+class LightingScenario {
+  +apply(led: RGBLed, ms: unsigned long)
+  +name() : const char*
+}
+LightingScenario <|-- PulseScenario
+LightingScenario <|-- RainbowScenario
+
+class LedGroup {
+  -leds_[MAX] : RGBLed*
+  -scenario_ : LightingScenario*
+  +add(led: RGBLed*)
+  +setScenario(s: LightingScenario*)
+}
+Device <|-- LedGroup
+LedGroup o-- RGBLed
+LedGroup o-- LightingScenario
+
+class DeviceManager {
+  -devices_[MAX] : Device*
+  +add(device: Device*)
+  +initAll()
+  +updateAll()
+}
+DeviceManager o-- Device
+
+@enduml
