@@ -141,6 +141,54 @@
         "label": "PIO Demo: Upload+Monitor",
         "dependsOrder": "sequence",
         "dependsOn": ["PIO Upload (demo)", "PIO Monitor (demo)"]
+    },
+    {
+      "label": "PIO Build (pico_traffic)",
+      "type": "shell",
+      "command": "platformio",
+      "windows": { "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe" },
+      "osx": { "command": "platformio" },
+      "linux": { "command": "platformio" },
+      "args": ["run", "-e", "rpipicow_traffic"],
+      "group": "build",
+      "problemMatcher": ["$gcc"],
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "PIO Upload (pico_traffic)",
+      "type": "shell",
+      "command": "platformio",
+      "windows": { "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe" },
+      "osx": { "command": "platformio" },
+      "linux": { "command": "platformio" },
+      "args": ["run", "-e", "rpipicow_traffic", "-t", "upload"],
+      "group": { "kind": "build", "isDefault": false },
+      "problemMatcher": ["$gcc"],
+      "presentation": { "reveal": "always" }
+    },
+    {
+      "label": "PIO Monitor (pico_traffic)",
+      "type": "shell",
+      "command": "platformio",
+      "windows": { "command": "${env:USERPROFILE}\\.platformio\\penv\\Scripts\\platformio.exe" },
+      "osx": { "command": "platformio" },
+      "linux": { "command": "platformio" },
+      "args": ["device", "monitor", "-e", "rpipicow_traffic"],
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO PicoW: Build+Upload",
+      "dependsOrder": "sequence",
+      "dependsOn": ["PIO Build (pico_traffic)", "PIO Upload (pico_traffic)"]
+    },
+    {
+      "label": "PIO PicoW: Full (Build+Upload+Monitor)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "PIO Build (pico_traffic)",
+        "PIO Upload (pico_traffic)",
+        "PIO Monitor (pico_traffic)"
+      ]
     }
-]
+  ]
 }
