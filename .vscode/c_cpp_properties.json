@@ -9,9 +9,10 @@
             "name": "PlatformIO",
             "includePath": [
                 "E:/GitHubProjects/University-Repository/OOP/CPS-CyberPhysicalSystems",
-                "E:/GitHubProjects/University-Repository/OOP/CPS-CyberPhysicalSystems/lib",
+                "E:/GitHubProjects/University-Repository/OOP/CPS-CyberPhysicalSystems/Lr1/lib",
                 "C:/Users/Admin/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/Admin/.platformio/packages/framework-arduino-avr/variants/standard",
+                "E:/GitHubProjects/University-Repository/OOP/CPS-CyberPhysicalSystems/Lr1/lib/SystemCore",
                 "C:/Users/Admin/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
                 "C:/Users/Admin/.platformio/packages/framework-arduino-avr/libraries/HID/src",
                 "C:/Users/Admin/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
@@ -23,9 +24,10 @@
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
                     "E:/GitHubProjects/University-Repository/OOP/CPS-CyberPhysicalSystems",
-                    "E:/GitHubProjects/University-Repository/OOP/CPS-CyberPhysicalSystems/lib",
+                    "E:/GitHubProjects/University-Repository/OOP/CPS-CyberPhysicalSystems/Lr1/lib",
                     "C:/Users/Admin/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/Admin/.platformio/packages/framework-arduino-avr/variants/standard",
+                    "E:/GitHubProjects/University-Repository/OOP/CPS-CyberPhysicalSystems/Lr1/lib/SystemCore",
                     "C:/Users/Admin/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
                     "C:/Users/Admin/.platformio/packages/framework-arduino-avr/libraries/HID/src",
                     "C:/Users/Admin/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
