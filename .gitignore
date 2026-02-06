@@ -1,46 +1,51 @@
-# Prerequisites
-*.d
+# === Claude Code ===
+.claude/
 
-# Compiled Object files
-*.slo
-*.lo
+# === IDE / Editor ===
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# === Build artifacts ===
+# C/C++
 *.o
 *.obj
-
-# Precompiled Headers
+*.slo
+*.lo
+*.d
 *.gch
 *.pch
-
-# Compiled Dynamic libraries
+*.exe
+*.out
+*.app
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
 *.lai
 *.la
 *.a
 *.lib
+cmake-build-*/
+build/
 
-# Executables
-*.exe
-*.out
-*.app
+# Java
+*.class
+out/
+production/
+target/
 
+# === OS files ===
+.DS_Store
+Thumbs.db
+Desktop.ini
 
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Environment-dependent path to Maven home directory
-/mavenHomeManager.xml
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-
-CrossplatformProgramming/.idea/
+# === Temp files ===
+*.swp
+*.swo
+*~
+tmpclaude-*
