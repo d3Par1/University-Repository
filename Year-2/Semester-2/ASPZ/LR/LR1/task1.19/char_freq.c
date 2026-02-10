@@ -1,9 +1,4 @@
-/*
- * Task 1.19 - Character frequency from file, sorted by descending frequency
- *
- * Compile: gcc -Wall -o task1_19 char_freq.c
- * Usage:   ./task1_19 file.txt
- */
+// Завдання 1.19: Частота символів
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -34,7 +29,6 @@ int main(int argc, char *argv[]) {
     }
     if (fp != stdin) fclose(fp);
 
-    /* Build sorted array */
     CharFreq arr[256];
     int n = 0;
     for (int i = 0; i < 256; i++) {

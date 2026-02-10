@@ -1,4 +1,4 @@
-/* Task 1.3 - process1.c (library in /usr/lib) */
+// Завдання 1.3: Модуль обробки (системна бібліотека)
 #include <stdio.h>
 #include "process1.h"
 

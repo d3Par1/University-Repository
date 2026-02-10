@@ -1,11 +1,7 @@
-/*
- * Task 1.3 - main.c
- * Multi-file program demonstrating library linking
- */
+// Завдання 1.3: Багатофайлова компіляція
 #include <stdio.h>
 #include "process1.h"
 
-/* Forward declarations from other modules */
 void read_input(void);
 void write_output(void);
 

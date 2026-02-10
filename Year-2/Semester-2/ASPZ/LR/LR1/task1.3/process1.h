@@ -1,4 +1,4 @@
-/* Task 1.3 - process1.h */
+// Завдання 1.3: Заголовковий файл
 #ifndef PROCESS1_H
 #define PROCESS1_H
 

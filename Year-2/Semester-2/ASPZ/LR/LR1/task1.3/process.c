@@ -1,4 +1,4 @@
-/* Task 1.3 - process.c (library in ~/mylibs) */
+// Завдання 1.3: Модуль обробки (користувацька бібліотека)
 #include <stdio.h>
 #include "process1.h"
 

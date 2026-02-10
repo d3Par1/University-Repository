@@ -1,8 +1,4 @@
-/*
- * Task 1.17 - Insertion sort (generic, binary insert, multi-criteria)
- *
- * Compile: gcc -Wall -o task1_17 insort.c
- */
+// Завдання 1.17: Сортування вставками
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +6,6 @@
 
 typedef int (*CmpFunc)(const void *, const void *);
 
-/* Binary search for insertion position */
 int binary_find_pos(void *base, int n, void *key, size_t elem_size, CmpFunc cmp) {
     int lo = 0, hi = n;
     while (lo < hi) {
@@ -23,7 +18,6 @@ int binary_find_pos(void *base, int n, void *key, size_t elem_size, CmpFunc cmp)
     return lo;
 }
 
-/* Generic insertion sort (basic) */
 void insort(void *base, int n, size_t elem_size, CmpFunc cmp) {
     void *key = malloc(elem_size);
     for (int i = 1; i < n; i++) {
@@ -39,13 +33,11 @@ void insort(void *base, int n, size_t elem_size, CmpFunc cmp) {
     free(key);
 }
 
-/* Optimized insertion sort with binary search for position */
 void insort_binary(void *base, int n, size_t elem_size, CmpFunc cmp) {
     void *key = malloc(elem_size);
     for (int i = 1; i < n; i++) {
         memcpy(key, (char *)base + i * elem_size, elem_size);
         int pos = binary_find_pos(base, i, key, elem_size, cmp);
-        /* Shift elements right */
         memmove((char *)base + (pos + 1) * elem_size,
                 (char *)base + pos * elem_size,
                 (i - pos) * elem_size);
@@ -54,7 +46,6 @@ void insort_binary(void *base, int n, size_t elem_size, CmpFunc cmp) {
     free(key);
 }
 
-/* --- Demo with multi-criteria sorting --- */
 typedef struct {
     int priority;
     int value;
@@ -79,7 +70,6 @@ int main() {
 
     printf("=== Task 1.17: Insertion Sort ===\n\n");
 
-    /* Basic int sort */
     int arr[] = {34, 8, 64, 51, 32, 21, 7, 12, 45, 99};
     int n = sizeof(arr) / sizeof(arr[0]);
 
@@ -97,7 +87,6 @@ int main() {
     printf("Binary insort: ");
     print_int_arr(arr2, n);
 
-    /* Multi-criteria sort */
     printf("\n--- Multi-criteria sort ---\n");
     Item items[] = {{3, 10}, {1, 5}, {2, 8}, {1, 3}, {3, 1}, {2, 2}};
     int m = sizeof(items) / sizeof(items[0]);
@@ -112,7 +101,6 @@ int main() {
     for (int i = 0; i < m; i++) printf("(%d,%d) ", items[i].priority, items[i].value);
     printf("\n");
 
-    /* Performance comparison */
     printf("\n--- Performance (n=10000) ---\n");
     int big_n = 10000;
     int *big1 = malloc(big_n * sizeof(int));

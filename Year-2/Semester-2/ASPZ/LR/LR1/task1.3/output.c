@@ -1,4 +1,4 @@
-/* Task 1.3 - output.c */
+// Завдання 1.3: Модуль виведення
 #include <stdio.h>
 
 void write_output(void) {

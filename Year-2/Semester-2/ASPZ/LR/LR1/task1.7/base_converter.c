@@ -1,9 +1,4 @@
-/*
- * Task 1.7 - Base conversion (any base to decimal)
- * Supports floating point for decimal base
- *
- * Compile: gcc -Wall -o task1_7 base_converter.c -lm
- */
+// Завдання 1.7: Перетворення системи числення
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -14,7 +9,7 @@ int char_to_digit(char c) {
     if (c >= '0' && c <= '9') return c - '0';
     if (c >= 'A' && c <= 'Z') return c - 'A' + 10;
     if (c >= 'a' && c <= 'z') return c - 'a' + 10;
-    return -1; /* invalid */
+    return -1;
 }
 
 long convert_integer(const char *str, int base) {
@@ -30,7 +25,6 @@ long convert_integer(const char *str, int base) {
     for (; str[i] != '\0'; i++) {
         int digit = char_to_digit(str[i]);
         if (digit < 0 || digit >= base) {
-            /* Ignore invalid characters */
             continue;
         }
         result = result * base + digit;
@@ -59,7 +53,6 @@ int main() {
         return 1;
     }
 
-    /* Check for floating point in decimal base */
     if (base == 10 && strchr(number, '.') != NULL) {
         double result = convert_float_decimal(number);
         printf("%.6f (decimal floating point)\n", result);
@@ -68,7 +61,6 @@ int main() {
         printf("%ld (decimal value of %s in base %d)\n", result, number, base);
     }
 
-    /* Test examples */
     printf("\n--- Examples ---\n");
     printf("77 in base 8 = %ld\n", convert_integer("77", 8));
     printf("FF in base 16 = %ld\n", convert_integer("FF", 16));

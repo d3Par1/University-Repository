@@ -1,10 +1,4 @@
-/*
- * Task 1.25 - Random float generator with seed support
- *
- * Compile: gcc -Wall -o task1_25 random_float.c
- * Usage:   ./task1_25 100       (random float in [0, 100])
- *          ./task1_25 100 42    (with seed=42)
- */
+// Завдання 1.25: Генератор випадкових чисел
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -33,12 +27,10 @@ int main(int argc, char *argv[]) {
 
     printf("Range: [0, %.2f]\n\n", max_val);
 
-    /* Generate 10 random numbers */
     for (int i = 0; i < 10; i++) {
         printf("  [%d] %.6f\n", i, random_float(max_val));
     }
 
-    /* Demonstrate reproducibility with same seed */
     printf("\n--- Reproducibility test (seed=%u) ---\n", seed);
     srand(seed);
     printf("  First 3: %.6f, %.6f, %.6f\n",

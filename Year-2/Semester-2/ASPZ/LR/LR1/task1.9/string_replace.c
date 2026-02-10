@@ -1,8 +1,4 @@
-/*
- * Task 1.9 - String replace: spaces to given character
- *
- * Compile: gcc -Wall -o task1_9 string_replace.c
- */
+// Завдання 1.9: Заміна рядків
 #include <stdio.h>
 #include <string.h>
 
@@ -19,11 +15,10 @@ int replace(char *str, char replacement) {
 
 int main(int argc, char *argv[]) {
     char str[256];
-    char repl_char = '-'; /* default replacement */
+    char repl_char = '-';
 
     printf("=== Task 1.9: String Replace ===\n\n");
 
-    /* Allow custom replacement character via command line */
     if (argc > 1 && strlen(argv[1]) == 1) {
         repl_char = argv[1][0];
     }
@@ -33,7 +28,6 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Error reading input\n");
         return 1;
     }
-    /* Remove newline */
     str[strcspn(str, "\n")] = '\0';
 
     printf("Original: \"%s\"\n", str);
@@ -44,7 +38,6 @@ int main(int argc, char *argv[]) {
     printf("Result:   \"%s\"\n", str);
     printf("Replacements made: %d\n", count);
 
-    /* Demo examples */
     printf("\n--- Examples ---\n");
     char ex1[] = "The cat sat";
     int c1 = replace(ex1, '-');

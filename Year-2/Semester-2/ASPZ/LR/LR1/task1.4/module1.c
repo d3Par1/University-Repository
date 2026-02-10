@@ -1,4 +1,4 @@
-/* Task 1.4 - module1.c: Parallel sum using pthreads */
+// Завдання 1.4: Модуль 1 (pthreads)
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>

@@ -1,8 +1,4 @@
-/*
- * Task 1.11 - Student database (add, edit, delete, partial search)
- *
- * Compile: gcc -Wall -o task1_11 student_db.c
- */
+// Завдання 1.11: База даних студентів
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +10,7 @@
 typedef struct {
     int id;
     char name[MAX_NAME];
-    char birthdate[16]; /* DD.MM.YYYY */
+    char birthdate[16];
     char address[MAX_ADDR];
     int active;
 } Student;

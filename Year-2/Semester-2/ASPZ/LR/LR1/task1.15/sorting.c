@@ -1,20 +1,13 @@
-/*
- * Task 1.15 - Sorting (qsort, merge sort, heap sort, parallel OpenMP)
- *
- * Compile: gcc -Wall -fopenmp -o task1_15 sorting.c
- * Usage:   ./task1_15 -t qsort | ./task1_15 -t merge | ./task1_15 -t heap
- */
+// Завдання 1.15: Алгоритми сортування
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <omp.h>
 
-/* --- Comparison --- */
 int cmp_asc(const void *a, const void *b) { return *(int *)a - *(int *)b; }
 int cmp_desc(const void *a, const void *b) { return *(int *)b - *(int *)a; }
 
-/* --- Merge Sort --- */
 void merge(int *arr, int *tmp, int left, int mid, int right) {
     int i = left, j = mid + 1, k = left;
     while (i <= mid && j <= right) {
@@ -39,7 +32,6 @@ void merge_sort(int *arr, int n) {
     free(tmp);
 }
 
-/* --- Heap Sort --- */
 void heapify(int *arr, int n, int i) {
     int largest = i, left = 2 * i + 1, right = 2 * i + 2;
     if (left < n && arr[left] > arr[largest]) largest = left;
@@ -58,12 +50,11 @@ void heap_sort(int *arr, int n) {
     }
 }
 
-/* --- Parallel Merge Sort (OpenMP) --- */
 void parallel_merge_sort(int *arr, int *tmp, int left, int right, int depth) {
     if (left >= right) return;
     int mid = (left + right) / 2;
 
-    if (depth < 3) {  /* limit parallel depth */
+    if (depth < 3) {
         #pragma omp parallel sections
         {
             #pragma omp section

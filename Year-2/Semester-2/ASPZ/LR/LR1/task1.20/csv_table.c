@@ -1,10 +1,4 @@
-/*
- * Task 1.20 - CSV to formatted table (supports comma, semicolon, tab delimiters)
- *
- * Compile: gcc -Wall -o task1_20 csv_table.c
- * Usage:   ./task1_20 file.csv [delimiter]
- *          ./task1_20 data.csv ";"
- */
+// Завдання 1.20: CSV у форматовану таблицю
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +8,6 @@
 #define MAX_CELL 256
 #define MAX_LINE 4096
 
-/* Print separator line for table */
 void print_separator(int max_cols, const int *col_widths) {
     printf("+");
     for (int c = 0; c < max_cols; c++) {
@@ -51,7 +44,6 @@ int main(int argc, char *argv[]) {
         int col = 0;
         char *token = strtok(line, (char[]){delim, '\0'});
         while (token && col < MAX_COLS) {
-            /* Trim spaces */
             while (*token == ' ') token++;
             char *end = token + strlen(token) - 1;
             while (end > token && *end == ' ') *end-- = '\0';
@@ -68,7 +60,6 @@ int main(int argc, char *argv[]) {
     }
     fclose(fp);
 
-    /* Print table */
     print_separator(max_cols, col_widths);
     for (int r = 0; r < rows; r++) {
         printf("|");
@@ -76,7 +67,7 @@ int main(int argc, char *argv[]) {
             printf(" %-*s |", col_widths[c], cells[r][c]);
         }
         printf("\n");
-        if (r == 0) print_separator(max_cols, col_widths); /* after header */
+        if (r == 0) print_separator(max_cols, col_widths);
     }
     print_separator(max_cols, col_widths);
 

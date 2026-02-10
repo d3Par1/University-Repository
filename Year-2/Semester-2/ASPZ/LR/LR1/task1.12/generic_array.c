@@ -1,10 +1,4 @@
-/*
- * Task 1.12 - Generic array with pointers, recursive & binary search
- * Supports int, float, char via command line args
- *
- * Compile: gcc -Wall -o task1_12 generic_array.c
- * Usage:   ./task1_12 int | ./task1_12 float | ./task1_12 char
- */
+// Завдання 1.12: Узагальнений масив
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +6,6 @@
 
 typedef enum { TYPE_INT, TYPE_FLOAT, TYPE_CHAR } DataType;
 
-/* Fill array with random values using pointers */
 void fill_random(void *arr, int size, DataType type) {
     for (int i = 0; i < size; i++) {
         switch (type) {
@@ -23,7 +16,6 @@ void fill_random(void *arr, int size, DataType type) {
     }
 }
 
-/* Recursive linear search */
 int recursive_search(const void *arr, int size, const void *target, DataType type, int idx) {
     if (idx >= size) return -1;
 
@@ -38,7 +30,6 @@ int recursive_search(const void *arr, int size, const void *target, DataType typ
     return recursive_search(arr, size, target, type, idx + 1);
 }
 
-/* Compare function for qsort/bsearch */
 int cmp_int(const void *a, const void *b) { return *(int *)a - *(int *)b; }
 int cmp_float(const void *a, const void *b) {
     float fa = *(float *)a, fb = *(float *)b;
@@ -46,7 +37,6 @@ int cmp_float(const void *a, const void *b) {
 }
 int cmp_char(const void *a, const void *b) { return *(char *)a - *(char *)b; }
 
-/* Binary search on sorted array */
 int binary_search(const void *arr, int size, const void *target, DataType type) {
     size_t elem_size = 0;
     int (*cmp)(const void *, const void *) = NULL;
@@ -95,15 +85,12 @@ int main(int argc, char *argv[]) {
     printf("Array: ");
     print_array(arr, size, type);
 
-    /* Pick a target that exists */
     void *target = malloc(elem_size);
     memcpy(target, (char *)arr + (size / 2) * elem_size, elem_size);
 
-    /* Recursive search */
     int idx = recursive_search(arr, size, target, type, 0);
     printf("Recursive search: found at index %d\n", idx);
 
-    /* Sort and binary search */
     int (*cmp)(const void *, const void *) =
         (type == TYPE_INT) ? cmp_int : (type == TYPE_FLOAT) ? cmp_float : cmp_char;
     qsort(arr, size, elem_size, cmp);

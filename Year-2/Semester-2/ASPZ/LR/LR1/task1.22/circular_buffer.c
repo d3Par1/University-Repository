@@ -1,8 +1,4 @@
-/*
- * Task 1.22 - Circular buffer with multithreaded access + synchronization
- *
- * Compile: gcc -Wall -pthread -o task1_22 circular_buffer.c
- */
+// Завдання 1.22: Кільцевий буфер (виробник-споживач)
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -12,8 +8,8 @@
 
 typedef struct {
     int data[BUF_SIZE];
-    int head;   /* read position */
-    int tail;   /* write position */
+    int head;
+    int tail;
     int count;
     pthread_mutex_t mutex;
     pthread_cond_t not_full;
@@ -69,7 +65,6 @@ void cb_peek(CircularBuffer *cb) {
     pthread_mutex_unlock(&cb->mutex);
 }
 
-/* Producer thread */
 CircularBuffer shared_buf;
 int done = 0;
 
@@ -79,7 +74,7 @@ void *producer(void *arg) {
         int val = id * 100 + i;
         cb_insert(&shared_buf, val);
         printf("[Producer %d] inserted %d\n", id, val);
-        usleep(50000); /* 50ms */
+        usleep(50000);
     }
     return NULL;
 }
@@ -90,7 +85,7 @@ void *consumer(void *arg) {
         int val;
         cb_remove(&shared_buf, &val);
         printf("[Consumer %d] removed %d\n", id, val);
-        usleep(80000); /* 80ms */
+        usleep(80000);
     }
     return NULL;
 }
@@ -98,7 +93,6 @@ void *consumer(void *arg) {
 int main() {
     printf("=== Task 1.22: Circular Buffer ===\n\n");
 
-    /* Single-threaded demo */
     printf("--- Single-threaded demo ---\n");
     CircularBuffer buf;
     cb_init(&buf);
@@ -116,7 +110,6 @@ int main() {
     cb_peek(&buf);
     cb_destroy(&buf);
 
-    /* Multi-threaded demo */
     printf("\n--- Multi-threaded demo (2 producers, 2 consumers) ---\n");
     cb_init(&shared_buf);
 

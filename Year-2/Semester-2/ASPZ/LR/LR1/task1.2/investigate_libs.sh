@@ -1,11 +1,9 @@
 #!/bin/bash
-# Task 1.2 - Library investigation script
-# Analyzes libraries, finds math functions, checks symbols
+# Завдання 1.2: Дослідження бібліотек
 
 echo "=== Task 1.2: Library Investigation ==="
 echo
 
-# 1. Check which libraries are used by common programs
 echo "--- Libraries used by /bin/ls ---"
 ldd /bin/ls
 echo
@@ -14,13 +12,11 @@ echo "--- Libraries used by /usr/bin/gcc ---"
 ldd $(which gcc) 2>/dev/null || echo "gcc not found or statically linked"
 echo
 
-# 2. Find math library
 echo "--- Finding math library ---"
 find /usr/lib -name "*libm*" 2>/dev/null
 find /lib -name "*libm*" 2>/dev/null
 echo
 
-# 3. Check math library symbols for erf
 echo "--- Symbols containing 'erf' in libm ---"
 LIBM=$(find /usr/lib /lib -name "libm.so*" 2>/dev/null | head -1)
 if [ -n "$LIBM" ]; then
@@ -33,14 +29,12 @@ else
 fi
 echo
 
-# 4. Analyze library dependencies
 echo "--- Library dependencies (libm) ---"
 if [ -n "$LIBM" ]; then
     ldd "$LIBM" 2>/dev/null || objdump -p "$LIBM" 2>/dev/null | grep NEEDED
 fi
 echo
 
-# 5. Search for math functions across all libraries in /usr/lib
 echo "--- Searching for sin, cos, exp in /usr/lib libraries ---"
 echo "(This may take a moment...)"
 

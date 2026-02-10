@@ -1,8 +1,4 @@
-/*
- * Task 1.13 - Dynamic array with realloc, memory tracking
- *
- * Compile: gcc -Wall -o task1_13 dynamic_array.c
- */
+// Завдання 1.13: Динамічний масив
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +6,6 @@
 #define MIN_SIZE 1
 #define MAX_SIZE 1000000
 
-/* Memory tracking */
 static size_t total_allocated = 0;
 static int malloc_count = 0;
 static int realloc_count = 0;
@@ -74,11 +69,9 @@ int main() {
     int *arr = (int *)tracked_malloc(current_size);
     if (!arr) { fprintf(stderr, "Allocation failed!\n"); return 1; }
 
-    /* Fill array with the number */
     for (int i = 0; i < n; i++) arr[i] = n;
     print_array(arr, n);
 
-    /* Interactive resize */
     int choice;
     while (1) {
         printf("\n1) Grow  2) Shrink  3) Print  4) Stats  0) Exit\n> ");
@@ -96,7 +89,6 @@ int main() {
                 size_t new_size = new_n * sizeof(int);
                 int *new_arr = (int *)tracked_realloc(arr, current_size, new_size);
                 if (!new_arr) { printf("Realloc failed!\n"); break; }
-                /* Initialize new elements */
                 for (int i = n; i < new_n; i++) new_arr[i] = 0;
                 arr = new_arr;
                 n = new_n;

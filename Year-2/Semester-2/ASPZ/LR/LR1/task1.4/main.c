@@ -1,11 +1,4 @@
-/*
- * Task 1.4 - Multithreaded program with pthreads, OpenMP, and std C
- *
- * Compile (pthreads):  gcc -Wall -Wextra -pthread -o task1_4 main.c module1.c module2.c
- * Compile (OpenMP):    gcc -Wall -Wextra -fopenmp -o task1_4_omp main.c module1.c module2.c
- * Valgrind:            valgrind --tool=callgrind ./task1_4
- * Profile:             gcc -Wall -pg -o task1_4_prof main.c module1.c module2.c -pthread && ./task1_4_prof && gprof task1_4_prof gmon.out
- */
+// Завдання 1.4: Багатопоточність (pthreads, OpenMP)
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -13,15 +6,12 @@
 #include <omp.h>
 #endif
 
-/* From module1.c */
 void compute_sum_pthread(int n);
-/* From module2.c */
 void compute_product_pthread(int n);
 
 #define ARRAY_SIZE 10000000
 
 #ifdef _OPENMP
-/* OpenMP version of parallel computation */
 void compute_openmp(void) {
     double sum = 0.0;
     int i;

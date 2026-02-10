@@ -1,14 +1,9 @@
-/*
- * Task 1.21 - Roots of quadratic & cubic equations (real + complex)
- *
- * Compile: gcc -Wall -o task1_21 equation_roots.c -lm
- */
+// Завдання 1.21: Корені квадратного рівняння
 #include <stdio.h>
 #include <math.h>
 
 #define PI 3.14159265358979323846
 
-/* Quadratic: ax^2 + bx + c = 0 */
 void solve_quadratic(double a, double b, double c) {
     printf("\n--- Quadratic: %.2fx² + %.2fx + %.2f = 0 ---\n", a, b, c);
 
@@ -39,7 +34,6 @@ void solve_quadratic(double a, double b, double c) {
     }
 }
 
-/* Cubic: ax^3 + bx^2 + cx + d = 0 (Cardano's method) */
 void solve_cubic(double a, double b, double c, double d) {
     printf("\n--- Cubic: %.2fx³ + %.2fx² + %.2fx + %.2f = 0 ---\n", a, b, c, d);
 
@@ -48,7 +42,6 @@ void solve_cubic(double a, double b, double c, double d) {
         return;
     }
 
-    /* Reduce to depressed cubic: t^3 + pt + q = 0 */
     double p = (3 * a * c - b * b) / (3 * a * a);
     double q = (2 * b * b * b - 9 * a * b * c + 27 * a * a * d) / (27 * a * a * a);
     double shift = b / (3 * a);
@@ -57,7 +50,6 @@ void solve_cubic(double a, double b, double c, double d) {
     printf("p = %.6f, q = %.6f, D = %.6f\n", p, q, D);
 
     if (D > 1e-12) {
-        /* One real root, two complex */
         double u = cbrt(-q / 2 + sqrt(D));
         double v = cbrt(-q / 2 - sqrt(D));
         double x1 = u + v - shift;
@@ -67,12 +59,10 @@ void solve_cubic(double a, double b, double c, double d) {
         printf("Complex: x2 = %.6f + %.6fi, x3 = %.6f - %.6fi\n",
                re, fabs(im), re, fabs(im));
     } else if (fabs(D) <= 1e-12) {
-        /* All real, at least two equal */
         double u = cbrt(-q / 2);
         printf("x1 = %.6f (double), x2 = %.6f\n",
                2 * u - shift, -u - shift);
     } else {
-        /* Three distinct real roots (trigonometric method) */
         double r = sqrt(-p * p * p / 27);
         double theta = acos(-q / (2 * r));
         double m = 2 * cbrt(r);
@@ -86,17 +76,14 @@ void solve_cubic(double a, double b, double c, double d) {
 int main() {
     printf("=== Task 1.21: Equation Roots ===\n");
 
-    /* Quadratic examples */
-    solve_quadratic(1, -5, 6);     /* x=2, x=3 */
-    solve_quadratic(1, -2, 1);     /* x=1 (double) */
-    solve_quadratic(1, 0, 1);      /* complex */
+    solve_quadratic(1, -5, 6);
+    solve_quadratic(1, -2, 1);
+    solve_quadratic(1, 0, 1);
 
-    /* Cubic examples */
-    solve_cubic(1, -6, 11, -6);    /* x=1, x=2, x=3 */
-    solve_cubic(1, 0, 0, -8);      /* x=2, complex */
-    solve_cubic(1, -3, 3, -1);     /* x=1 (triple) */
+    solve_cubic(1, -6, 11, -6);
+    solve_cubic(1, 0, 0, -8);
+    solve_cubic(1, -3, 3, -1);
 
-    /* User input */
     printf("\n--- Enter your equation ---\n");
     printf("Quadratic (a b c): ");
     double a, b, c;

@@ -1,8 +1,4 @@
-/*
- * Task 1.10 - Tomorrow's date using enums (Gregorian & Julian)
- *
- * Compile: gcc -Wall -o task1_10 tomorrow_date.c
- */
+// Завдання 1.10: Обчислення завтрашньої дати
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -21,7 +17,7 @@ const char *month_name(Month m) {
 bool is_leap_year(int year, CalendarType cal) {
     if (cal == GREGORIAN) {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-    } else { /* JULIAN */
+    } else {
         return year % 4 == 0;
     }
 }
@@ -83,7 +79,6 @@ int main() {
     printf("Tomorrow (Julian):    ");
     print_date(jul_tomorrow, JULIAN);
 
-    /* Special cases */
     printf("\n--- Special cases ---\n");
     Date leap_test = {28, FEBRUARY, 2024};
     printf("Feb 28, 2024 -> Greg: ");
@@ -95,7 +90,6 @@ int main() {
     printf("Dec 31, 2025 -> ");
     print_date(tomorrow(year_end, GREGORIAN), GREGORIAN);
 
-    /* 1900 is leap in Julian but not in Gregorian */
     Date test1900 = {28, FEBRUARY, 1900};
     printf("Feb 28, 1900 -> Greg: ");
     print_date(tomorrow(test1900, GREGORIAN), GREGORIAN);

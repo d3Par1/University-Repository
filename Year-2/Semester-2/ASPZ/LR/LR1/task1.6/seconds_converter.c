@@ -1,9 +1,4 @@
-/*
- * Task 1.6 - Convert seconds to hours:minutes:seconds
- * Supports negative values (time in the past)
- *
- * Compile: gcc -Wall -o task1_6 seconds_converter.c
- */
+// Завдання 1.6: Перетворення секунд у час
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -38,7 +33,6 @@ int main() {
 
     convert_seconds(seconds);
 
-    /* Test examples */
     printf("\n--- Examples ---\n");
     convert_seconds(7322);
     convert_seconds(-3661);

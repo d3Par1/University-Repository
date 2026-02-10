@@ -1,4 +1,4 @@
-/* Task 1.4 - module2.c: Parallel product using pthreads + async I/O */
+// Завдання 1.4: Модуль 2 (обчислення)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +24,7 @@ static void *product_worker(void *arg) {
 }
 
 void compute_product_pthread(int n) {
-    if (n > 20) n = 20; /* limit to avoid overflow */
+    if (n > 20) n = 20;
 
     pthread_t threads[NUM_THREADS];
     ThreadArg args[NUM_THREADS];
@@ -46,7 +46,6 @@ void compute_product_pthread(int n) {
 
     printf("[pthreads] Factorial-like product (n=%d) = %.0f\n", n, total);
 
-    /* Write result to file using standard I/O */
     FILE *f = fopen("/tmp/task1_4_result.txt", "w");
     if (f) {
         fprintf(f, "Product result: %.0f\n", total);

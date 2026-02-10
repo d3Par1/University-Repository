@@ -1,4 +1,4 @@
-/* Task 1.3 - input.c */
+// Завдання 1.3: Модуль введення
 #include <stdio.h>
 
 void read_input(void) {

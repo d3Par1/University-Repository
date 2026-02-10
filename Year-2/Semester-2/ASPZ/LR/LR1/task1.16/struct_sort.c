@@ -1,8 +1,4 @@
-/*
- * Task 1.16 - Struct sort by keyword, multi-field, bsearch
- *
- * Compile: gcc -Wall -o task1_16 struct_sort.c
- */
+// Завдання 1.16: Сортування структур
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +8,6 @@ typedef struct {
     int frequency;
 } Entry;
 
-/* Comparison functions (function pointers for dynamic selection) */
 int cmp_by_keyword(const void *a, const void *b) {
     return strcmp(((Entry *)a)->keyword, ((Entry *)b)->keyword);
 }
@@ -51,12 +46,10 @@ int main() {
     printf("--- Original ---\n");
     print_entries(data, n);
 
-    /* Dynamic sort selection via function pointer */
     CompareFunc comparators[] = {cmp_by_keyword, cmp_by_frequency, cmp_by_keyword_then_freq};
     const char *names[] = {"by keyword", "by frequency", "by keyword then frequency"};
 
     for (int s = 0; s < 3; s++) {
-        /* Make a copy */
         Entry *copy = malloc(n * sizeof(Entry));
         memcpy(copy, data, n * sizeof(Entry));
 
@@ -64,7 +57,6 @@ int main() {
         printf("\n--- Sorted %s ---\n", names[s]);
         print_entries(copy, n);
 
-        /* Binary search (only on keyword-sorted) */
         if (s == 0 || s == 2) {
             Entry key = {"kernel", 0};
             Entry *found = bsearch(&key, copy, n, sizeof(Entry), cmp_by_keyword);

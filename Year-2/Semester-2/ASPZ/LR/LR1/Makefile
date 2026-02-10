@@ -1,5 +1,4 @@
-# Master Makefile for LR1 - All tasks
-# Run from WSL: cd /mnt/d/... && make all
+# ЛР1: Збірка всіх завдань
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c11
 

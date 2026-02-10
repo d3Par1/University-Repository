@@ -1,11 +1,4 @@
-/*
- * Task 1.14 - last: read last n lines (ring buffer, -n, -r flags, mmap support)
- *
- * Compile: gcc -Wall -o last last.c
- * Usage:   ./last -n 10 file.txt
- *          ./last -n 5 -r file.txt  (reverse order)
- *          cat file.txt | ./last -n 10
- */
+// Завдання 1.14: Реалізація команди last
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +10,6 @@
 #define DEFAULT_LINES 10
 #define MAX_LINE_LEN 4096
 
-/* Ring buffer approach for stdin/small files */
 void last_lines_ring(FILE *fp, int n, int reverse) {
     char **ring = calloc(n, sizeof(char *));
     if (!ring) { perror("calloc"); return; }
@@ -55,7 +47,6 @@ void last_lines_ring(FILE *fp, int n, int reverse) {
     free(ring);
 }
 
-/* mmap approach for large files */
 void last_lines_mmap(const char *filename, int n, int reverse) {
     int fd = open(filename, O_RDONLY);
     if (fd < 0) { perror("open"); return; }
@@ -68,12 +59,10 @@ void last_lines_mmap(const char *filename, int n, int reverse) {
     char *data = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     if (data == MAP_FAILED) { perror("mmap"); close(fd); return; }
 
-    /* Find line offsets from the end */
     long *line_starts = malloc((n + 1) * sizeof(long));
     int line_count = 0;
     long pos = st.st_size - 1;
 
-    /* Skip trailing newline */
     if (pos >= 0 && data[pos] == '\n') pos--;
 
     while (pos >= 0 && line_count < n) {
@@ -86,7 +75,6 @@ void last_lines_mmap(const char *filename, int n, int reverse) {
         line_starts[line_count++] = 0;
     }
 
-    /* Print lines */
     if (reverse) {
         for (int i = 0; i < line_count; i++) {
             long start = line_starts[i];
@@ -111,7 +99,6 @@ int main(int argc, char *argv[]) {
     int reverse = 0;
     const char *filename = NULL;
 
-    /* Parse arguments */
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-n") == 0 && i + 1 < argc) {
             n = atoi(argv[++i]);
@@ -124,10 +111,8 @@ int main(int argc, char *argv[]) {
     }
 
     if (filename) {
-        /* Use mmap for files */
         last_lines_mmap(filename, n, reverse);
     } else {
-        /* Use ring buffer for stdin */
         last_lines_ring(stdin, n, reverse);
     }
 
