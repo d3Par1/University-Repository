@@ -25,6 +25,7 @@ if [ "$1" = "clean" ]; then
     make -C "$SCRIPT_DIR/LR2" clean 2>/dev/null || true
     make -C "$SCRIPT_DIR/LR3" clean 2>/dev/null || true
     make -C "$SCRIPT_DIR/LR4" clean 2>/dev/null || true
+    make -C "$SCRIPT_DIR/LR5" clean 2>/dev/null || true
     echo "Done."
     exit 0
 fi
@@ -195,6 +196,34 @@ build_single_lr4 "task4.5"   "realloc_fail.c"        "realloc_fail"       "-D_GN
 build_single_lr4 "task4.6"   "realloc_null_zero.c"   "realloc_null_zero"  ""
 build_single_lr4 "task4.7"   "reallocarray_test.c"   "reallocarray_test"  "-D_GNU_SOURCE"
 build_single_lr4 "variant15" "glibc_vs_musl.c"       "malloc_bench"       "-D_GNU_SOURCE -pthread -lrt"
+
+echo ""
+echo -e "${YELLOW}=== Building LR5 ===${NC}"
+
+build_single_lr5() {
+    local dir="$1" src="$2" out="$3" flags="$4"
+    printf "  %-30s" "$dir..."
+    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR5/$dir/$out" "$SCRIPT_DIR/LR5/$dir/$src" $flags 2>/tmp/aspz_err; then
+        echo -e " ${GREEN}OK${NC}"
+        ((OK++))
+    else
+        echo -e " ${RED}FAIL${NC}"
+        cat /tmp/aspz_err
+        ((FAIL++))
+    fi
+}
+
+build_single_lr5 "task5.1"   "uninitialized.c"       "uninitialized"       "-g"
+build_single_lr5 "task5.2"   "out_of_bounds.c"       "out_of_bounds"       "-g"
+build_single_lr5 "task5.3"   "memory_leak.c"         "memory_leak"         "-g"
+build_single_lr5 "task5.4"   "undefined_behavior.c"  "undefined_behavior"  "-g"
+build_single_lr5 "task5.5"   "fragmentation.c"       "fragmentation"       "-g"
+build_single_lr5 "task5.6"   "dangling_pointer.c"    "dangling_pointer"    "-g"
+build_single_lr5 "task5.7"   "double_free.c"         "double_free"         "-g"
+build_single_lr5 "task5.8"   "buffer_overflow.c"     "buffer_overflow"     "-g -fno-stack-protector"
+build_single_lr5 "task5.9"   "use_after_free.c"      "use_after_free"      "-g"
+build_single_lr5 "task5.10"  "memory_corruption.c"   "memory_corruption"   "-g"
+build_single_lr5 "variant15" "cyclic_refs.c"         "cyclic_refs"         "-g"
 
 echo ""
 report
