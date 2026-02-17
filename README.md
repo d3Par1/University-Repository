@@ -32,7 +32,7 @@ Year-2/
 ├── Semester-1/
 ├── Semester-2/
 │   ├── Web/                            Web Development
-│   └── ASPZ/                           OS & Linux fundamentals
+│   └── SSA/                            Архітектура системного програмного забезпечення
 Year-3/
 Year-4/
 ```
@@ -44,7 +44,7 @@ Year-4/
 | OOP | 1 | 1 | C, C++ | Done |
 | Crossplatform Programming | 1 | 1-2 | Java | Done |
 | Web Development | 2 | 2 | -- | Upcoming |
-| ASPZ | 2 | 2 | -- | Upcoming |
+| Архітектура системного програмного забезпечення (SSA) | 2 | 2 | C | In Progress |
 
 ## Abbreviations
 
@@ -54,3 +54,4 @@ Year-4/
 | **HW** | Homework _(домашня робота)_ |
 | **IW** | Individual work _(самостійна робота)_ |
 | **RGR** | Calculation-graphic work _(розрахунково-графічна робота)_ |
+| **SSA** | Архітектура системного програмного забезпечення |

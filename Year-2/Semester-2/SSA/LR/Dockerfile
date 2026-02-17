@@ -1,7 +1,7 @@
-# Dockerfile for building and testing all ASPZ lab tasks
-# Build: docker build -t aspz-labs .
-# Run:   docker run -it --rm aspz-labs
-# Or mount source: docker run -it --rm -v $(pwd):/src -w /src aspz-labs bash
+# Dockerfile for building and testing all SSA lab tasks
+# Build: docker build -t ssa-labs .
+# Run:   docker run -it --rm ssa-labs
+# Or mount source: docker run -it --rm -v $(pwd):/src -w /src ssa-labs bash
 
 FROM ubuntu:22.04
 

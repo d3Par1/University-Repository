@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build all ASPZ Lab tasks in WSL Ubuntu
+# Build all SSA Lab tasks in WSL Ubuntu
 # Usage: bash build_all.sh [clean]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -36,12 +36,12 @@ echo -e "${YELLOW}=== Building LR1 ===${NC}"
 build_single() {
     local dir="$1" src="$2" out="$3" flags="$4"
     printf "  %-30s" "$dir..."
-    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR1/$dir/$out" "$SCRIPT_DIR/LR1/$dir/$src" $flags 2>/tmp/aspz_err; then
+    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR1/$dir/$out" "$SCRIPT_DIR/LR1/$dir/$src" $flags 2>/tmp/ssa_err; then
         echo -e " ${GREEN}OK${NC}"
         ((OK++))
     else
         echo -e " ${RED}FAIL${NC}"
-        cat /tmp/aspz_err
+        cat /tmp/ssa_err
         ((FAIL++))
     fi
 }
@@ -55,12 +55,12 @@ build_multi() {
         full_srcs+=("$SCRIPT_DIR/LR1/$dir/$s")
     done
     printf "  %-30s" "$dir..."
-    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR1/$dir/$out" "${full_srcs[@]}" $flags 2>/tmp/aspz_err; then
+    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR1/$dir/$out" "${full_srcs[@]}" $flags 2>/tmp/ssa_err; then
         echo -e " ${GREEN}OK${NC}"
         ((OK++))
     else
         echo -e " ${RED}FAIL${NC}"
-        cat /tmp/aspz_err
+        cat /tmp/ssa_err
         ((FAIL++))
     fi
 }
@@ -76,12 +76,12 @@ echo -e " ${YELLOW}SKIP${NC}"
 # Tasks 1.3, 1.4 have their own Makefiles
 for t in task1.3 task1.4; do
     printf "  %-30s" "$t (make)..."
-    if make -C "$SCRIPT_DIR/LR1/$t" -s 2>/tmp/aspz_err; then
+    if make -C "$SCRIPT_DIR/LR1/$t" -s 2>/tmp/ssa_err; then
         echo -e " ${GREEN}OK${NC}"
         ((OK++))
     else
         echo -e " ${RED}FAIL${NC}"
-        cat /tmp/aspz_err
+        cat /tmp/ssa_err
         ((FAIL++))
     fi
 done
@@ -122,12 +122,12 @@ echo -e "${YELLOW}=== Building LR2 ===${NC}"
 build_single_lr2() {
     local dir="$1" src="$2" out="$3" flags="$4"
     printf "  %-30s" "$dir..."
-    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR2/$dir/$out" "$SCRIPT_DIR/LR2/$dir/$src" $flags 2>/tmp/aspz_err; then
+    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR2/$dir/$out" "$SCRIPT_DIR/LR2/$dir/$src" $flags 2>/tmp/ssa_err; then
         echo -e " ${GREEN}OK${NC}"
         ((OK++))
     else
         echo -e " ${RED}FAIL${NC}"
-        cat /tmp/aspz_err
+        cat /tmp/ssa_err
         ((FAIL++))
     fi
 }
@@ -150,12 +150,12 @@ echo -e "${YELLOW}=== Building LR3 ===${NC}"
 build_single_lr3() {
     local dir="$1" src="$2" out="$3" flags="$4"
     printf "  %-30s" "$dir..."
-    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR3/$dir/$out" "$SCRIPT_DIR/LR3/$dir/$src" $flags 2>/tmp/aspz_err; then
+    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR3/$dir/$out" "$SCRIPT_DIR/LR3/$dir/$src" $flags 2>/tmp/ssa_err; then
         echo -e " ${GREEN}OK${NC}"
         ((OK++))
     else
         echo -e " ${RED}FAIL${NC}"
-        cat /tmp/aspz_err
+        cat /tmp/ssa_err
         ((FAIL++))
     fi
 }
@@ -178,12 +178,12 @@ echo -e "${YELLOW}=== Building LR4 ===${NC}"
 build_single_lr4() {
     local dir="$1" src="$2" out="$3" flags="$4"
     printf "  %-30s" "$dir..."
-    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR4/$dir/$out" "$SCRIPT_DIR/LR4/$dir/$src" $flags 2>/tmp/aspz_err; then
+    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR4/$dir/$out" "$SCRIPT_DIR/LR4/$dir/$src" $flags 2>/tmp/ssa_err; then
         echo -e " ${GREEN}OK${NC}"
         ((OK++))
     else
         echo -e " ${RED}FAIL${NC}"
-        cat /tmp/aspz_err
+        cat /tmp/ssa_err
         ((FAIL++))
     fi
 }
@@ -195,7 +195,7 @@ build_single_lr4 "task4.4"   "malloc_bug.c"          "malloc_bug"         "-g"
 build_single_lr4 "task4.5"   "realloc_fail.c"        "realloc_fail"       "-D_GNU_SOURCE"
 build_single_lr4 "task4.6"   "realloc_null_zero.c"   "realloc_null_zero"  ""
 build_single_lr4 "task4.7"   "reallocarray_test.c"   "reallocarray_test"  "-D_GNU_SOURCE"
-build_single_lr4 "variant15" "glibc_vs_musl.c"       "malloc_bench"       "-D_GNU_SOURCE -pthread -lrt"
+build_single_lr4 "variant15" "malloc_wrapper.c"       "malloc_wrapper"     "-Wl,--wrap=malloc,--wrap=free"
 
 echo ""
 echo -e "${YELLOW}=== Building LR5 ===${NC}"
@@ -203,12 +203,12 @@ echo -e "${YELLOW}=== Building LR5 ===${NC}"
 build_single_lr5() {
     local dir="$1" src="$2" out="$3" flags="$4"
     printf "  %-30s" "$dir..."
-    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR5/$dir/$out" "$SCRIPT_DIR/LR5/$dir/$src" $flags 2>/tmp/aspz_err; then
+    if gcc -Wall -Wextra -std=c11 -o "$SCRIPT_DIR/LR5/$dir/$out" "$SCRIPT_DIR/LR5/$dir/$src" $flags 2>/tmp/ssa_err; then
         echo -e " ${GREEN}OK${NC}"
         ((OK++))
     else
         echo -e " ${RED}FAIL${NC}"
-        cat /tmp/aspz_err
+        cat /tmp/ssa_err
         ((FAIL++))
     fi
 }

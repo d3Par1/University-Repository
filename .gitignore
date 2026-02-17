@@ -33,19 +33,19 @@
 cmake-build-*/
 build/
 
-# Linux ELF executables (no extension) in ASPZ lab directories
-Year-2/Semester-2/ASPZ/LR/**/task*_*
-Year-2/Semester-2/ASPZ/LR/**/last
-Year-2/Semester-2/ASPZ/LR/**/my_program
-Year-2/Semester-2/ASPZ/LR/**/malloc_bench
-Year-2/Semester-2/ASPZ/LR/**/perf_limit
-Year-2/Semester-2/ASPZ/LR/**/dice_sim
-Year-2/Semester-2/ASPZ/LR/**/lottery
-Year-2/Semester-2/ASPZ/LR/**/filecopy
-Year-2/Semester-2/ASPZ/LR/**/stack_limit
-Year-2/Semester-2/ASPZ/LR/**/ulimit_fsize
-Year-2/Semester-2/ASPZ/LR/**/segments_bench
-Year-2/Semester-2/ASPZ/LR/**/hello
+# Linux ELF executables (no extension) in SSA lab directories
+Year-2/Semester-2/SSA/LR/**/task*_*
+Year-2/Semester-2/SSA/LR/**/last
+Year-2/Semester-2/SSA/LR/**/my_program
+Year-2/Semester-2/SSA/LR/**/malloc_wrapper
+Year-2/Semester-2/SSA/LR/**/perf_limit
+Year-2/Semester-2/SSA/LR/**/dice_sim
+Year-2/Semester-2/SSA/LR/**/lottery
+Year-2/Semester-2/SSA/LR/**/filecopy
+Year-2/Semester-2/SSA/LR/**/stack_limit
+Year-2/Semester-2/SSA/LR/**/ulimit_fsize
+Year-2/Semester-2/SSA/LR/**/segments_bench
+Year-2/Semester-2/SSA/LR/**/hello
 
 # Java
 *.class
