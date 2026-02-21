@@ -31,8 +31,15 @@ Year-1/
 Year-2/
 ├── Semester-1/
 ├── Semester-2/
-│   ├── Web/                            Web Development
-│   └── SSA/                            Архітектура системного програмного забезпечення
+│   ├── SSA/                            Архітектура системного програмного забезпечення (C)
+│   │   └── LR/LR1..LR5               5 lab works
+│   ├── Web/                            Основи Веб-програмування (HTML/CSS/JS/Node.js)
+│   │   ├── PR/                        practicals
+│   │   └── CW/                        coursework
+│   ├── OOA/                            ООА та конструювання ПС (C#)
+│   │   └── LR/                        lab works
+│   └── SoftwareEngineering/            Компоненти ПІ. Архітектура ПЗ
+│       └── PR/                        practicals
 Year-3/
 Year-4/
 ```
@@ -43,8 +50,10 @@ Year-4/
 |:--------|:----:|:--------:|:--------:|:------:|
 | OOP | 1 | 1 | C, C++ | Done |
 | Crossplatform Programming | 1 | 1-2 | Java | Done |
-| Web Development | 2 | 2 | -- | Upcoming |
 | Архітектура системного програмного забезпечення (SSA) | 2 | 2 | C | In Progress |
+| Основи Веб-програмування (Web) | 2 | 2 | HTML/CSS/JS/Node.js | In Progress |
+| ООА та конструювання ПС (OOA) | 2 | 2 | C# | In Progress |
+| Компоненти ПІ. Архітектура ПЗ (SE) | 2 | 2 | — | In Progress |
 
 ## Abbreviations
 
@@ -54,4 +63,8 @@ Year-4/
 | **HW** | Homework _(домашня робота)_ |
 | **IW** | Individual work _(самостійна робота)_ |
 | **RGR** | Calculation-graphic work _(розрахунково-графічна робота)_ |
+| **PR** | Practical work _(практична робота)_ |
+| **CW** | Coursework _(курсова робота)_ |
 | **SSA** | Архітектура системного програмного забезпечення |
+| **OOA** | Об'єктно-орієнтований аналіз та конструювання ПС |
+| **SE** | Компоненти програмної інженерії. Архітектура ПЗ |
