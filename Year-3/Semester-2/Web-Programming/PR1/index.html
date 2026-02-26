@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вітрова станція «Приазовська» — 150 МВт</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Навігація -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">💨 ВітроПортал</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#about">Про об'єкт</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#params">Параметри</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#scheme">Схема</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contacts">Контакти</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Головний заголовок -->
+    <header class="hero-section text-white text-center">
+        <div class="hero-content">
+            <div class="container">
+                <p class="hero-label">Варіант 15 — Вітрова електростанція</p>
+                <h1 class="display-3 fw-bold">Вітрова станція «Приазовська»</h1>
+                <p class="lead fs-4">Чиста енергія Азовського вітру · 150 МВт · Запорізька обл.</p>
+                <div class="mt-4">
+                    <a href="#about" class="btn btn-outline-light btn-lg me-2">Дізнатись більше</a>
+                    <a href="#params" class="btn btn-wind btn-lg">Технічні параметри</a>
+                </div>
+            </div>
+        </div>
+        <div class="turbine-silhouette" aria-hidden="true">
+            <div class="turbine" id="t1"></div>
+            <div class="turbine" id="t2"></div>
+            <div class="turbine" id="t3"></div>
+        </div>
+    </header>
+
+    <!-- Статистика -->
+    <section class="stats-bar py-4">
+        <div class="container">
+            <div class="row text-center g-3">
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <span class="stat-number">150</span>
+                        <span class="stat-unit">МВт</span>
+                        <p class="stat-label">Встановлена потужність</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <span class="stat-number">50</span>
+                        <span class="stat-unit">шт</span>
+                        <p class="stat-label">Вітрових турбін</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <span class="stat-number">430</span>
+                        <span class="stat-unit">ГВт·год</span>
+                        <p class="stat-label">Річне виробництво</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <span class="stat-number">2019</span>
+                        <span class="stat-unit">рік</span>
+                        <p class="stat-label">Рік введення в роботу</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Основний контент -->
+    <main class="container my-5">
+
+        <!-- Про об'єкт -->
+        <section id="about" class="mb-5">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <h2 class="section-title mb-4">Про об'єкт</h2>
+                    <p>
+                        Вітрова електростанція «Приазовська» — один із найбільших вітроенергетичних об'єктів
+                        Запорізької області, розташований у степовій зоні поблизу Азовського узбережжя.
+                        Проєкт реалізовано у 2018–2019 роках у рамках державної програми розвитку відновлюваної
+                        енергетики України. Станція введена в промислову експлуатацію у квітні 2019 року та
+                        генерує електроенергію для близько 120 000 домогосподарств регіону. Завдяки стабільним
+                        вітрам Приазов'я (середня швидкість 7,8 м/с) об'єкт демонструє коефіцієнт використання
+                        встановленої потужності понад 30%.
+                    </p>
+                    <p>
+                        До складу станції входять 50 вітрових турбін потужністю 3 МВт кожна виробництва
+                        компанії Vestas (модель V117-3.45 MW), встановлених на сталевих конічних вежах
+                        висотою 91,5 м. Загальна площа розміщення об'єкта становить близько 4 800 га, проте
+                        земля між турбінами використовується у сільськогосподарських цілях. Весь виробляємий
+                        струм (0,69 кВ) підвищується трансформаторами до 35 кВ і передається до
+                        вузлової підстанції «Приазовська-35» для подальшого розподілу в енергосистемі.
+                    </p>
+                    <p>
+                        Станція щорічно запобігає викиду понад 370 000 тонн CO₂ в атмосферу порівняно з
+                        виробництвом еквівалентної кількості електроенергії на теплових електростанціях.
+                        Об'єкт обладнано сучасною системою SCADA-моніторингу, що забезпечує цілодобовий
+                        дистанційний контроль кожної вітрової турбіни та автоматичне реагування на зміни
+                        погодних умов.
+                    </p>
+                </div>
+                <div class="col-lg-5 mt-4 mt-lg-0">
+                    <img src="https://placehold.co/500x380/1a6b5a/white?text=ВЕС+Приазовська"
+                         alt="Вітрова станція Приазовська — загальний вигляд"
+                         class="img-fluid rounded-4 shadow-lg object-fit-cover w-100">
+                    <p class="text-muted small text-center mt-2">Рис. 1. Загальний вигляд ВЕС «Приазовська»</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Особливості -->
+        <section class="mb-5">
+            <h2 class="section-title mb-4">Особливості та переваги</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">🌿</div>
+                            <h5 class="card-title">Екологічність</h5>
+                            <p class="card-text">Нульові викиди CO₂ під час роботи. Щорічна економія
+                                370 000 т парникових газів. Повна відповідність нормам ЄС.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">⚡</div>
+                            <h5 class="card-title">Надійність</h5>
+                            <p class="card-text">Коефіцієнт готовності турбін — 97,5%. Резервне
+                                живлення систем управління. Захист від блискавки та обмерзання.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon mb-3">🖥️</div>
+                            <h5 class="card-title">Автоматизація</h5>
+                            <p class="card-text">Система SCADA з моніторингом у режимі реального часу.
+                                Предиктивне технічне обслуговування на основі даних датчиків.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Технічні параметри -->
+        <section id="params" class="mb-5">
+            <h2 class="section-title mb-4">Технічні параметри</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Параметр</th>
+                            <th scope="col">Значення</th>
+                            <th scope="col">Одиниці виміру</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Встановлена потужність</td>
+                            <td><strong>150</strong></td>
+                            <td>МВт</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Напруга генератора (НН)</td>
+                            <td>0,69</td>
+                            <td>кВ</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Напруга мережі (ВН)</td>
+                            <td>35</td>
+                            <td>кВ</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Кількість вітрових турбін</td>
+                            <td>50</td>
+                            <td>шт</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Потужність однієї турбіни</td>
+                            <td>3,0</td>
+                            <td>МВт</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Висота вежі</td>
+                            <td>91,5</td>
+                            <td>м</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Діаметр ротора</td>
+                            <td>117</td>
+                            <td>м</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>Розрахункова швидкість вітру</td>
+                            <td>7,8</td>
+                            <td>м/с</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Річне виробництво електроенергії</td>
+                            <td>430 000</td>
+                            <td>МВт·год</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Рік введення в експлуатацію</td>
+                            <td>2019</td>
+                            <td>рік</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Схема -->
+        <section id="scheme" class="mb-5">
+            <h2 class="section-title mb-4">Принципова схема ВЕС</h2>
+            <div class="row align-items-center g-4">
+                <div class="col-lg-7 text-center">
+                    <img src="https://placehold.co/700x420/0d3b6e/white?text=Принципова+схема+ВЕС"
+                         alt="Принципова схема вітрової електростанції"
+                         class="img-fluid rounded-4 shadow">
+                    <p class="text-muted small mt-2">Рис. 2. Принципова схема ВЕС «Приазовська»</p>
+                </div>
+                <div class="col-lg-5">
+                    <h5 class="fw-semibold mb-3">Структура електричної схеми:</h5>
+                    <ul class="scheme-list">
+                        <li>
+                            <span class="scheme-dot" style="background:#28a745"></span>
+                            Генератор (0,69 кВ) — кожна турбіна
+                        </li>
+                        <li>
+                            <span class="scheme-dot" style="background:#17a2b8"></span>
+                            Трансформатор 0,69/35 кВ (50 шт)
+                        </li>
+                        <li>
+                            <span class="scheme-dot" style="background:#ffc107"></span>
+                            Кабельна мережа 35 кВ
+                        </li>
+                        <li>
+                            <span class="scheme-dot" style="background:#dc3545"></span>
+                            Головна підстанція «Приазовська-35»
+                        </li>
+                        <li>
+                            <span class="scheme-dot" style="background:#6f42c1"></span>
+                            Приєднання до ОЕС України (110 кВ)
+                        </li>
+                    </ul>
+                    <div class="mt-4">
+                        <img src="https://placehold.co/400x220/1a6b5a/white?text=Розташування+турбін"
+                             alt="Розташування вітрових турбін на майданчику"
+                             class="img-fluid rounded-4 shadow">
+                        <p class="text-muted small mt-2">Рис. 3. Схема розташування турбін</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Контакти -->
+        <section id="contacts" class="mb-5">
+            <h2 class="section-title mb-4">Контактна інформація</h2>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-3">📍 Реквізити</h5>
+                            <p><strong>Повна назва:</strong> ВЕС «Приазовська»</p>
+                            <p><strong>Адреса:</strong> Запорізька обл., Бердянський р-н, с-рда Новомиколаївська</p>
+                            <p><strong>Поштовий індекс:</strong> 71400</p>
+                            <p><strong>ЄДРПОУ:</strong> 44312789</p>
+                            <p><strong>Режим роботи:</strong> цілодобово, без вихідних</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-3">📞 Зв'язок</h5>
+                            <p><strong>Диспетчерська (цілодобово):</strong><br>
+                               <a href="tel:+380612345678">+380 (61) 234-56-78</a></p>
+                            <p><strong>Відділ технічного обслуговування:</strong><br>
+                               <a href="tel:+380612345679">+380 (61) 234-56-79</a></p>
+                            <p><strong>Email:</strong><br>
+                               <a href="mailto:info@pryazovska-wpp.ua">info@pryazovska-wpp.ua</a></p>
+                            <p><strong>Веб-сайт:</strong><br>
+                               <span class="text-muted">www.pryazovska-wpp.ua</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Нижній колонтитул -->
+    <footer class="footer-section text-white">
+        <div class="container py-4">
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <h6 class="fw-bold mb-1">💨 Вітрова станція «Приазовська»</h6>
+                    <small>Запорізька обл. · 150 МВт · Варіант 15</small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small>Практична робота №1 · Основи Веб-програмування</small><br>
+                    <small class="text-white-50">КПІ ім. Ігоря Сікорського · ТВ-43 · 2025/26</small>
+                </div>
+            </div>
+            <hr class="border-secondary mt-3 mb-2">
+            <p class="text-center text-white-50 small mb-0">
+                &copy; 2025 ВітроПортал. Всі права захищені. Дані об'єкта є вигаданими.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+/* =============================================
+   styles.css — ВЕС «Приазовська» | Варіант 15
+   Основи Веб-програмування | КПІ ТВ-43 2025/26
+   ============================================= */
+
+/* ---- CSS-змінні кольорової схеми (вітрова тематика: небо + зелень) ---- */
+:root {
+    --primary:      #0d6efd; /* насичений блакитний — небо */
+    --primary-dark: #0a58ca;
+    --secondary:    #1a6b5a; /* темно-зелений — природа */
+    --accent:       #29d9c2; /* аква — чиста енергія */
+    --text-dark:    #1e2d3d;
+    --text-muted:   #6c757d;
+    --bg-light:     #f0f7ff;
+    --shadow-sm:    0 2px 8px rgba(13,110,253,.12);
+    --shadow-md:    0 6px 20px rgba(13,110,253,.18);
+    --shadow-lg:    0 12px 40px rgba(13,110,253,.22);
+    --radius:       12px;
+    --transition:   .3s ease;
+}
+
+/* ---- Загальне ---- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+    color: var(--text-dark);
+    background-color: #fff;
+}
+
+/* ---- Навігація ---- */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,.2);
+    padding: .75rem 1rem;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: .5px;
+}
+
+.nav-link {
+    font-weight: 500;
+    margin: 0 6px;
+    transition: color var(--transition), transform var(--transition);
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    transition: width var(--transition);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+.nav-link:hover {
+    color: var(--accent) !important;
+    transform: translateY(-1px);
+}
+
+/* ---- Hero секція ---- */
+.hero-section {
+    position: relative;
+    min-height: 480px;
+    background: linear-gradient(160deg, #0a1628 0%, #0d3b6e 45%, var(--secondary) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 80px 0 60px;
+}
+
+.hero-label {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 999px;
+    padding: .25rem 1rem;
+    font-size: .9rem;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.hero-section h1 {
+    text-shadow: 2px 3px 8px rgba(0,0,0,.4);
+    margin-bottom: 1rem;
+}
+
+.hero-section .lead {
+    opacity: .9;
+    text-shadow: 1px 1px 4px rgba(0,0,0,.3);
+}
+
+/* Кнопка-акцент */
+.btn-wind {
+    background: linear-gradient(135deg, var(--accent) 0%, #1aad9a 100%);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.btn-wind:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(41,217,194,.45);
+}
+
+/* Силуети турбін (декоративні CSS-елементи) */
+.turbine-silhouette {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 130px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.turbine {
+    position: absolute;
+    bottom: 0;
+    width: 4px;
+    background: rgba(255,255,255,.15);
+}
+
+.turbine::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.12);
+}
+
+#t1 { height: 120px; left: 12%; }
+#t2 { height: 100px; left: 35%; }
+#t3 { height: 115px; right: 15%; }
+
+/* ---- Смуга статистики ---- */
+.stats-bar {
+    background: var(--bg-light);
+    border-bottom: 1px solid #dee2e6;
+}
+
+.stat-item {
+    padding: .5rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: inline-block;
+}
+
+.stat-unit {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--secondary);
+    margin-left: 4px;
+}
+
+.stat-label {
+    font-size: .8rem;
+    color: var(--text-muted);
+    margin-top: .25rem;
+    margin-bottom: 0;
+}
+
+/* ---- Заголовки секцій ---- */
+.section-title {
+    color: var(--primary-dark);
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 10px;
+    font-weight: 700;
+    font-size: 1.6rem;
+}
+
+/* ---- Картки ---- */
+.card {
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Картки переваг */
+.feature-card {
+    background: linear-gradient(160deg, #fff 0%, var(--bg-light) 100%);
+    border-top: 4px solid var(--accent);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+/* ---- Таблиця параметрів ---- */
+.table {
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.table thead {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: #fff;
+}
+
+.table thead th {
+    font-weight: 600;
+    letter-spacing: .4px;
+    border: none;
+    padding: .85rem 1rem;
+}
+
+.table tbody tr {
+    transition: background var(--transition);
+}
+
+.table-hover tbody tr:hover {
+    background-color: #e8f0fe;
+    cursor: default;
+}
+
+.table tbody td {
+    padding: .75rem 1rem;
+    vertical-align: middle;
+}
+
+/* ---- Зображення ---- */
+img {
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+img:hover {
+    transform: scale(1.03);
+    box-shadow: var(--shadow-lg) !important;
+}
+
+/* ---- Схема — список ---- */
+.scheme-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.scheme-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: .5rem 0;
+    border-bottom: 1px solid #e9ecef;
+    font-size: .95rem;
+}
+
+.scheme-list li:last-child {
+    border-bottom: none;
+}
+
+.scheme-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ---- Нижній колонтитул ---- */
+.footer-section {
+    background: linear-gradient(135deg, #0a1628 0%, #0d3b6e 60%, var(--secondary) 100%);
+    box-shadow: 0 -3px 10px rgba(0,0,0,.15);
+}
+
+/* ---- Анімації ---- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes rotateWind {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+section {
+    animation: fadeInUp .65s ease-out both;
+}
+
+/* Затримки для секцій */
+#about  { animation-delay: .05s; }
+#params { animation-delay: .15s; }
+#scheme { animation-delay: .25s; }
+#contacts { animation-delay: .35s; }
+
+/* ---- Адаптивність ---- */
+@media (max-width: 992px) {
+    .hero-section h1 {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content {
+        padding: 60px 0 40px;
+    }
+
+    .hero-section h1 {
+        font-size: 1.75rem;
+    }
+
+    .stat-number {
+        font-size: 1.6rem;
+    }
+
+    .section-title {
+        font-size: 1.35rem;
+    }
+
+    .turbine-silhouette {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section .lead {
+        font-size: 1rem;
+    }
+
+    .btn-lg {
+        padding: .5rem 1.1rem;
+        font-size: .95rem;
+    }
+}
