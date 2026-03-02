@@ -1,70 +1,69 @@
-<div align="center">
-
 # University Repository
 
-[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](https://unlicense.org)
-[![University](https://img.shields.io/badge/University-KPI-brightgreen.svg)](https://kpi.ua)
-[![Year](https://img.shields.io/badge/Year-2nd-orange.svg)](#)
-
-A collection of academic work from the [National Technical University of Ukraine<br>"Igor Sikorsky Kyiv Polytechnic Institute"](https://kpi.ua/)
+[National Technical University of Ukraine "Igor Sikorsky Kyiv Polytechnic Institute"](https://kpi.ua/) - academic work collection.
 
 ---
 
-</div>
+## Предмети
 
-## Repository Structure
-
-```
-Year-1/
-├── Semester-1/
-│   ├── OOP/                            C, C++
-│   │   ├── Cpp/LR/LR1..LR14          14 lab works
-│   │   ├── Cpp/IW/                    individual work
-│   │   └── C/LR/                      lab works
-│   └── CrossplatformProgramming/       Java
-│       ├── LR/LR1..LR4               4 lab works
-│       └── RGR/                       individual project
-├── Semester-2/
-│   └── CrossplatformProgramming/       Java
-│       ├── LR/LR1..LR4               4 lab works
-│       └── HW/HW1..HW7               7 homeworks
-Year-2/
-├── Semester-1/
-├── Semester-2/
-│   ├── SSA/                            Архітектура системного програмного забезпечення (C)
-│   │   └── LR/LR1..LR5               5 lab works
-│   ├── Web/                            Основи Веб-програмування (HTML/CSS/JS/Node.js)
-│   │   ├── PR/                        practicals
-│   │   └── CW/                        coursework
-│   ├── OOA/                            ООА та конструювання ПС (C#)
-│   │   └── LR/                        lab works
-│   └── SoftwareEngineering/            Компоненти ПІ. Архітектура ПЗ
-│       └── PR/                        practicals
-Year-3/
-Year-4/
-```
-
-## Subjects
-
-| Subject | Year | Semester | Language | Status |
-|:--------|:----:|:--------:|:--------:|:------:|
+| Предмет | Рік | Семестр | Мова | Статус |
+|---|:---:|:---:|---|:---:|
 | OOP | 1 | 1 | C, C++ | Done |
 | Crossplatform Programming | 1 | 1-2 | Java | Done |
-| Архітектура системного програмного забезпечення (SSA) | 2 | 2 | C | In Progress |
+| АСПЗ (SSA) | 2 | 2 | C | In Progress |
 | Основи Веб-програмування (Web) | 2 | 2 | HTML/CSS/JS/Node.js | In Progress |
 | ООА та конструювання ПС (OOA) | 2 | 2 | C# | In Progress |
-| Компоненти ПІ. Архітектура ПЗ (SE) | 2 | 2 | — | In Progress |
+| Компоненти ПІ (SE) | 2 | 2 | - | In Progress |
 
-## Abbreviations
+---
 
-| Code | Full Name |
-|:----:|:----------|
-| **LR** | Lab work _(лабораторна робота)_ |
-| **HW** | Homework _(домашня робота)_ |
-| **IW** | Individual work _(самостійна робота)_ |
-| **RGR** | Calculation-graphic work _(розрахунково-графічна робота)_ |
-| **PR** | Practical work _(практична робота)_ |
-| **CW** | Coursework _(курсова робота)_ |
-| **SSA** | Архітектура системного програмного забезпечення |
-| **OOA** | Об'єктно-орієнтований аналіз та конструювання ПС |
-| **SE** | Компоненти програмної інженерії. Архітектура ПЗ |
+## Year 1
+
+### Semester 1
+
+**OOP** - C, C++
+- `Cpp/LR/` - 14 лабораторних (LR1-LR14)
+- `Cpp/IW/` - самостійна робота
+- `C/LR/` - лабораторні на C (LR1, LR12-LR14)
+
+**Crossplatform Programming** - Java
+- `LR/` - 4 лабораторні (LR1-LR4)
+- `RGR/` - розрахунково-графічна робота
+
+### Semester 2
+
+**Crossplatform Programming** - Java
+- `LR/` - 4 лабораторні (LR1-LR4)
+- `HW/` - 7 домашніх (HW1-HW7)
+
+---
+
+## Year 2
+
+### Semester 2
+
+**АСПЗ (SSA)** - Архітектура системного програмного забезпечення - C
+- `LR/` - 5 лабораторних (LR1-LR5)
+
+**Основи Веб-програмування (Web)** - HTML/CSS/JS/Node.js
+- `PR/` - практичні роботи
+- `CW/` - курсова робота
+
+**ООА та конструювання ПС (OOA)** - C#
+- `LR/` - лабораторні роботи
+
+**Компоненти ПІ (SE)** - Архітектура ПЗ
+- `PR/` - практичні роботи
+
+---
+
+## Скорочення
+
+| Код | Назва |
+|---|---|
+| **LR** | Лабораторна робота |
+| **HW** | Домашня робота |
+| **IW** | Самостійна робота |
+| **RGR** | Розрахунково-графічна робота |
+| **PR** | Практична робота |
+| **CW** | Курсова робота |
