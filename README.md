@@ -1,69 +1,124 @@
 # University Repository
 
-[National Technical University of Ukraine "Igor Sikorsky Kyiv Polytechnic Institute"](https://kpi.ua/) - academic work collection.
+> Academic work from the [National Technical University of Ukraine "Igor Sikorsky Kyiv Polytechnic Institute"](https://kpi.ua/)
+> Faculty of Informatics and Computer Science
+
+`License: Unlicense` | `Year: 2nd` | `Semesters: 1-4`
 
 ---
 
-## Предмети
+## Subjects
 
-| Предмет | Рік | Семестр | Мова | Статус |
-|---|:---:|:---:|---|:---:|
-| OOP | 1 | 1 | C, C++ | Done |
-| Crossplatform Programming | 1 | 1-2 | Java | Done |
-| АСПЗ (SSA) | 2 | 2 | C | In Progress |
-| Основи Веб-програмування (Web) | 2 | 2 | HTML/CSS/JS/Node.js | In Progress |
-| ООА та конструювання ПС (OOA) | 2 | 2 | C# | In Progress |
-| Компоненти ПІ (SE) | 2 | 2 | - | In Progress |
+| Subject | Year | Sem | Language | Folder | Status |
+|:--------|:----:|:---:|:---------|:-------|:------:|
+| [OOP](#oop) | 1 | 1 | C, C++ | [Year-1/Semester-1/OOP](Year-1/Semester-1/OOP) | Done |
+| [Crossplatform Programming](#crossplatform-programming) | 1 | 1-2 | Java | [Year-1/.../CrossplatformProgramming](Year-1/Semester-1/CrossplatformProgramming) | Done |
+| [АСПЗ](#аспз-ssa) | 2 | 2 | C | [Year-2/Semester-2/SSA](Year-2/Semester-2/SSA) | In Progress |
+| [Веб-програмування](#веб-програмування-web) | 2 | 2 | HTML/CSS/JS/Node.js | [Year-2/Semester-2/Web](Year-2/Semester-2/Web) | In Progress |
+| [ООА](#ооа-ooa) | 2 | 2 | C# | [Year-2/Semester-2/OOA](Year-2/Semester-2/OOA) | In Progress |
+| [Компоненти ПІ](#компоненти-пі-se) | 2 | 2 | - | [Year-2/.../SoftwareEngineering](Year-2/Semester-2/SoftwareEngineering) | In Progress |
 
 ---
 
 ## Year 1
 
-### Semester 1
+### OOP
+> Object-Oriented Programming - **C, C++**
 
-**OOP** - C, C++
-- `Cpp/LR/` - 14 лабораторних (LR1-LR14)
-- `Cpp/IW/` - самостійна робота
-- `C/LR/` - лабораторні на C (LR1, LR12-LR14)
+| Type | Path | Count |
+|:-----|:-----|:-----:|
+| Лабораторні (C++) | [Cpp/LR](Year-1/Semester-1/OOP/Cpp/LR) | 14 |
+| Самостійна робота | [Cpp/IW](Year-1/Semester-1/OOP/Cpp/IW) | 2 |
+| Лабораторні (C) | [C/LR](Year-1/Semester-1/OOP/C/LR) | 4 |
 
-**Crossplatform Programming** - Java
-- `LR/` - 4 лабораторні (LR1-LR4)
-- `RGR/` - розрахунково-графічна робота
+### Crossplatform Programming
+> Кросплатформне програмування - **Java**
 
-### Semester 2
+**Semester 1**
 
-**Crossplatform Programming** - Java
-- `LR/` - 4 лабораторні (LR1-LR4)
-- `HW/` - 7 домашніх (HW1-HW7)
+| Type | Path | Count |
+|:-----|:-----|:-----:|
+| Лабораторні | [LR](Year-1/Semester-1/CrossplatformProgramming/LR) | 4 |
+| РГР | [RGR](Year-1/Semester-1/CrossplatformProgramming/RGR) | 1 |
+
+**Semester 2**
+
+| Type | Path | Count |
+|:-----|:-----|:-----:|
+| Лабораторні | [LR](Year-1/Semester-2/CrossplatformProgramming/LR) | 4 |
+| Домашні завдання | [HW](Year-1/Semester-2/CrossplatformProgramming/HW) | 7 |
 
 ---
 
 ## Year 2
 
-### Semester 2
+### АСПЗ (SSA)
+> Архітектура системного програмного забезпечення - **C**
 
-**АСПЗ (SSA)** - Архітектура системного програмного забезпечення - C
-- `LR/` - 5 лабораторних (LR1-LR5)
+| Type | Path | Count |
+|:-----|:-----|:-----:|
+| Лабораторні | [LR](Year-2/Semester-2/SSA/LR) | 5 |
 
-**Основи Веб-програмування (Web)** - HTML/CSS/JS/Node.js
-- `PR/` - практичні роботи
-- `CW/` - курсова робота
+### Веб-програмування (Web)
+> Основи Веб-програмування - **HTML/CSS/JS/Node.js**
 
-**ООА та конструювання ПС (OOA)** - C#
-- `LR/` - лабораторні роботи
+| Type | Path | Count |
+|:-----|:-----|:-----:|
+| Практичні | [PR](Year-2/Semester-2/Web/PR) | 1 |
+| Курсова робота | [CW](Year-2/Semester-2/Web/CW) | - |
 
-**Компоненти ПІ (SE)** - Архітектура ПЗ
-- `PR/` - практичні роботи
+### ООА (OOA)
+> Об'єктно-орієнтований аналіз та конструювання ПС - **C#**
+
+| Type | Path | Count |
+|:-----|:-----|:-----:|
+| Лабораторні | [LR](Year-2/Semester-2/OOA/LR) | 2 |
+
+### Компоненти ПІ (SE)
+> Компоненти програмної інженерії. Архітектура ПЗ
+
+| Type | Path | Count |
+|:-----|:-----|:-----:|
+| Практичні | [PR](Year-2/Semester-2/SoftwareEngineering/PR) | - |
 
 ---
 
-## Скорочення
+## Structure
 
-| Код | Назва |
-|---|---|
-| **LR** | Лабораторна робота |
-| **HW** | Домашня робота |
-| **IW** | Самостійна робота |
-| **RGR** | Розрахунково-графічна робота |
-| **PR** | Практична робота |
-| **CW** | Курсова робота |
+```
+University-Repository/
+├── Year-1/
+│   ├── Semester-1/
+│   │   ├── OOP/                    C, C++
+│   │   │   ├── Cpp/LR/LR1-LR14   14 лабораторних
+│   │   │   ├── Cpp/IW/            самостійна робота
+│   │   │   └── C/LR/              лабораторні на C
+│   │   └── CrossplatformProgramming/   Java
+│   │       ├── LR/LR1-LR4        4 лабораторні
+│   │       └── RGR/               РГР
+│   └── Semester-2/
+│       └── CrossplatformProgramming/   Java
+│           ├── LR/LR1-LR4        4 лабораторні
+│           └── HW/HW1-HW7        7 домашніх
+├── Year-2/
+│   └── Semester-2/
+│       ├── SSA/LR/LR1-LR5        АСПЗ (C)
+│       ├── Web/PR/, Web/CW/       Веб (HTML/CSS/JS)
+│       ├── OOA/LR/               ООА (C#)
+│       └── SoftwareEngineering/PR/ Компоненти ПІ
+├── Year-3/
+└── Year-4/
+```
+
+---
+
+## Abbreviations
+
+| Code | Full Name | Повна назва |
+|:----:|:----------|:------------|
+| **LR** | Lab work | Лабораторна робота |
+| **HW** | Homework | Домашня робота |
+| **IW** | Individual work | Самостійна робота |
+| **RGR** | Calculation-graphic work | Розрахунково-графічна робота |
+| **PR** | Practical work | Практична робота |
+| **CW** | Coursework | Курсова робота |
