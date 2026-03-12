@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Насосна станція водопостачання — Моніторинг</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Навігація -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">💧 АкваМонітор</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Перемикач навігації">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#dashboard">Панель</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#charts">Графіки</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#extra">Додатково</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Про об'єкт</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Головний заголовок -->
+    <header class="hero-section text-white text-center" role="banner">
+        <div class="hero-content">
+            <div class="container">
+                <p class="hero-label">Варіант 15 — Насосна станція</p>
+                <h1 class="display-3 fw-bold">Насосна станція водопостачання</h1>
+                <p class="lead fs-4">Моніторинг у реальному часі · JavaScript · Динамічний контент</p>
+                <div class="mt-3">
+                    <span class="badge bg-light text-dark fs-6 me-2" id="clockBadge">--:--:--</span>
+                    <span class="badge bg-warning text-dark fs-6" id="systemStatus">Очікування...</span>
+                </div>
+            </div>
+        </div>
+        <div class="wave-decoration" aria-hidden="true">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,60 C200,120 400,0 600,60 C800,120 1000,0 1200,60 L1200,120 L0,120 Z"
+                      fill="rgba(255,255,255,0.08)"/>
+                <path d="M0,80 C300,20 500,100 700,40 C900,100 1100,20 1200,80 L1200,120 L0,120 Z"
+                      fill="rgba(255,255,255,0.05)"/>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Панель керування -->
+    <section class="controls-bar py-3" aria-label="Панель керування">
+        <div class="container">
+            <div class="row align-items-center g-2">
+                <div class="col-auto">
+                    <button id="updateBtn" class="btn btn-water btn-lg" aria-label="Оновити дані вручну">
+                        🔄 Оновити
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <button id="autoUpdateBtn" class="btn btn-outline-light btn-lg" aria-label="Увімкнути автооновлення">
+                        ▶️ Автооновлення
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <select id="intervalSelect" class="form-select form-select-lg" aria-label="Інтервал оновлення">
+                        <option value="2000">2 сек</option>
+                        <option value="3000" selected>3 сек</option>
+                        <option value="5000">5 сек</option>
+                        <option value="10000">10 сек</option>
+                    </select>
+                </div>
+                <div class="col-auto ms-lg-auto">
+                    <span class="text-white-50 small">
+                        Останнє оновлення: <strong id="lastUpdate">—</strong>
+                    </span>
+                </div>
+                <div class="col-auto">
+                    <span id="autoStatus" class="badge bg-secondary">Авто: вимк.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Основний контент -->
+    <main class="container my-4">
+
+        <!-- Дашборд параметрів -->
+        <section id="dashboard" class="mb-5" aria-label="Параметри моніторингу">
+            <h2 class="section-title mb-4">Параметри моніторингу</h2>
+            <div class="row g-4" id="paramsGrid">
+                <!-- Картки генеруються JavaScript -->
+            </div>
+        </section>
+
+        <!-- Додаткові індикатори -->
+        <section id="extra" class="mb-5" aria-label="Додаткові параметри">
+            <h2 class="section-title mb-4">Додаткові параметри</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card extra-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="extra-icon mb-2">🔧</div>
+                            <h5 class="card-title">Працюючі насоси</h5>
+                            <div class="pump-indicators d-flex justify-content-center gap-2 my-3" id="pumpIndicators">
+                                <span class="pump-dot" id="pump1" title="Насос 1">1</span>
+                                <span class="pump-dot" id="pump2" title="Насос 2">2</span>
+                                <span class="pump-dot" id="pump3" title="Насос 3">3</span>
+                                <span class="pump-dot" id="pump4" title="Насос 4">4</span>
+                            </div>
+                            <p class="text-muted small">Активних: <strong id="activePumps">0</strong> / 4</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card extra-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="extra-icon mb-2">⚙️</div>
+                            <h5 class="card-title">Частота обертання</h5>
+                            <div class="big-number text-primary" id="rotationFreq">0</div>
+                            <span class="unit">об/хв</span>
+                            <div class="progress mt-3" role="progressbar" aria-label="Частота обертання">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                     id="rotationBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card extra-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="extra-icon mb-2">🌡️</div>
+                            <h5 class="card-title">Температура двигуна</h5>
+                            <div class="big-number" id="motorTemp">0</div>
+                            <span class="unit">°C</span>
+                            <div id="motorTempStatus" class="status-text mt-2">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Графіки -->
+        <section id="charts" class="mb-5" aria-label="Графіки">
+            <h2 class="section-title mb-4">Графіки параметрів</h2>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="card p-3">
+                        <h5 class="card-title text-center mb-3">Тиск на виході (атм)</h5>
+                        <div class="chart-container">
+                            <canvas id="pressureChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card p-3">
+                        <h5 class="card-title text-center mb-3">Продуктивність (м³/год)</h5>
+                        <div class="chart-container">
+                            <canvas id="productivityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card p-3">
+                        <h5 class="card-title text-center mb-3">Споживана потужність (кВт)</h5>
+                        <div class="chart-container">
+                            <canvas id="powerChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card p-3">
+                        <h5 class="card-title text-center mb-3">Рівень води (м)</h5>
+                        <div class="chart-container">
+                            <canvas id="waterChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Історія вимірювань -->
+        <section class="mb-5" aria-label="Історія вимірювань">
+            <h2 class="section-title mb-4">Журнал вимірювань</h2>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted small">Останні <strong id="logCount">0</strong> записів</span>
+                <div>
+                    <button id="exportCsvBtn" class="btn btn-sm btn-outline-primary me-2">📥 Експорт CSV</button>
+                    <button id="clearLogBtn" class="btn btn-sm btn-outline-danger">🗑️ Очистити</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle" id="logTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Час</th>
+                            <th scope="col">Тиск (атм)</th>
+                            <th scope="col">Продукт. (м³/год)</th>
+                            <th scope="col">Потужн. (кВт)</th>
+                            <th scope="col">Рівень (м)</th>
+                            <th scope="col">Стан</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logBody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Про об'єкт -->
+        <section id="about" class="mb-5" aria-label="Інформація про об'єкт">
+            <h2 class="section-title mb-4">Про об'єкт</h2>
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <p>
+                        Насосна станція водопостачання — ключовий інфраструктурний об'єкт, що забезпечує
+                        безперебійне постачання питної та технічної води для міського району з населенням
+                        близько 50 000 мешканців. Станція обладнана 4 відцентровими насосами з
+                        частотно-регульованим приводом, що дозволяє гнучко регулювати продуктивність
+                        залежно від навантаження мережі.
+                    </p>
+                    <p>
+                        Система моніторингу відстежує основні параметри роботи обладнання у режимі реального
+                        часу: тиск у напірному колекторі, об'ємну витрату, споживану електричну потужність
+                        та рівень води у резервуарі чистої води. Візуальна індикація статусів дозволяє
+                        оператору миттєво оцінити стан системи та прийняти рішення про коригування режиму
+                        роботи.
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-3">📋 Технічний паспорт</h5>
+                            <p><strong>Тип об'єкта:</strong> Насосна станція II підйому</p>
+                            <p><strong>Кількість насосів:</strong> 4 шт (3 робочих + 1 резервний)</p>
+                            <p><strong>Максимальна продуктивність:</strong> 200 м³/год</p>
+                            <p><strong>Встановлена потужність:</strong> 100 кВт</p>
+                            <p><strong>Об'єм резервуару:</strong> 500 м³</p>
+                            <p class="mb-0"><strong>Режим роботи:</strong> цілодобово</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Нижній колонтитул -->
+    <footer class="footer-section text-white">
+        <div class="container py-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-2">💧 Насосна станція водопостачання</h6>
+                    <small class="text-white-50">Моніторинг · Варіант 15</small>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-2">Параметри</h6>
+                    <small>Тиск · Продуктивність · Потужність · Рівень води</small>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <small>Практична робота №2 · Основи Веб-програмування</small><br>
+                    <small class="text-white-50">КПІ ім. Ігоря Сікорського · ТВ-43 · 2025/26</small>
+                </div>
+            </div>
+            <hr class="border-secondary mt-3 mb-2">
+            <p class="text-center text-white-50 small mb-0">
+                &copy; 2025 АкваМонітор. Всі права захищені. Дані об'єкта є вигаданими.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

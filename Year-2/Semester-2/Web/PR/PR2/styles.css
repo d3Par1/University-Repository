@@ -1,0 +1,450 @@
+
+/* ---- CSS-змінні кольорової схеми (водна тематика: блакитний + синій) ---- */
+:root {
+    --primary:      #0077b6;
+    --primary-dark:  #023e8a;
+    --secondary:    #0096c7;
+    --accent:       #00b4d8;
+    --accent-light: #90e0ef;
+    --text-dark:    #1b2838;
+    --text-muted:   #6c757d;
+    --bg-light:     #edf6f9;
+    --shadow-sm:    0 2px 8px rgba(0,119,182,.12);
+    --shadow-md:    0 6px 20px rgba(0,119,182,.18);
+    --shadow-lg:    0 12px 40px rgba(0,119,182,.22);
+    --radius:       12px;
+    --transition:   .3s ease;
+    --status-normal:  #2ecc71;
+    --status-warning: #f39c12;
+    --status-danger:  #e74c3c;
+}
+
+/* ---- Загальне ---- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+    color: var(--text-dark);
+    background-color: #fff;
+}
+
+/* ---- Навігація ---- */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,.2);
+    padding: .75rem 1rem;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: .5px;
+}
+
+.nav-link {
+    font-weight: 500;
+    margin: 0 6px;
+    transition: color var(--transition), transform var(--transition);
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent-light);
+    transition: width var(--transition);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+.nav-link:hover {
+    color: var(--accent-light) !important;
+    transform: translateY(-1px);
+}
+
+/* ---- Hero секція ---- */
+.hero-section {
+    position: relative;
+    min-height: 380px;
+    background: linear-gradient(160deg, #03045e 0%, var(--primary-dark) 40%, var(--secondary) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 70px 0 50px;
+}
+
+.hero-label {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 999px;
+    padding: .25rem 1rem;
+    font-size: .9rem;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.hero-section h1 {
+    text-shadow: 2px 3px 8px rgba(0,0,0,.4);
+    margin-bottom: 1rem;
+}
+
+.hero-section .lead {
+    opacity: .9;
+    text-shadow: 1px 1px 4px rgba(0,0,0,.3);
+}
+
+/* Хвиля (декоративна) */
+.wave-decoration {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.wave-decoration svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* ---- Панель керування ---- */
+.controls-bar {
+    background: linear-gradient(135deg, #03045e 0%, var(--primary-dark) 100%);
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+
+.btn-water {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 100%);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    transition: box-shadow var(--transition), transform var(--transition);
+}
+
+.btn-water:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,180,216,.45);
+}
+
+/* ---- Заголовки секцій ---- */
+.section-title {
+    color: var(--primary-dark);
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 10px;
+    font-weight: 700;
+    font-size: 1.6rem;
+}
+
+/* ---- Картки параметрів ---- */
+.card {
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.param-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.param-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent);
+    transition: background var(--transition);
+}
+
+.param-card.status-normal::before { background: var(--status-normal); }
+.param-card.status-warning::before { background: var(--status-warning); }
+.param-card.status-danger::before { background: var(--status-danger); }
+
+.param-icon {
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: .5rem;
+}
+
+.big-number {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.1;
+    transition: color var(--transition);
+}
+
+.unit {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Статус індикатор */
+.status-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+    transition: background var(--transition);
+}
+
+.status-text {
+    font-size: .85rem;
+    font-weight: 600;
+    transition: color var(--transition);
+}
+
+.status-normal .big-number { color: var(--status-normal); }
+.status-warning .big-number { color: var(--status-warning); }
+.status-danger .big-number { color: var(--status-danger); }
+
+.status-normal .status-dot { background: var(--status-normal); }
+.status-warning .status-dot { background: var(--status-warning); }
+.status-danger .status-dot { background: var(--status-danger); }
+
+.status-normal .status-text { color: var(--status-normal); }
+.status-warning .status-text { color: var(--status-warning); }
+.status-danger .status-text { color: var(--status-danger); }
+
+/* Діапазон-бар */
+.range-bar {
+    width: 100%;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    margin-top: .75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.range-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width .5s ease, background var(--transition);
+}
+
+.range-normal { background: var(--status-normal); }
+.range-warning { background: var(--status-warning); }
+.range-danger { background: var(--status-danger); }
+
+/* Пульсація для критичних значень */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .5; }
+}
+
+.status-danger .status-dot {
+    animation: pulse 1s infinite;
+}
+
+/* ---- Додаткові картки ---- */
+.extra-card {
+    background: linear-gradient(160deg, #fff 0%, var(--bg-light) 100%);
+}
+
+.extra-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+/* Індикатори насосів */
+.pump-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: .95rem;
+    background: #e9ecef;
+    color: #999;
+    transition: all var(--transition);
+    border: 2px solid transparent;
+}
+
+.pump-dot.active {
+    background: var(--status-normal);
+    color: #fff;
+    border-color: #27ae60;
+    box-shadow: 0 0 12px rgba(46,204,113,.4);
+}
+
+/* ---- Графіки ---- */
+.chart-container {
+    position: relative;
+    height: 250px;
+}
+
+/* ---- Таблиця журналу ---- */
+.table {
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.table thead {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: #fff;
+}
+
+.table thead th {
+    font-weight: 600;
+    letter-spacing: .4px;
+    border: none;
+    padding: .85rem 1rem;
+}
+
+.table tbody tr {
+    transition: background var(--transition);
+}
+
+.table-hover tbody tr:hover {
+    background-color: #e0f2fe;
+}
+
+.table tbody td {
+    padding: .65rem 1rem;
+    vertical-align: middle;
+}
+
+.log-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.log-status-badge.normal { background: var(--status-normal); }
+.log-status-badge.warning { background: var(--status-warning); }
+.log-status-badge.danger { background: var(--status-danger); }
+
+/* ---- Нижній колонтитул ---- */
+.footer-section {
+    background: linear-gradient(135deg, #03045e 0%, var(--primary-dark) 60%, var(--primary) 100%);
+    box-shadow: 0 -3px 10px rgba(0,0,0,.15);
+}
+
+/* ---- Анімації ---- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+section {
+    animation: fadeInUp .65s ease-out both;
+}
+
+#dashboard  { animation-delay: .05s; }
+#extra      { animation-delay: .10s; }
+#charts     { animation-delay: .15s; }
+#about      { animation-delay: .25s; }
+
+/* ---- Адаптивність ---- */
+@media (max-width: 992px) {
+    .hero-section h1 {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content {
+        padding: 50px 0 30px;
+    }
+
+    .hero-section h1 {
+        font-size: 1.75rem;
+    }
+
+    .big-number {
+        font-size: 2.2rem;
+    }
+
+    .section-title {
+        font-size: 1.35rem;
+    }
+
+    .controls-bar .row {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .controls-bar .col-auto {
+        width: 100%;
+    }
+
+    .controls-bar .btn {
+        width: 100%;
+        margin-bottom: .5rem;
+    }
+
+    .wave-decoration {
+        display: none;
+    }
+
+    .chart-container {
+        height: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section .lead {
+        font-size: 1rem;
+    }
+
+    .btn-lg {
+        padding: .5rem 1.1rem;
+        font-size: .95rem;
+    }
+
+    .pump-dot {
+        width: 36px;
+        height: 36px;
+        font-size: .85rem;
+    }
+}
