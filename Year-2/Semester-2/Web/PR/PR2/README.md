@@ -18,7 +18,7 @@ PR2/
 ├── index.html          — головна сторінка (моніторинг)
 ├── styles.css          — CSS-стилі (водна тематика)
 ├── script.js           — JavaScript логіка
-├── Звіт_ПР2.html      — звіт до практичної роботи
+├── Звіт_ПР2.docx      — звіт до практичної роботи
 └── README.md           — опис проекту
 ```
 
@@ -52,6 +52,10 @@ PR2/
 - JavaScript (DOM, Events, Timers, localStorage)
 - Bootstrap 5.3.0 (grid, cards, badges, progress, utilities)
 - Chart.js (лінійні графіки)
+
+## Приклади викладача
+
+Структура проєкту відповідає підходу з [прикладів](https://github.com/MishaHnatyshyn/labs-examples/tree/main) (example-3: окремий `script.js`).
 
 ## Запуск
 
