@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Реєстр резервних джерел живлення (ДГУ)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Навігація -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">&#9889; ДГУ-Реєстр</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Перемикач навігації">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#form-section">Реєстрація</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#stats-section">Статистика</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#registry-section">Реєстр</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about-section">Про систему</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Головний заголовок -->
+    <header class="hero-section text-white text-center" role="banner">
+        <div class="hero-content">
+            <div class="container">
+                <p class="hero-label">Варіант 15 — Резервні джерела живлення</p>
+                <h1 class="display-3 fw-bold">Реєстр ДГУ</h1>
+                <p class="lead fs-4">Облік дизельних генераторних установок · Node.js + Express</p>
+            </div>
+        </div>
+        <div class="power-decoration" aria-hidden="true">
+            <div class="bolt bolt-1"></div>
+            <div class="bolt bolt-2"></div>
+            <div class="bolt bolt-3"></div>
+        </div>
+    </header>
+
+    <!-- Основний контент -->
+    <main class="container my-4">
+
+        <!-- Повідомлення -->
+        <div id="alertContainer"></div>
+
+        <!-- Статистика -->
+        <section id="stats-section" class="mb-5" aria-label="Статистика">
+            <h2 class="section-title mb-4">Загальна статистика</h2>
+            <div class="row g-3" id="statsGrid">
+                <div class="col-6 col-md-3">
+                    <div class="card stat-card h-100 text-center p-3">
+                        <div class="stat-icon">&#128202;</div>
+                        <div class="stat-number" id="statTotal">0</div>
+                        <div class="stat-label">Всього ДГУ</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card stat-card h-100 text-center p-3">
+                        <div class="stat-icon">&#9889;</div>
+                        <div class="stat-number" id="statPower">0</div>
+                        <div class="stat-label">Загальна потужність (кВА)</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card stat-card h-100 text-center p-3">
+                        <div class="stat-icon">&#9981;</div>
+                        <div class="stat-number" id="statConsumption">0</div>
+                        <div class="stat-label">Сер. витрата (л/год)</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card stat-card h-100 text-center p-3">
+                        <div class="stat-icon">&#9888;</div>
+                        <div class="stat-number" id="statMaintenance">0</div>
+                        <div class="stat-label">Потребують ТО</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="row g-4">
+            <!-- Форма реєстрації -->
+            <div class="col-lg-5">
+                <section id="form-section" aria-label="Форма реєстрації">
+                    <h2 class="section-title mb-4" id="formTitle">Реєстрація нового ДГУ</h2>
+                    <form id="generatorForm" novalidate>
+                        <input type="hidden" id="editId" value="">
+
+                        <div class="mb-3">
+                            <label for="objectName" class="form-label">Назва об'єкта *</label>
+                            <input type="text" class="form-control" id="objectName" name="objectName"
+                                   required minlength="2" placeholder="Напр.: Центральна лікарня №3">
+                            <div class="invalid-feedback">Мінімум 2 символи</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="generatorType" class="form-label">Тип ДГУ *</label>
+                            <select class="form-select" id="generatorType" name="generatorType" required>
+                                <option value="">Оберіть тип</option>
+                                <option value="diesel">Дизельна генераторна установка</option>
+                                <option value="gasoline">Бензинова генераторна у��тановка</option>
+                                <option value="gas">Газова генераторна установка</option>
+                                <option value="gas-turbine">Газотурбінна установка</option>
+                                <option value="portable">Портативний генератор</option>
+                            </select>
+                            <div class="invalid-feedback">Оберіть тип ДГУ</div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label for="power" class="form-label">Потужність (кВА) *</label>
+                                <input type="number" class="form-control" id="power" name="power"
+                                       required min="0.1" max="50000" step="0.1" placeholder="100">
+                                <div class="invalid-feedback">0.1 — 50 000 кВА</div>
+                            </div>
+                            <div class="col-6">
+                                <label for="fuelType" class="form-label">Тип палива *</label>
+                                <select class="form-select" id="fuelType" name="fuelType" required>
+                                    <option value="">Оберіть паливо</option>
+                                    <option value="diesel-fuel">Дизельне паливо</option>
+                                    <option value="gasoline-fuel">Бензин АІ-95</option>
+                                    <option value="natural-gas">Природний газ</option>
+                                    <option value="propane">Пропан-бутан (LPG)</option>
+                                </select>
+                                <div class="invalid-feedback">Оберіть тип палива</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Адреса розташування *</label>
+                            <textarea class="form-control" id="address" name="address"
+                                      required minlength="5" rows="2"
+                                      placeholder="Повна адреса з індексом"></textarea>
+                            <div class="invalid-feedback">Мінімум 5 символів</div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label for="fuelConsumption" class="form-label">��итрата палива (л/год) *</label>
+                                <input type="number" class="form-control" id="fuelConsumption" name="fuelConsumption"
+                                       required min="0.1" step="0.1" placeholder="25">
+                                <div class="form-text" id="consumptionHint">Розрахунок: ~0.25 л/кВА·год</div>
+                                <div class="invalid-feedback">Введіть витрату палива</div>
+                            </div>
+                            <div class="col-6">
+                                <label for="status" class="form-label">Стан *</label>
+                                <select class="form-select" id="status" name="status" required>
+                                    <option value="">Оберіть стан</option>
+                                    <option value="operational">Справний</option>
+                                    <option value="needs-maintenance">Потребує ТО</option>
+                                    <option value="faulty">Несправний</option>
+                                    <option value="decommissioned">Виведений з експлуатації</option>
+                                </select>
+                                <div class="invalid-feedback">О��еріть стан</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label for="lastMaintenance" class="form-label">Дата останнього ТО</label>
+                                <input type="date" class="form-control" id="lastMaintenance" name="lastMaintenance">
+                            </div>
+                            <div class="col-6">
+                                <label for="nextMaintenance" class="form-label">Наступне ТО</label>
+                                <input type="date" class="form-control" id="nextMaintenance" name="nextMaintenance">
+                                <div class="invalid-feedback" id="maintenanceFeedback"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Примітки</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2"
+                                      placeholder="Додаткова інформація (необов'язково)"></textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-power flex-grow-1" id="submitBtn">
+                                Зареєструвати
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" id="cancelEditBtn"
+                                    style="display:none" onclick="cancelEdit()">
+                                Скасувати
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary">Очистити</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <!-- Реєстр -->
+            <div class="col-lg-7">
+                <section id="registry-section" aria-label="Реєстр ДГУ">
+                    <h2 class="section-title mb-4">Зареєстровані ДГУ</h2>
+
+                    <!-- Фільтри -->
+                    <div class="filter-bar mb-3">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control form-control-sm" id="searchInput"
+                                       placeholder="Пошук за назвою / адресою...">
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select form-select-sm" id="filterType">
+                                    <option value="">Всі типи</option>
+                                    <option value="diesel">Дизельна</option>
+                                    <option value="gasoline">Бенз��нова</option>
+                                    <option value="gas">Газова</option>
+                                    <option value="gas-turbine">Газотурбінна</option>
+                                    <option value="portable">Портативна</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select form-select-sm" id="filterStatus">
+                                    <option value="">Всі стани</option>
+                                    <option value="operational">Справний</option>
+                                    <option value="needs-maintenance">Потребує ТО</option>
+                                    <option value="faulty">Н��справний</option>
+                                    <option value="decommissioned">Виведений</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-sm btn-outline-secondary w-100" onclick="resetFilters()">
+                                    Скинути
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Список -->
+                    <div id="generatorsList" class="generators-list">
+                        <p class="text-muted text-center py-4">Завантаження...</p>
+                    </div>
+
+                    <!-- Лічильник -->
+                    <div class="text-muted small mt-2">
+                        Знайдено: <strong id="resultCount">0</strong> записів
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Про си��тему -->
+        <section id="about-section" class="mb-5 mt-5" aria-label="Про систему">
+            <h2 class="section-title mb-4">Про систему</h2>
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <p>
+                        Система реєстрації резервних джерел живлення призначена для обліку дизельних
+                        генераторних установок (ДГУ) на об'єктах критичної інфраструктури. ДГУ забезпечують
+                        безперебійне електропостачання під час аварійних відключень основної мережі та
+                        є обов'язковими для лікарень, серверних центрів, промислових підприємств та
+                        об'єктів цивільного захисту.
+                    </p>
+                    <p>
+                        Реєстр дозволяє вести облік установок різних типів (дизельні, бензинові, газові,
+                        газотурбінні), контролювати витрату палива та планувати технічне обслуговування.
+                        Регулярне ТО є критично важливим: ДГУ має запуститися за 10–15 секунд після
+                        зникнення основного живлення, тому несправний генератор може призвести до
+                        серйозних наслідків.
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-3">&#128221; Технічний паспорт систем��</h5>
+                            <p><strong>Призначення:</strong> Облік резервних ДГУ</p>
+                            <p><strong>Серверна частина:</strong> Node.js + Express</p>
+                            <p><strong>Зберігання:</strong> JSON-файл</p>
+                            <p><strong>Клієнт:</strong> HTML5 + Bootstrap 5 + JavaScript</p>
+                            <p><strong>API:</strong> REST (GET, POST, PUT, DELETE)</p>
+                            <p class="mb-0"><strong>Автор:</strong> Степаненко Н.Ю., ТВ-43</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Нижній колонтитул -->
+    <footer class="footer-section text-white">
+        <div class="container py-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-2">&#9889; Реєстр ДГУ</h6>
+                    <small class="text-white-50">Резервні джерела живлення · Варіант 15</small>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-2">Функціонал</h6>
+                    <small>Реєстрація · Фільтрація · Пошук · Статистика · ТО</small>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <small>Практична робота №3 · Основи Веб-програмування</small><br>
+                    <small class="text-white-50">КПІ ім. Ігоря Сікорського · ТВ-43 · 2025/26</small>
+                </div>
+            </div>
+            <hr class="border-secondary mt-3 mb-2">
+            <p class="text-center text-white-50 small mb-0">
+                &copy; 2025 ДГУ-Реєстр. Всі права захищені. Дані об'єктів є вигаданими.
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
