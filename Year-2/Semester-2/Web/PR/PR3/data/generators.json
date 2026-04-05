@@ -1,1 +1,58 @@
-[]
+[
+  {
+    "id": "2",
+    "objectName": "Дата-центр «CloudUA»",
+    "generatorType": "gas-turbine",
+    "power": 2000,
+    "fuelType": "natural-gas",
+    "address": "м. Київ, пров. Індустріальний, 12",
+    "fuelConsumption": 600,
+    "lastMaintenance": "2025-06-20",
+    "nextMaintenance": "2025-12-20",
+    "status": "needs-maintenance",
+    "notes": "Tier III, N+1 резервування",
+    "registrationDate": "2025-09-15T14:00:00.000Z"
+  },
+  {
+    "id": "3",
+    "objectName": "Школа №127 ім. Т.Шевченка",
+    "generatorType": "diesel",
+    "power": 100,
+    "fuelType": "diesel-fuel",
+    "address": "м. Київ, вул. Лісова, 45, 02090",
+    "fuelConsumption": 25,
+    "lastMaintenance": "2024-09-01",
+    "nextMaintenance": "2025-03-01",
+    "status": "needs-maintenance",
+    "notes": "",
+    "registrationDate": "2025-10-05T09:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "objectName": "АЗС «ОККО» №415",
+    "generatorType": "gasoline",
+    "power": 30,
+    "fuelType": "gasoline-fuel",
+    "address": "Київська обл., м. Бровари, вул. Київська, 2",
+    "fuelConsumption": 10.5,
+    "lastMaintenance": "2026-02-10",
+    "nextMaintenance": "2026-08-10",
+    "status": "operational",
+    "notes": "Портативний резерв для касового обладнання",
+    "registrationDate": "2026-01-20T11:15:00.000Z"
+  },
+  {
+    "id": "5",
+    "objectName": "Насосна станція «Водоканал-7»",
+    "generatorType": "diesel",
+    "power": 800,
+    "fuelType": "diesel-fuel",
+    "address": "м. Запоріжжя, вул. Промислова, 88",
+    "fuelConsumption": 200,
+    "lastMaintenance": "2025-08-01",
+    "nextMaintenance": "2026-04-10",
+    "status": "operational",
+    "notes": "Категорія I електропостачання",
+    "registrationDate": "2025-11-10T08:00:00.000Z"
+  }
+]
