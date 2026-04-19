@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "Освітлення вул. Хрещатик",
+    "lampCount": 240,
+    "activeLamps": 235,
+    "totalPower": 28.8,
+    "brightness": 85,
+    "mode": "auto",
+    "energyConsumed": 4320.5,
+    "lightLevel": 32,
+    "schedule": {
+      "on": "18:30",
+      "off": "06:15"
+    },
+    "updatedAt": "2026-04-19T18:35:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Парк Шевченка",
+    "lampCount": 96,
+    "activeLamps": 96,
+    "totalPower": 9.6,
+    "brightness": 70,
+    "mode": "schedule",
+    "energyConsumed": 1480,
+    "lightLevel": 18,
+    "schedule": {
+      "on": "19:00",
+      "off": "06:00"
+    },
+    "updatedAt": "2026-04-19T18:35:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "Просп. Перемоги (сегмент 1)",
+    "lampCount": 180,
+    "activeLamps": 0,
+    "totalPower": 0,
+    "brightness": 0,
+    "mode": "manual",
+    "energyConsumed": 3210.7,
+    "lightLevel": 6500,
+    "schedule": {
+      "on": "18:30",
+      "off": "06:15"
+    },
+    "updatedAt": "2026-04-19T12:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "name": "Вул. Саксаганського",
+    "lampCount": 120,
+    "activeLamps": 120,
+    "totalPower": 11.52,
+    "brightness": 80,
+    "mode": "auto",
+    "energyConsumed": 0,
+    "lightLevel": 25,
+    "schedule": {
+      "on": "18:30",
+      "off": "06:15"
+    },
+    "updatedAt": "2026-04-19T19:24:32.756Z"
+  }
+]

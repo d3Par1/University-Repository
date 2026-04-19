@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розумне вуличне освітлення — REST API</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="hero">
+        <div class="container">
+            <h1><span class="hero-icon">⚡</span> Розробка REST API для енергетичних даних</h1>
+            <p class="lead-sub">Практичне заняття №4 · Інтерактивний навчальний додаток · Варіант 15</p>
+        </div>
+    </header>
+
+    <main class="container py-4">
+        <section class="panel">
+            <h2 class="panel-title"><span class="dot dot-green"></span> Інтерактивний симулятор API</h2>
+
+            <div class="endpoints">
+                <button class="ep ep-get" data-method="GET" data-url="/api/lighting-systems">
+                    <span class="badge bg-success">GET</span>
+                    <code>/api/lighting-systems</code>
+                    <span class="ep-action">Отримати всі</span>
+                </button>
+                <button class="ep ep-get" data-method="GET" data-url="/api/lighting-systems/1">
+                    <span class="badge bg-success">GET</span>
+                    <code>/api/lighting-systems/1</code>
+                    <span class="ep-action">За ID</span>
+                </button>
+                <button class="ep ep-get" data-method="GET" data-url="/api/lighting-systems/1/schedule">
+                    <span class="badge bg-success">GET</span>
+                    <code>/api/lighting-systems/1/schedule</code>
+                    <span class="ep-action">Розклад</span>
+                </button>
+                <button class="ep ep-post" id="btn-create">
+                    <span class="badge bg-warning text-dark">POST</span>
+                    <code>/api/lighting-systems</code>
+                    <span class="ep-action">Створити</span>
+                </button>
+                <button class="ep ep-post" id="btn-control">
+                    <span class="badge bg-warning text-dark">POST</span>
+                    <code>/api/lighting-systems/:id/control</code>
+                    <span class="ep-action">Керувати</span>
+                </button>
+                <button class="ep ep-put" id="btn-brightness">
+                    <span class="badge bg-info text-dark">PUT</span>
+                    <code>/api/lighting-systems/:id/brightness</code>
+                    <span class="ep-action">Яскравість</span>
+                </button>
+                <button class="ep ep-delete" id="btn-delete">
+                    <span class="badge bg-danger">DELETE</span>
+                    <code>/api/lighting-systems/:id</code>
+                    <span class="ep-action">Видалити</span>
+                </button>
+                <button class="ep ep-get" data-method="GET" data-url="/api/lighting-systems/stats">
+                    <span class="badge bg-success">GET</span>
+                    <code>/api/lighting-systems/stats</code>
+                    <span class="ep-action">Статистика</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2 class="panel-title"><span class="dot dot-blue"></span> Поточні дані</h2>
+            <pre id="current-data" class="data-block">Завантаження...</pre>
+            <div class="data-meta">Всього об'єктів: <span id="count">0</span></div>
+        </section>
+
+        <section class="panel response-panel">
+            <h2 class="panel-title"><span class="dot dot-yellow"></span> Відповідь сервера</h2>
+            <div class="status-row">
+                <span id="status-badge" class="status-badge">Status: —</span>
+                <span id="status-text"></span>
+            </div>
+            <pre id="response" class="response-block">Очікування запиту...</pre>
+        </section>
+    </main>
+
+    <footer class="container">
+        <p class="footer-text">Степаненко Назар Юрійович, ТВ-43 · 2026</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
