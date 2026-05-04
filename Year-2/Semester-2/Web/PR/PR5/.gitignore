@@ -1,0 +1,9 @@
+node_modules/
+*.log
+.env
+.DS_Store
+
+# Тимчасові файли збірки звіту (не комітимо)
+zvit-temp.html
+*_preview.pdf
+screenshots/_preview_*.png

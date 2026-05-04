@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Біогазова електростанція — Моніторинг у реальному часі</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="hero">
+        <div class="container">
+            <div class="hero-row">
+                <div>
+                    <h1><span class="hero-icon">🌱</span> Моніторинг біогазової електростанції</h1>
+                    <p class="lead-sub">Практична робота №5 · Real-time дашборд (REST + WebSocket) · Варіант 15</p>
+                </div>
+                <div class="ws-indicator">
+                    <span id="ws-dot" class="ws-dot ws-offline"></span>
+                    <span id="ws-status">Підключення...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container py-4">
+
+        <!-- KPI cards -->
+        <section class="kpi-grid">
+            <div class="kpi kpi-flow">
+                <div class="kpi-label">Обсяг біогазу</div>
+                <div class="kpi-value"><span id="kpi-flow">—</span> <span class="kpi-unit">м³/год</span></div>
+            </div>
+            <div class="kpi kpi-methane">
+                <div class="kpi-label">Вміст метану</div>
+                <div class="kpi-value"><span id="kpi-methane">—</span> <span class="kpi-unit">%</span></div>
+            </div>
+            <div class="kpi kpi-power">
+                <div class="kpi-label">Електрична потужність</div>
+                <div class="kpi-value"><span id="kpi-power">—</span> <span class="kpi-unit">кВт</span></div>
+            </div>
+            <div class="kpi kpi-temp">
+                <div class="kpi-label">Темп. ферментера</div>
+                <div class="kpi-value"><span id="kpi-temp">—</span> <span class="kpi-unit">°C</span></div>
+            </div>
+            <div class="kpi kpi-substrate">
+                <div class="kpi-label">Завантаження субстрату</div>
+                <div class="kpi-value"><span id="kpi-substrate">—</span> <span class="kpi-unit">т/добу</span></div>
+            </div>
+        </section>
+
+        <!-- Графік виробництва біогазу + Кругова діаграма складу газу -->
+        <section class="chart-row">
+            <div class="panel chart-panel">
+                <h2 class="panel-title"><span class="dot dot-green"></span> Виробництво біогазу за 24 години</h2>
+                <canvas id="biogas-chart"></canvas>
+            </div>
+            <div class="panel chart-panel">
+                <h2 class="panel-title"><span class="dot dot-yellow"></span> Склад біогазу</h2>
+                <canvas id="composition-chart"></canvas>
+            </div>
+        </section>
+
+        <!-- Індикатори температури ферментерів (gauge per plant) -->
+        <section class="panel">
+            <h2 class="panel-title"><span class="dot dot-red"></span> Температура ферментерів (оптимум 38–40°C)</h2>
+            <div id="temp-gauges" class="gauges-grid"></div>
+        </section>
+
+        <!-- Таблиця параметрів ферментації -->
+        <section class="panel">
+            <h2 class="panel-title"><span class="dot dot-blue"></span> Параметри ферментації</h2>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Станція</th>
+                            <th>Регіон</th>
+                            <th>Субстрат</th>
+                            <th>Біогаз, м³/год</th>
+                            <th>CH₄, %</th>
+                            <th>Темп., °C</th>
+                            <th>P, кВт</th>
+                            <th>ККД, %</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody id="plants-tbody">
+                        <tr><td colspan="9" class="empty">Очікування даних...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="container">
+        <p class="footer-text">Степаненко Назар Юрійович, ТВ-43 · 2026</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "name": "БГУ 'Рокитне-Агро'",
+    "region": "Київська область",
+    "maxPower": 1500,
+    "substrateType": "Силос кукурудзи + гній ВРХ",
+    "fermenterCount": 2,
+    "fermenterVolume": 4500,
+    "lat": 49.6660,
+    "lng": 30.4625
+  },
+  {
+    "id": 2,
+    "name": "БГК 'Еко-Енерго Вінниця'",
+    "region": "Вінницька область",
+    "maxPower": 2000,
+    "substrateType": "Жом цукробурякового виробництва",
+    "fermenterCount": 3,
+    "fermenterVolume": 6000,
+    "lat": 49.2331,
+    "lng": 28.4682
+  },
+  {
+    "id": 3,
+    "name": "Метантанк агрокомплексу 'Перемога'",
+    "region": "Харківська область",
+    "maxPower": 800,
+    "substrateType": "Свинячий гній + кукурудзяний силос",
+    "fermenterCount": 1,
+    "fermenterVolume": 3000,
+    "lat": 49.9935,
+    "lng": 36.2304
+  },
+  {
+    "id": 4,
+    "name": "Біогазова установка 'ОрганікАгро'",
+    "region": "Полтавська область",
+    "maxPower": 1200,
+    "substrateType": "Курячий послід + рослинні відходи",
+    "fermenterCount": 2,
+    "fermenterVolume": 4000,
+    "lat": 49.5883,
+    "lng": 34.5514
+  },
+  {
+    "id": 5,
+    "name": "БГУ ферми 'Зелений Дол'",
+    "region": "Львівська область",
+    "maxPower": 600,
+    "substrateType": "Гній ВРХ + сінаж",
+    "fermenterCount": 1,
+    "fermenterVolume": 2200,
+    "lat": 49.8397,
+    "lng": 24.0297
+  }
+]
