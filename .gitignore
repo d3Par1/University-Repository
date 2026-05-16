@@ -53,6 +53,11 @@ Year-2/Semester-2/SSA/LR/**/atomic_swap
 Year-2/Semester-2/SSA/LR/**/cmd_logger
 Year-2/Semester-2/SSA/LR/**/wait_order
 Year-2/Semester-2/SSA/LR/**/signal_timeline
+# LR8 binaries
+Year-2/Semester-2/SSA/LR/**/partial_write
+Year-2/Semester-2/SSA/LR/**/lseek_read
+Year-2/Semester-2/SSA/LR/**/qsort_worst
+Year-2/Semester-2/SSA/LR/**/fork_pid
 # LR7 binaries
 Year-2/Semester-2/SSA/LR/**/popen_who
 Year-2/Semester-2/SSA/LR/**/my_ls
