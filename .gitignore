@@ -53,6 +53,17 @@ Year-2/Semester-2/SSA/LR/**/atomic_swap
 Year-2/Semester-2/SSA/LR/**/cmd_logger
 Year-2/Semester-2/SSA/LR/**/wait_order
 Year-2/Semester-2/SSA/LR/**/signal_timeline
+# LR7 binaries
+Year-2/Semester-2/SSA/LR/**/popen_who
+Year-2/Semester-2/SSA/LR/**/my_ls
+Year-2/Semester-2/SSA/LR/**/my_grep
+Year-2/Semester-2/SSA/LR/**/my_more
+Year-2/Semester-2/SSA/LR/**/recursive_ls
+Year-2/Semester-2/SSA/LR/**/subdirs_sorted
+Year-2/Semester-2/SSA/LR/**/grant_read
+Year-2/Semester-2/SSA/LR/**/delete_prompt
+Year-2/Semester-2/SSA/LR/**/timer_ms
+Year-2/Semester-2/SSA/LR/**/random_floats
 
 # Java
 *.class
