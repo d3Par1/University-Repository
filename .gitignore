@@ -53,6 +53,14 @@ Year-2/Semester-2/SSA/LR/**/atomic_swap
 Year-2/Semester-2/SSA/LR/**/cmd_logger
 Year-2/Semester-2/SSA/LR/**/wait_order
 Year-2/Semester-2/SSA/LR/**/signal_timeline
+# LR10 binaries
+Year-2/Semester-2/SSA/LR/**/global_after_fork
+Year-2/Semester-2/SSA/LR/**/pid_ppid
+Year-2/Semester-2/SSA/LR/**/exit_code
+Year-2/Semester-2/SSA/LR/**/loop_5_children
+Year-2/Semester-2/SSA/LR/**/execlp_ls
+Year-2/Semester-2/SSA/LR/**/process_tree
+Year-2/Semester-2/SSA/LR/**/sigchld_handler
 # LR9 binaries
 Year-2/Semester-2/SSA/LR/**/users
 Year-2/Semester-2/SSA/LR/**/sudo_shadow
