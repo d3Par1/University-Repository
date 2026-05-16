@@ -53,6 +53,12 @@ Year-2/Semester-2/SSA/LR/**/atomic_swap
 Year-2/Semester-2/SSA/LR/**/cmd_logger
 Year-2/Semester-2/SSA/LR/**/wait_order
 Year-2/Semester-2/SSA/LR/**/signal_timeline
+# LR11 binaries
+Year-2/Semester-2/SSA/LR/**/sigsegv_handler
+Year-2/Semester-2/SSA/LR/**/sigaction_basics
+Year-2/Semester-2/SSA/LR/**/sigqueue_data
+Year-2/Semester-2/SSA/LR/**/signalfd_poll
+Year-2/Semester-2/SSA/LR/**/sigsuspend_mask
 # LR10 binaries
 Year-2/Semester-2/SSA/LR/**/global_after_fork
 Year-2/Semester-2/SSA/LR/**/pid_ppid
