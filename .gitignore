@@ -53,6 +53,13 @@ Year-2/Semester-2/SSA/LR/**/atomic_swap
 Year-2/Semester-2/SSA/LR/**/cmd_logger
 Year-2/Semester-2/SSA/LR/**/wait_order
 Year-2/Semester-2/SSA/LR/**/signal_timeline
+# LR9 binaries
+Year-2/Semester-2/SSA/LR/**/users
+Year-2/Semester-2/SSA/LR/**/sudo_shadow
+Year-2/Semester-2/SSA/LR/**/root_copy
+Year-2/Semester-2/SSA/LR/**/whoami_id
+Year-2/Semester-2/SSA/LR/**/chmod_check
+Year-2/Semester-2/SSA/LR/**/ls_dirs
 # LR8 binaries
 Year-2/Semester-2/SSA/LR/**/partial_write
 Year-2/Semester-2/SSA/LR/**/lseek_read
