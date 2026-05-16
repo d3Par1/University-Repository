@@ -46,6 +46,13 @@ Year-2/Semester-2/SSA/LR/**/stack_limit
 Year-2/Semester-2/SSA/LR/**/ulimit_fsize
 Year-2/Semester-2/SSA/LR/**/segments_bench
 Year-2/Semester-2/SSA/LR/**/hello
+Year-2/Semester-2/SSA/LR/**/debugger
+Year-2/Semester-2/SSA/LR/LR6/variant15/target
+Year-2/Semester-2/SSA/LR/**/dir_tree
+Year-2/Semester-2/SSA/LR/**/atomic_swap
+Year-2/Semester-2/SSA/LR/**/cmd_logger
+Year-2/Semester-2/SSA/LR/**/wait_order
+Year-2/Semester-2/SSA/LR/**/signal_timeline
 
 # Java
 *.class
