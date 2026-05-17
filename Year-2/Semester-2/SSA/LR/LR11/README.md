@@ -16,13 +16,12 @@ make all
 ./variant15/signal_timeline
 ```
 
-## Результат
-
-![Виконання задач LR11](1.png)
 
 ## Огляд завдань
 
 ### Задача 11.1 — SIGSEGV-handler із fault address
+
+![Завдання 11.1](11.1.png)
 Файл: [`task11.1/sigsegv_handler.c`](task11.1/sigsegv_handler.c)
 
 Спочатку `*p = 42` де `p = NULL` → ядро доставляє `SIGSEGV` і у `siginfo_t->si_addr` записує адресу, що викликала помилку (з регістру CR2 на x86). Наш обробник:
@@ -33,6 +32,8 @@ make all
 **Чому усе ручне форматування?** У обробнику сигналу можна використовувати лише **async-signal-safe** функції. `printf`, `malloc`, `fopen` — заборонені (можуть викликати deadlock на mutex'ах). Лише `write`, `_exit`, `signalfd_*`, `raise`. Тому свій `itoa_hex` + `write`. Це обмеження — головна причина появи `signalfd` (задача 11.4).
 
 ### Задача 11.2 — `sigaction` vs `signal` + `SA_SIGINFO`
+
+![Завдання 11.2](11.2.png)
 Файл: [`task11.2/sigaction_basics.c`](task11.2/sigaction_basics.c)
 
 Чому **ніколи** не використовувати `signal()`:
@@ -48,6 +49,8 @@ make all
 `siginfo_t->si_pid` і `si_uid` показують, ХТО надіслав сигнал. Це критично для безпеки: handler може фільтрувати «дозволених відправників».
 
 ### Задача 11.3 — `sigqueue` + `sival_int` для передачі даних
+
+![Завдання 11.3](11.3.png)
 Файл: [`task11.3/sigqueue_data.c`](task11.3/sigqueue_data.c)
 
 `kill(pid, sig)` не передає даних — тільки номер сигналу. `sigqueue(pid, sig, sigval)` дозволяє передати **32-бітне ціле** (або `void*` у тому самому процесі) через `union sigval`.
@@ -57,6 +60,8 @@ make all
 Демо передає три значення (42, 43, 44) через `SIGRTMIN` — усі три доходять окремими подіями.
 
 ### Задача 11.4 — `signalfd` + event loop
+
+![Завдання 11.4](11.4.png)
 Файл: [`task11.4/signalfd_poll.c`](task11.4/signalfd_poll.c)
 
 **Геніальна ідея signalfd:** сигнали стають **звичайним fd**, з якого `read()` повертає `struct signalfd_siginfo` за кожну доставку. Тепер:
@@ -67,6 +72,8 @@ make all
 Це те, що використовують `systemd`, `libevent`, `nginx`, `Node.js`. Класичний `sigaction`-handler залишається тільки для синхронних сигналів (SIGSEGV, SIGFPE, SIGBUS), які не можна делегувати в event-loop.
 
 ### Задача 11.5 — Атомарне очікування через `sigsuspend`
+
+![Завдання 11.5](11.5.png)
 Файл: [`task11.5/sigsuspend_mask.c`](task11.5/sigsuspend_mask.c)
 
 Наївний код має **race condition**:
@@ -85,6 +92,8 @@ if (!flag) {
 Між кроками 1 і 2 жоден сигнал «не пропаде». Це фундаментальний інструмент написання правильних handler'ів. Альтернатива `pselect()` робить те саме для select'у з timeout'ом.
 
 ## Варіантне завдання 15 — Часова лінія подій від кількох процесів
+
+![Варіант 15](v15.png)
 Файл: [`variant15/signal_timeline.c`](variant15/signal_timeline.c)
 
 **Умова:** Реалізувати контролер, який реагує на сигнали від кількох процесів, сортує події за часом отримання та будує часову лінію у вигляді графу.

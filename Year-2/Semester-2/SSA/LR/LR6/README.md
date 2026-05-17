@@ -12,6 +12,10 @@
 
 ## Компіляція та запуск
 
+
+## Результат
+
+![Варіант 15](v15.png)
 ```bash
 make all
 ./variant15/debugger ./variant15/target target_function
@@ -19,9 +23,6 @@ make all
 make run
 ```
 
-## Результат
-
-![Налагоджувач у дії](1.png)
 
 ## Як це працює — і чому
 
