@@ -75,5 +75,9 @@ task1.5:
 	$(CC) $(CFLAGS) -o task1.5/task1_5 task1.5/dependencies.c
 
 clean:
-	find . -type f -executable -not -name "*.sh" -not -name "*.c" -not -name "*.h" -not -name "Makefile" -not -name "CMakeLists.txt" -not -name "*.csv" -delete
+	find . -type f -executable \
+	    -not -name "*.sh" -not -name "*.c" -not -name "*.h" \
+	    -not -name "*.png" -not -name "*.md" -not -name "*.txt" \
+	    -not -name "Makefile" -not -name "CMakeLists.txt" -not -name "*.csv" \
+	    -delete
 	find . -name "*.o" -delete

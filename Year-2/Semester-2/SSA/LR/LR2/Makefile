@@ -26,5 +26,9 @@ variant15:
 	$(CC) $(CFLAGS) -O0 -o variant15/segment_timing variant15/segment_timing.c -lrt
 
 clean:
-	find . -type f -executable -not -name "*.sh" -not -name "*.c" -not -name "*.h" -not -name "Makefile" -delete
+	find . -type f -executable \
+	    -not -name "*.sh" -not -name "*.c" -not -name "*.h" \
+	    -not -name "*.png" -not -name "*.md" -not -name "*.txt" \
+	    -not -name "Makefile" \
+	    -delete
 	find . -name "*.o" -delete
