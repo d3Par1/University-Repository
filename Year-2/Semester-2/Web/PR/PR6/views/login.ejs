@@ -1,0 +1,37 @@
+<% const pageTitle = 'Вхід · Heat Pump Portal' %>
+<%- include('partials/head', { pageTitle, csrfToken }) %>
+<%- include('partials/nav', { user }) %>
+
+<main class="container py-5" style="max-width: 480px;">
+    <div class="card bg-dark text-light border-info-subtle">
+        <div class="card-body p-4">
+            <h1 class="h4 mb-4 text-info">Вхід у портал</h1>
+            <% if (typeof info !== 'undefined' && info) { %>
+                <div class="alert alert-success py-2"><%= info %></div>
+            <% } %>
+            <% if (error) { %>
+                <div class="alert alert-danger py-2"><%= error %></div>
+            <% } %>
+            <div id="js-error" class="alert alert-danger py-2 d-none"></div>
+
+            <form id="login-form" novalidate>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" required autocomplete="email">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" class="form-control" name="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-info w-100">Увійти</button>
+            </form>
+            <p class="text-center small mt-3 mb-0">
+                Немає акаунту? <a href="/register" class="text-info">Зареєструватися</a>
+            </p>
+        </div>
+    </div>
+</main>
+
+<script src="/login.js"></script>
+</body></html>

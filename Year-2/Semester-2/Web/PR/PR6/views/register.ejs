@@ -1,0 +1,50 @@
+<% const pageTitle = 'Реєстрація · Heat Pump Portal' %>
+<%- include('partials/head', { pageTitle, csrfToken }) %>
+<%- include('partials/nav', { user }) %>
+
+<main class="container py-5" style="max-width: 560px;">
+    <div class="card bg-dark text-light border-info-subtle">
+        <div class="card-body p-4">
+            <h1 class="h4 mb-4 text-info">Створення акаунту</h1>
+            <div id="js-error" class="alert alert-danger py-2 d-none"></div>
+            <div id="js-success" class="alert alert-success py-2 d-none"></div>
+
+            <form id="register-form" novalidate>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+                <div class="mb-3">
+                    <label class="form-label">Імʼя</label>
+                    <input class="form-control" name="name" required minlength="2" maxlength="80">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" required autocomplete="email">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Пароль <span class="text-secondary small">(мін. 10 символів, літери + цифри)</span></label>
+                    <input type="password" class="form-control" name="password" id="pwd" required autocomplete="new-password">
+                    <div class="progress mt-2" style="height: 6px;">
+                        <div id="pwd-bar" class="progress-bar bg-danger" style="width: 0%"></div>
+                    </div>
+                    <small id="pwd-label" class="text-secondary">Введіть пароль…</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Роль</label>
+                    <select class="form-select" name="role" required>
+                        <option value="resident">Мешканець (resident)</option>
+                        <option value="technician">Технік (technician)</option>
+                        <option value="facility_manager">Менеджер комплексу (facility_manager)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-info w-100">Зареєструватися</button>
+            </form>
+
+            <p class="text-center small mt-3 mb-0">
+                Вже маєте акаунт? <a href="/login" class="text-info">Увійти</a>
+            </p>
+        </div>
+    </div>
+</main>
+
+<script src="/register.js"></script>
+</body></html>

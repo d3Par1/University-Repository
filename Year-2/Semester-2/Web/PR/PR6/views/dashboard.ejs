@@ -1,0 +1,85 @@
+<% const pageTitle = 'Панель керування · Heat Pump Portal' %>
+<%- include('partials/head', { pageTitle, csrfToken }) %>
+<%- include('partials/nav', { user }) %>
+
+<main class="container py-4">
+    <header class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-2">
+        <div>
+            <h1 class="h3 mb-1 text-info">Керування тепловими насосами</h1>
+            <p class="text-secondary mb-0 small">
+                Роль: <code><%= user.role %></code> · Користувач: <%= user.name %>
+            </p>
+        </div>
+        <div class="text-secondary small">
+            Тік симуляції: 5с · Цільова T: 12–28°C
+        </div>
+    </header>
+
+    <section id="apartments-section" class="mb-4">
+        <h2 class="h5 text-info">Квартири</h2>
+        <div id="apartments-grid" class="row g-3"></div>
+    </section>
+
+    <% if (user.role === 'facility_manager') { %>
+    <section id="manager-section" class="mb-4">
+        <h2 class="h5 text-info">Ефективність будинку</h2>
+        <div id="efficiency-cards" class="row g-3"></div>
+    </section>
+    <section id="audit-section" class="mb-4">
+        <h2 class="h5 text-info">Аудит-журнал</h2>
+        <div class="table-responsive">
+            <table class="table table-sm table-dark table-striped align-middle small">
+                <thead>
+                    <tr><th>Час</th><th>Користувач</th><th>Дія</th><th>IP</th><th>Деталі</th></tr>
+                </thead>
+                <tbody id="audit-body"></tbody>
+            </table>
+        </div>
+    </section>
+    <% } %>
+
+    <% if (user.role === 'technician') { %>
+    <section id="technician-section" class="mb-4">
+        <h2 class="h5 text-info">Запланувати обслуговування</h2>
+        <form id="maintenance-form" class="row g-2 mb-3">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="col-md-2"><input class="form-control" name="apartmentId" placeholder="ID квартири" inputmode="numeric"></div>
+            <div class="col-md-3"><input class="form-control" name="title" placeholder="Назва робіт" required></div>
+            <div class="col-md-3"><input class="form-control" name="notes" placeholder="Примітки"></div>
+            <div class="col-md-3"><input class="form-control" name="scheduledFor" type="datetime-local" required></div>
+            <div class="col-md-1"><button class="btn btn-info w-100">+</button></div>
+        </form>
+        <div id="maintenance-feedback"></div>
+        <div class="table-responsive">
+            <table class="table table-sm table-dark table-striped align-middle small">
+                <thead><tr><th>Коли</th><th>Квартира</th><th>Роботи</th><th>Примітки</th><th>Статус</th></tr></thead>
+                <tbody id="maintenance-body"></tbody>
+            </table>
+        </div>
+    </section>
+    <% } %>
+</main>
+
+<template id="apt-card-tpl">
+    <div class="col-md-4 col-lg-3">
+        <div class="card bg-dark text-light border-info-subtle h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-1">№<span data-num></span> <small class="text-secondary">·</small> <small data-floor></small></h5>
+                <p class="small text-secondary mb-2"><span data-area></span> м² · COP <span data-cop></span></p>
+                <div class="d-flex justify-content-between align-items-baseline mb-2">
+                    <span class="display-6" data-current>—</span>
+                    <span class="text-secondary">→ <span data-target>—</span>°C</span>
+                </div>
+                <p class="small text-info mb-2"><span data-power>0</span> кВт ел.</p>
+                <div class="d-flex gap-1">
+                    <input class="form-control form-control-sm" type="number" step="0.5" min="12" max="28" data-temp-input>
+                    <button class="btn btn-sm btn-outline-info" data-temp-btn>↵</button>
+                </div>
+                <div class="small mt-1" data-msg></div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script src="/dashboard.js"></script>
+</body></html>

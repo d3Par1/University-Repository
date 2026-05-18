@@ -1,0 +1,53 @@
+:root {
+    --bg: #0b1220;
+    --bg-2: #111a2e;
+    --info: #38bdf8;
+    --border: rgba(56, 189, 248, 0.25);
+}
+
+html, body { background: var(--bg); color: #e8eefb; min-height: 100vh; }
+body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(1200px 600px at top, #14213a 0%, #0b1220 60%);
+}
+
+.card {
+    background: var(--bg-2) !important;
+    border-color: var(--border) !important;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+.navbar { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5); }
+.navbar-brand { letter-spacing: 0.5px; }
+
+.table-dark {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: rgba(56, 189, 248, 0.06);
+}
+
+.text-info { color: var(--info) !important; }
+.btn-info  { background: var(--info); border-color: var(--info); color: #0b1220; }
+.btn-info:hover { background: #7dd3fc; border-color: #7dd3fc; color: #0b1220; }
+.btn-outline-info { color: var(--info); border-color: var(--info); }
+.btn-outline-info:hover { background: var(--info); color: #0b1220; }
+
+.form-control, .form-select {
+    background: #1a253c;
+    border-color: var(--border);
+    color: #e8eefb;
+}
+.form-control:focus, .form-select:focus {
+    background: #1a253c;
+    border-color: var(--info);
+    color: #e8eefb;
+    box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.2);
+}
+
+.display-6 { font-weight: 600; color: var(--info); }
+.badge.bg-info { color: #0b1220 !important; }
+
+/* Адаптив */
+@media (max-width: 700px) {
+    .display-6 { font-size: 1.6rem; }
+    .navbar-brand .badge { display: none; }
+}

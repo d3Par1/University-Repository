@@ -1,0 +1,22 @@
+<nav class="navbar navbar-expand-lg bg-dark border-bottom border-info-subtle" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/">
+            <span class="text-info">⌂</span> HeatPump Portal
+            <span class="badge bg-secondary ms-2">Варіант 15 · ПР6</span>
+        </a>
+        <% if (user) { %>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-light small">
+                    <%= user.name %>
+                    <span class="badge bg-info text-dark ms-1"><%= user.role %></span>
+                </span>
+                <button id="btn-logout" class="btn btn-sm btn-outline-light">Вийти</button>
+            </div>
+        <% } else { %>
+            <div class="d-flex gap-2">
+                <a href="/login" class="btn btn-sm btn-outline-light">Вхід</a>
+                <a href="/register" class="btn btn-sm btn-info">Реєстрація</a>
+            </div>
+        <% } %>
+    </div>
+</nav>

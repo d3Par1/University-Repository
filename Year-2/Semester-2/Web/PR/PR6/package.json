@@ -1,0 +1,30 @@
+{
+  "name": "heatpump-security-portal",
+  "version": "1.0.0",
+  "description": "Захищений портал керування тепловими насосами житлового комплексу (Passport.js + RBAC + CSRF + XSS + rate-limit) — Варіант 15, ПР6",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --no-warnings server.js",
+    "dev": "nodemon --no-warnings server.js",
+    "test": "node --no-warnings test-api.js",
+    "seed": "node --no-warnings seed.js",
+    "screenshots": "node --no-warnings take-screenshots.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "csurf": "^1.11.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.1",
+    "express-session": "^1.18.0",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.2.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "puppeteer-core": "^24.42.0"
+  }
+}
