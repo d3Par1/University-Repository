@@ -6,23 +6,24 @@
 
 Мета роботи: для десяти бізнес-сценаріїв обрати та реалізувати відповідний поведінковий патерн проєктування, обґрунтувати вибір, продемонструвати роботу у консолі. Усі реалізації виконані на C# (.NET 9), кожен патерн розміщений в окремому файлі та запускається з `Program.cs`.
 
-Загальна структура проєкту:
+Загальна структура проєкту (кожне завдання — окремий standalone .NET 9 console-проєкт):
+
 LR4/
-└── BehavioralPatterns/
-    ├── BehavioralPatterns.csproj
-    ├── global.json
-    ├── Program.cs
-    └── Patterns/
-        ├── ObserverPattern.cs
-        ├── StrategyPattern.cs
-        ├── StatePattern.cs
-        ├── MementoPattern.cs
-        ├── ChainOfResponsibilityPattern.cs
-        ├── TemplateMethodPattern.cs
-        ├── CommandPattern.cs
-        ├── IteratorPattern.cs
-        ├── MediatorPattern.cs
-        └── VisitorPattern.cs
+├── .editorconfig
+├── .gitignore
+├── global.json
+├── Task1_Observer/             (Task1_Observer.csproj + Program.cs + ObserverPattern.cs)
+├── Task2_Strategy/             (Task2_Strategy.csproj + Program.cs + StrategyPattern.cs)
+├── Task3_State/                (Task3_State.csproj + Program.cs + StatePattern.cs)
+├── Task4_Memento/              (Task4_Memento.csproj + Program.cs + MementoPattern.cs)
+├── Task5_ChainOfResponsibility/ (csproj + Program.cs + ChainOfResponsibilityPattern.cs)
+├── Task6_TemplateMethod/       (csproj + Program.cs + TemplateMethodPattern.cs)
+├── Task7_Command/              (csproj + Program.cs + CommandPattern.cs)
+├── Task8_Iterator/             (csproj + Program.cs + IteratorPattern.cs)
+├── Task9_Mediator/             (csproj + Program.cs + MediatorPattern.cs)
+└── Task10_Visitor/             (csproj + Program.cs + VisitorPattern.cs)
+
+Запуск окремого завдання: `cd Task<N>_<Pattern> && dotnet run`
 
 1. Observer — YouTube-сповіщення
 Завдання: автор каналу публікує відео; усі підписники повинні автоматично отримати сповіщення. Автор не знає кожного підписника поіменно.

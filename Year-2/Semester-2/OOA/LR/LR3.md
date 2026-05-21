@@ -6,20 +6,42 @@
 
 Мета роботи: для семи різних бізнес-сценаріїв обрати та реалізувати відповідний структурний патерн проєктування, обґрунтувати вибір, продемонструвати роботу у консолі. Усі реалізації виконані на C# (.NET 9), кожен патерн розміщений в окремому файлі та запускається через `BehavioralPatterns.Patterns.<Pattern>Demo.Run()` із спільного `Program.cs`.
 
-Загальна структура проєкту:
+Загальна структура проєкту (кожне завдання — окремий standalone .NET 9 console-проєкт):
+
 LR3/
-└── StructuralPatterns/
-    ├── StructuralPatterns.csproj      (net9.0, file-scoped namespaces, nullable enable)
-    ├── global.json                    (SDK 9.0.311, rollForward=latestMinor)
-    ├── Program.cs                     (запускає всі сім Demo.Run() послідовно)
-    └── Patterns/
-        ├── AdapterPattern.cs
-        ├── FacadePattern.cs
-        ├── ProxyPattern.cs
-        ├── CompositePattern.cs
-        ├── DecoratorPattern.cs
-        ├── BridgePattern.cs
-        └── FlyweightPattern.cs
+├── .editorconfig                    (спільний стиль форматування)
+├── .gitignore                       (bin/, obj/, .idea/)
+├── global.json                      (SDK 9.0.311, rollForward=latestMinor)
+├── Task1_Adapter/
+│   ├── Task1_Adapter.csproj
+│   ├── Program.cs
+│   └── AdapterPattern.cs
+├── Task2_Facade/
+│   ├── Task2_Facade.csproj
+│   ├── Program.cs
+│   └── FacadePattern.cs
+├── Task3_Proxy/
+│   ├── Task3_Proxy.csproj
+│   ├── Program.cs
+│   └── ProxyPattern.cs
+├── Task4_Composite/
+│   ├── Task4_Composite.csproj
+│   ├── Program.cs
+│   └── CompositePattern.cs
+├── Task5_Decorator/
+│   ├── Task5_Decorator.csproj
+│   ├── Program.cs
+│   └── DecoratorPattern.cs
+├── Task6_Bridge/
+│   ├── Task6_Bridge.csproj
+│   ├── Program.cs
+│   └── BridgePattern.cs
+└── Task7_Flyweight/
+    ├── Task7_Flyweight.csproj
+    ├── Program.cs
+    └── FlyweightPattern.cs
+
+Запуск окремого завдання: `cd Task<N>_<Pattern> && dotnet run`
 
 1. Adapter — Уніфікація платіжних API
 Завдання: фінансова платформа інтегрує трьох різнотипних провайдерів (JSON, XML, асинхронний криптопровайдер). Ядро очікує єдиний інтерфейс із методами `GetAmount()`, `GetCurrency()`, `GetStatus()`.
