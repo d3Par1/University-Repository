@@ -1,0 +1,39 @@
+// Масиви (статична та динамічна ініціалізація) і структури
+package main
+
+import "fmt"
+
+type Vec struct {
+	x, y float
+}
+
+type Segment struct {
+	from, to Vec
+	name     string
+}
+
+func length(s Segment) float {
+	dx := s.to.x - s.from.x
+	dy := s.to.y - s.from.y
+	return (dx*dx + dy*dy) ** 0.5
+}
+
+func main() {
+	m := [2][2]int{
+		{1, 2},
+		{3, 4},
+	}
+	var sq [5]int // нульові значення
+	for i := 0; i < len(sq); i++ {
+		sq[i] = i * i // динамічна ініціалізація
+	}
+
+	var s Segment
+	s.name = "AB"
+	s.to.x = 3
+	s.to.y = 4
+	c := s // поелементне копіювання
+	c.name = "copy"
+
+	fmt.Println(m[1][0], sq[4], length(s), s.name, c.name)
+}

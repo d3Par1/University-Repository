@@ -1,0 +1,33 @@
+<svg class="railroad-diagram" height="140" viewBox="0 0 488.5 140" width="488.5" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 30v20m10 -20v20m-10 -10h20" /></g><g>
+<path d="M40 40h0.0" /><path d="M448.5 40h0.0" /><path d="M40.0 40h20" /><g>
+<path d="M60.0 40h0.0" /><path d="M428.5 40h0.0" /><g class="non-terminal ">
+<path d="M60.0 40h0.0" /><path d="M131.0 40h0.0" /><rect height="22" width="71" x="60" y="29"></rect><text x="95.5" y="44">Digits</text></g><path d="M131.0 40h10" /><path d="M141.0 40h10" /><g class="terminal ">
+<path d="M151.0 40h0.0" /><path d="M179.5 40h0.0" /><rect height="22" rx="10" ry="10" width="28.5" x="151" y="29"></rect><text x="165.25" y="44">.</text></g><path d="M179.5 40h10" /><g>
+<path d="M189.5 40h0.0" /><path d="M300.5 40h0.0" /><path d="M189.5 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10" /><g>
+<path d="M209.5 20h71.0" /></g><path d="M280.5 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10" /><path d="M189.5 40h20" /><g class="non-terminal ">
+<path d="M209.5 40h0.0" /><path d="M280.5 40h0.0" /><rect height="22" width="71" x="209.5" y="29"></rect><text x="245" y="44">Digits</text></g><path d="M280.5 40h20" /></g><g>
+<path d="M300.5 40h0.0" /><path d="M428.5 40h0.0" /><path d="M300.5 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10" /><g>
+<path d="M320.5 20h88.0" /></g><path d="M408.5 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10" /><path d="M300.5 40h20" /><g class="non-terminal ">
+<path d="M320.5 40h0.0" /><path d="M408.5 40h0.0" /><rect height="22" width="88" x="320.5" y="29"></rect><text x="364.5" y="44">Exponent</text></g><path d="M408.5 40h20" /></g></g><path d="M428.5 40h20" /><path d="M40.0 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10" /><g>
+<path d="M60.0 70h94.75" /><path d="M333.75 70h94.75" /><g class="non-terminal ">
+<path d="M154.75 70h0.0" /><path d="M225.75 70h0.0" /><rect height="22" width="71" x="154.75" y="59"></rect><text x="190.25" y="74">Digits</text></g><path d="M225.75 70h10" /><path d="M235.75 70h10" /><g class="non-terminal ">
+<path d="M245.75 70h0.0" /><path d="M333.75 70h0.0" /><rect height="22" width="88" x="245.75" y="59"></rect><text x="289.75" y="74">Exponent</text></g></g><path d="M428.5 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10" /><path d="M40.0 40a10 10 0 0 1 10 10v49a10 10 0 0 0 10 10" /><g>
+<path d="M60.0 109h55.5" /><path d="M373.0 109h55.5" /><g class="terminal ">
+<path d="M115.5 109h0.0" /><path d="M144.0 109h0.0" /><rect height="22" rx="10" ry="10" width="28.5" x="115.5" y="98"></rect><text x="129.75" y="113">.</text></g><path d="M144.0 109h10" /><path d="M154.0 109h10" /><g class="non-terminal ">
+<path d="M164.0 109h0.0" /><path d="M235.0 109h0.0" /><rect height="22" width="71" x="164" y="98"></rect><text x="199.5" y="113">Digits</text></g><path d="M235.0 109h10" /><g>
+<path d="M245.0 109h0.0" /><path d="M373.0 109h0.0" /><path d="M245.0 109a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10" /><g>
+<path d="M265.0 89h88.0" /></g><path d="M353.0 89a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10" /><path d="M245.0 109h20" /><g class="non-terminal ">
+<path d="M265.0 109h0.0" /><path d="M353.0 109h0.0" /><rect height="22" width="88" x="265" y="98"></rect><text x="309" y="113">Exponent</text></g><path d="M353.0 109h20" /></g></g><path d="M428.5 109a10 10 0 0 0 10 -10v-49a10 10 0 0 1 10 -10" /></g><path d="M 448.5 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g><style>/* <![CDATA[ */
+
+svg.railroad-diagram { background-color: #ffffff; }
+svg.railroad-diagram path { stroke-width: 1.4; stroke: #000; fill: none; }
+svg.railroad-diagram text { font: 14px Consolas, 'DejaVu Sans Mono', monospace; text-anchor: middle; white-space: pre; fill: #000; }
+svg.railroad-diagram text.comment { font: italic 12px Consolas, monospace; }
+svg.railroad-diagram rect { stroke-width: 1.4; stroke: #000; fill: #fff; }
+svg.railroad-diagram g.non-terminal text { font-style: italic; }
+
+/* ]]> */
+</style></svg>

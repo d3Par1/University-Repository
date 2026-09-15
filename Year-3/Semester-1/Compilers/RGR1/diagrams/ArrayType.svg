@@ -1,0 +1,19 @@
+<svg class="railroad-diagram" height="62" viewBox="0 0 376.0 62" width="376.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 21v20m10 -20v20m-10 -10h20" /></g><path d="M40 31h10" /><g>
+<path d="M50 31h0.0" /><path d="M326.0 31h0.0" /><g class="terminal ">
+<path d="M50.0 31h0.0" /><path d="M78.5 31h0.0" /><rect height="22" rx="10" ry="10" width="28.5" x="50" y="20"></rect><text x="64.25" y="35">[</text></g><path d="M78.5 31h10" /><path d="M88.5 31h10" /><g class="non-terminal ">
+<path d="M98.5 31h0.0" /><path d="M203.5 31h0.0" /><rect height="22" width="105" x="98.5" y="20"></rect><text x="151" y="35">Expression</text></g><path d="M203.5 31h10" /><path d="M213.5 31h10" /><g class="terminal ">
+<path d="M223.5 31h0.0" /><path d="M252.0 31h0.0" /><rect height="22" rx="10" ry="10" width="28.5" x="223.5" y="20"></rect><text x="237.75" y="35">]</text></g><path d="M252.0 31h10" /><path d="M262.0 31h10" /><g class="non-terminal ">
+<path d="M272.0 31h0.0" /><path d="M326.0 31h0.0" /><rect height="22" width="54" x="272" y="20"></rect><text x="299" y="35">Type</text></g></g><path d="M326.0 31h10" /><path d="M 336.0 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g><style>/* <![CDATA[ */
+
+svg.railroad-diagram { background-color: #ffffff; }
+svg.railroad-diagram path { stroke-width: 1.4; stroke: #000; fill: none; }
+svg.railroad-diagram text { font: 14px Consolas, 'DejaVu Sans Mono', monospace; text-anchor: middle; white-space: pre; fill: #000; }
+svg.railroad-diagram text.comment { font: italic 12px Consolas, monospace; }
+svg.railroad-diagram rect { stroke-width: 1.4; stroke: #000; fill: #fff; }
+svg.railroad-diagram g.non-terminal text { font-style: italic; }
+
+/* ]]> */
+</style></svg>

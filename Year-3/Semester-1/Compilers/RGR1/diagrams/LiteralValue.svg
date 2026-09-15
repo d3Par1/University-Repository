@@ -1,0 +1,22 @@
+<svg class="railroad-diagram" height="71" viewBox="0 0 430.0 71" width="430.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 30v20m10 -20v20m-10 -10h20" /></g><path d="M40 40h10" /><g>
+<path d="M50 40h0.0" /><path d="M380.0 40h0.0" /><g class="terminal ">
+<path d="M50.0 40h0.0" /><path d="M78.5 40h0.0" /><rect height="22" rx="10" ry="10" width="28.5" x="50" y="29"></rect><text x="64.25" y="44">{</text></g><path d="M78.5 40h10" /><g>
+<path d="M88.5 40h0.0" /><path d="M341.5 40h0.0" /><path d="M88.5 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10" /><g>
+<path d="M108.5 20h213.0" /></g><path d="M321.5 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10" /><path d="M88.5 40h20" /><g>
+<path d="M108.5 40h0.0" /><path d="M321.5 40h0.0" /><g class="non-terminal ">
+<path d="M108.5 40h0.0" /><path d="M188.0 40h0.0" /><rect height="22" width="79.5" x="108.5" y="29"></rect><text x="148.25" y="44">Element</text></g><path d="M188.0 40h10" /><path d="M198.0 40h10" /><g class="non-terminal ">
+<path d="M208.0 40h0.0" /><path d="M321.5 40h0.0" /><rect height="22" width="113.5" x="208" y="29"></rect><text x="264.75" y="44">ElementTail</text></g></g><path d="M321.5 40h20" /></g><path d="M341.5 40h10" /><g class="terminal ">
+<path d="M351.5 40h0.0" /><path d="M380.0 40h0.0" /><rect height="22" rx="10" ry="10" width="28.5" x="351.5" y="29"></rect><text x="365.75" y="44">}</text></g></g><path d="M380.0 40h10" /><path d="M 390.0 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g><style>/* <![CDATA[ */
+
+svg.railroad-diagram { background-color: #ffffff; }
+svg.railroad-diagram path { stroke-width: 1.4; stroke: #000; fill: none; }
+svg.railroad-diagram text { font: 14px Consolas, 'DejaVu Sans Mono', monospace; text-anchor: middle; white-space: pre; fill: #000; }
+svg.railroad-diagram text.comment { font: italic 12px Consolas, monospace; }
+svg.railroad-diagram rect { stroke-width: 1.4; stroke: #000; fill: #fff; }
+svg.railroad-diagram g.non-terminal text { font-style: italic; }
+
+/* ]]> */
+</style></svg>

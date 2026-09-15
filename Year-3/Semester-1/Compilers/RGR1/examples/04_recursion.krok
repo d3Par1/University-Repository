@@ -1,0 +1,31 @@
+// Функції та рекурсія
+package main
+
+import "fmt"
+
+func fib(n int) int {
+	if n < 2 {
+		return n
+	}
+	return fib(n-1) + fib(n-2)
+}
+
+func gcd(a, b int) int {
+	if b == 0 {
+		return a
+	}
+	return gcd(b, a%b)
+}
+
+func power(base float, e int) float {
+	if e == 0 {
+		return 1
+	} else if e < 0 {
+		return 1 / power(base, -e)
+	}
+	return base * power(base, e-1)
+}
+
+func main() {
+	fmt.Println(fib(10), gcd(84, 36), power(2, -3), 2.0**-3)
+}

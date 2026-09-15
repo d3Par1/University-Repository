@@ -1,0 +1,88 @@
+// Базовий приклад програми мовою Krok:
+// містить приклади всіх лексем із таблиці токенів.
+package main
+
+import "fmt"
+
+const Size int = 5 // іменована константа з явним типом
+const Eps = 1.5e-3 // тип float визначається за літералом
+const Title = "Krok:\t\"крок\" \\ 2026"
+
+type Celsius float // користувацький скалярний тип
+
+type Point struct {
+	x, y  float
+	label string
+}
+
+var total int          // глобальна змінна, початкове значення 0
+var ready bool = false // глобальна змінна з ініціалізацією
+
+// Рекурсивне обчислення факторіала.
+func factorial(n int) int {
+	if n <= 1 {
+		return 1
+	}
+	return n * factorial(n-1)
+}
+
+// Передача параметрів за посиланням.
+func swap(a, b *int) {
+	t := *a
+	*a = *b
+	*b = t
+}
+
+// Масив передається за значенням (копіюється).
+func sum(v [Size]int) int {
+	s := 0
+	for i := 0; i < len(v); i++ {
+		s = s + v[i]
+	}
+	return s
+}
+
+func distance(p Point) float {
+	return (p.x**2 + p.y**2) ** .5
+}
+
+func main() {
+	var n, m int
+	fmt.Scan(&n, &m)
+	swap(&n, &m)
+	fmt.Println("n =", n, "m =", m, "n! =", factorial(n%10))
+
+	var data [Size]int = [Size]int{3, -1, 4, 1, +5}
+	var grid [2][3]float
+	grid[1][2] = 2.
+	total = sum(data)
+
+	var t Celsius = 36.6
+	t = t + Celsius(n)
+	x := float(total)/2 - 7*3 // int неявно розширюється до float
+	k := int(-x)
+
+	var p Point
+	p.x = 3.0
+	p.y = 4E0
+	p.label = ""
+	d := distance(p)
+
+	ok := true
+	ready = d >= 5.0 && !(k == 0) || total != 12
+	for k > 10 {
+		k--
+	}
+	for i := 0; i < 3; i++ {
+		if grid[1][2] > float(i) {
+			fmt.Print(i, " ")
+		} else if i == 2 {
+			fmt.Print("last")
+		} else {
+			fmt.Print("-")
+		}
+	}
+	fmt.Println()
+	fmt.Print(Title, "\n")
+	fmt.Println(t, d, ready, ok, Eps, x < -1.0, 2**3**2, k)
+}

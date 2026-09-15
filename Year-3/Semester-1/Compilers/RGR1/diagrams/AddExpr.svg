@@ -1,0 +1,17 @@
+<svg class="railroad-diagram" height="92" viewBox="0 0 199.5 92" width="199.5" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 21v20m10 -20v20m-10 -10h20" /></g><path d="M40 31h10" /><g>
+<path d="M50 31h0.0" /><path d="M149.5 31h0.0" /><path d="M50.0 31h10" /><g class="non-terminal ">
+<path d="M60.0 31h0.0" /><path d="M139.5 31h0.0" /><rect height="22" width="79.5" x="60" y="20"></rect><text x="99.75" y="35">MulExpr</text></g><path d="M139.5 31h10" /><path d="M60.0 31a10 10 0 0 0 -10 10v10a10 10 0 0 0 10 10" /><g class="non-terminal ">
+<path d="M60.0 61h8.5" /><path d="M131.0 61h8.5" /><rect height="22" width="62.5" x="68.5" y="50"></rect><text x="99.75" y="65">AddOp</text></g><path d="M139.5 61a10 10 0 0 0 10 -10v-10a10 10 0 0 0 -10 -10" /></g><path d="M149.5 31h10" /><path d="M 159.5 31 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g><style>/* <![CDATA[ */
+
+svg.railroad-diagram { background-color: #ffffff; }
+svg.railroad-diagram path { stroke-width: 1.4; stroke: #000; fill: none; }
+svg.railroad-diagram text { font: 14px Consolas, 'DejaVu Sans Mono', monospace; text-anchor: middle; white-space: pre; fill: #000; }
+svg.railroad-diagram text.comment { font: italic 12px Consolas, monospace; }
+svg.railroad-diagram rect { stroke-width: 1.4; stroke: #000; fill: #fff; }
+svg.railroad-diagram g.non-terminal text { font-style: italic; }
+
+/* ]]> */
+</style></svg>

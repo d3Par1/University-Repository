@@ -1,0 +1,18 @@
+// Розгалуження: if / else if / else
+package main
+
+import "fmt"
+
+func main() {
+	var t float
+	fmt.Scan(&t)
+	if t < 0 {
+		fmt.Println("мороз")
+	} else if t < 15 {
+		fmt.Println("прохолодно")
+	} else if t <= 25 && t != 20 {
+		fmt.Println("комфортно")
+	} else {
+		fmt.Println("спекотно або рівно 20")
+	}
+}

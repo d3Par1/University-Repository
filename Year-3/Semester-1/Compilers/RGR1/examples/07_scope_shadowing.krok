@@ -1,0 +1,25 @@
+// Області видимості та затінення
+package main
+
+import "fmt"
+
+var x int = 1 // глобальна
+
+func show() {
+	fmt.Println("global x =", x) // глобальна x: 1
+}
+
+func main() {
+	fmt.Println(x) // 1
+	x := "local"    // затінює глобальну x у тілі main
+	{
+		x := 3.5 // затінює локальну x у вкладеному блоці
+		fmt.Println(x)
+	}
+	fmt.Println(x) // local
+	for i := 0; i < 2; i++ {
+		x := i // нова змінна на кожне виконання тіла
+		fmt.Println(x)
+	}
+	show()
+}

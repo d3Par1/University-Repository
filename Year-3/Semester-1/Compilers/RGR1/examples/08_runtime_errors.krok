@@ -1,0 +1,19 @@
+// Помилки часу виконання
+package main
+
+import "fmt"
+
+func depth(n int) int {
+	return depth(n+1) + 1 // RE-06: переповнення стека
+}
+
+func main() {
+	var a [3]int
+	var i, z int
+	fmt.Scan(&i, &z)
+	fmt.Println(a[i]) // RE-04 при i < 0 або i > 2
+	fmt.Println(10 / z) // RE-01 при z == 0
+	big := 9223372036854775807
+	fmt.Println(big + 1) // RE-02: переповнення int
+	fmt.Println(depth(0))
+}

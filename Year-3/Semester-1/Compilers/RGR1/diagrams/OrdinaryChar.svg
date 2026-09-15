@@ -1,0 +1,15 @@
+<svg class="railroad-diagram" height="60" viewBox="0 0 509 60" width="509" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 20v20m10 -20v20m-10 -10h20" /></g><path d="M40 30h10" /><g class="non-terminal ">
+<path d="M50 30h0.0" /><path d="M459.0 30h0.0" /><text class="comment" x="254.5" y="35">? будь-який символ Unicode, крім &apos;&quot;&apos;, &apos;\&apos;, &apos;\n&apos; та &apos;\r&apos; ?</text></g><path d="M459 30h10" /><path d="M 469 30 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g><style>/* <![CDATA[ */
+
+svg.railroad-diagram { background-color: #ffffff; }
+svg.railroad-diagram path { stroke-width: 1.4; stroke: #000; fill: none; }
+svg.railroad-diagram text { font: 14px Consolas, 'DejaVu Sans Mono', monospace; text-anchor: middle; white-space: pre; fill: #000; }
+svg.railroad-diagram text.comment { font: italic 12px Consolas, monospace; }
+svg.railroad-diagram rect { stroke-width: 1.4; stroke: #000; fill: #fff; }
+svg.railroad-diagram g.non-terminal text { font-style: italic; }
+
+/* ]]> */
+</style></svg>
