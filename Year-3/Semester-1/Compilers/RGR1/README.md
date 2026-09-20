@@ -14,14 +14,19 @@
 ## Структура
 
 ```
-grammar/krok.ebnf        повна граматика (РБНФ) — єдине джерело для діаграм і тексту
-spec/krok-spec.md        текст специфікації з директивами збирання
-spec/title-template.docx зразок титульного аркуша
-examples/*.krok          контрольні приклади (base_example.krok — базовий приклад)
-examples/invalid/*.krok  некоректні програми, які мають відхилятися
-diagrams/                згенеровані діаграми Вірта (SVG + PNG)
-tools/                   перевірка граматики, лексер/парсер, генератор діаграм і документа
+grammar/krok.ebnf            повна граматика (РБНФ) — єдине джерело для діаграм і тексту
+grammar/krok-visualizer.ebnf та сама граматика у діалекті EBNF Visualizer (генерується)
+spec/krok-spec.md            текст специфікації з директивами збирання
+spec/title-template.docx     зразок титульного аркуша
+examples/*.krok              контрольні приклади (base_example.krok — базовий приклад)
+examples/invalid/*.krok      некоректні програми, які мають відхилятися
+diagrams/                    згенеровані діаграми Вірта (SVG + PNG)
+tools/                       перевірка граматики, лексер/парсер, генератор діаграм і документа
 ```
+
+Структуру документа побудовано за розд. 2.4 посібника Стативки [1]: вступ, лексична структура,
+типи даних і змінні, вирази, інструкції, декларації, структура програми, повна граматика (останній
+розділ). Додано розділи «Властивості граматики» та «Приклади програм».
 
 ## Збирання
 
@@ -32,6 +37,7 @@ python tools/check_grammar.py                              # КС, марні с
 python tools/krok_parse.py --coverage examples/*.krok      # приклади розбираються; базовий покриває всі токени
 python tools/krok_parse.py --invalid examples/invalid/*.krok
 python tools/gen_diagrams.py                               # grammar/krok.ebnf -> diagrams/
+python tools/export_visualizer.py                          # -> grammar/krok-visualizer.ebnf
 python tools/build_spec.py                                 # spec/krok-spec.md -> .docx
 pwsh tools/finalize.ps1                                    # оновити зміст у Word, експорт PDF
 ```

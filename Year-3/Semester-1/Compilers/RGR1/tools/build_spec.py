@@ -47,6 +47,9 @@ def number_labels(lines):
     for line in lines:
         m = re.match(r"^(#{1,3}) (.+?)(?:\s*\{#([\w:-]+)\})?$", line)
         if m:
+            if m.group(2).endswith("{-}"):     # heading without a number
+                headings.append("")
+                continue
             level = len(m.group(1))
             h[level - 1] += 1
             for i in range(level, 3):
@@ -58,7 +61,7 @@ def number_labels(lines):
             if m.group(3):
                 labels[m.group(3)] = number
             continue
-        m = re.match(r"^(?:Таблиця|@tokentable|@checks)\{#([\w:-]+)\}", line)
+        m = re.match(r"^(?:Таблиця|@tokentable|@checks|@grammarstats)\{#([\w:-]+)\}", line)
         if m:
             tab += 1
             labels[m.group(1)] = f"{h[0]}.{tab}"
@@ -308,11 +311,12 @@ class Builder:
 
     def heading(self, level, title):
         num = self.heading_numbers.pop(0)
+        title = title.replace("{-}", "").strip()
         if level == 1 and self._started:
             self.page_break()
         self._started = True
         par = self.doc.add_paragraph(style=f"Heading {level}")
-        run = par.add_run(f"{num} {title}")
+        run = par.add_run(f"{num} {title}" if num else title)
         set_run_font(run, bold=True, size=16 if level == 1 else 14, italic=level == 3)
 
     # ---- blocks
@@ -435,6 +439,11 @@ class Builder:
                 self.table(rows, m.group(1), m.group(2), widths=[1.5, 5.0, 3.0, 7.0])
                 i += 1
                 continue
+            m = re.match(r"^@grammarstats\{#([\w:-]+)\}\s*(.+)$", line)
+            if m:
+                self.table(grammar_stats(self.grammar), m.group(1), m.group(2), widths=[7.0, 5.0, 4.5])
+                i += 1
+                continue
             m = re.match(r"^@checks\{#([\w:-]+)\}\s*(.+)$", line)
             if m:
                 _, _, report = check_grammar.run()
@@ -488,6 +497,42 @@ class Builder:
         if dup or missing:
             raise SystemExit(f"rule/diagram coverage broken: duplicated={dup} missing={missing}")
         print(f"all {len(counts)} rules presented exactly once with diagrams")
+
+
+def grammar_stats(g):
+    """Rows for the table with the quantitative characteristics of Γ = (N, T, P, S)."""
+    tokens = check_grammar.TOKEN_CLASSES
+
+    def part(roots, stop):
+        names = ebnf.reachable(g, roots, stop=stop) - stop
+        terms, specials = set(), set()
+        for n in names:
+            terms |= ebnf.terminals(g.rules[n].body)
+            specials |= {s for s in _specials(g.rules[n].body)}
+        return names, terms, specials
+
+    syn_names, syn_terms, _ = part(["Program"], tokens)
+    lex_names, lex_terms, lex_special = part(["SourceText", "Alphabet"], frozenset())
+    return [
+        ("Характеристика", "Синтаксична граматика", "Лексична граматика"),
+        ("Аксіома S", "`Program`", "`SourceText`, `Alphabet`"),
+        ("Нетермінали |N|", str(len(syn_names)), str(len(lex_names))),
+        ("Термінали |T|", f"{len(syn_terms)} + {len(tokens)} класи токенів", f"{len(lex_terms)} символів + {len(lex_special)} спец. послідовності"),
+        ("Правила РБНФ |P|", str(len(syn_names)), str(len(lex_names))),
+        ("Клас за Хомським", "тип 2 (контекстно вільна), LL(1)", "тип 2; задає регулярні множини"),
+    ]
+
+
+def _specials(node, acc=None):
+    acc = set() if acc is None else acc
+    if isinstance(node, ebnf.Special):
+        acc.add(node.text)
+    elif isinstance(node, (ebnf.Seq, ebnf.Alt)):
+        for i in node.items:
+            _specials(i, acc)
+    elif isinstance(node, (ebnf.Opt, ebnf.Rep)):
+        _specials(node.item, acc)
+    return acc
 
 
 def split_row(line):
