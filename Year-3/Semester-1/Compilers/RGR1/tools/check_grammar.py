@@ -50,6 +50,10 @@ def run():
     report.append(("Ліва рекурсія (безпосередня та опосередкована) відсутня", not cycles,
                    "; ".join(" → ".join(c) for c in cycles)))
 
+    cycles = ebnf.chain_cycles(g)
+    report.append(("Цикли A ⇒⁺ A (ланцюгові) відсутні", not cycles,
+                   "; ".join(" → ".join(c) for c in cycles)))
+
     conflicts = ll.conflicts()
     report.append(("Синтаксична граматика належить до класу LL(1), отже однозначна", not conflicts,
                    "\n".join(f"{r}: {m}" for r, m in conflicts)))
@@ -71,6 +75,11 @@ def main():
         print(f"{'OK  ' if passed else 'FAIL'} {title}")
         if details:
             print("     " + details.replace("\n", "\n     "))
+    if "--transform" in sys.argv:
+        nullable = sorted(n for n in ll.names if ll.nullable[n])
+        chains = ebnf.chain_productions(g)
+        print(f"\nnullable nonterminals ({len(nullable)}): {', '.join(nullable)}")
+        print(f"chain productions ({len(chains)}): " + ", ".join(f"{a}->{b}" for a, b in chains))
     if "--sets" in sys.argv:
         for n in ll.names:
             print(f"{n:15} nullable={ll.nullable[n]!s:5} FIRST={sorted(ll.first[n])} FOLLOW={sorted(ll.follow[n])}")

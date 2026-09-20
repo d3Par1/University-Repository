@@ -35,7 +35,8 @@ tools/                       перевірка граматики, лексер
 Потрібні Python 3.12+ (`pip install python-docx railroad-diagrams`), Microsoft Edge (рендер PNG) та Microsoft Word (оновлення змісту й PDF).
 
 ```sh
-python tools/check_grammar.py                              # КС, марні символи, ліва рекурсія, LL(1), алфавіт
+python tools/check_grammar.py                              # КС, марні символи, ліва рекурсія, цикли, LL(1), алфавіт
+python tools/check_grammar.py --transform                  # анульовні нетермінали та ланцюгові продукції
 python tools/krok_parse.py --coverage examples/*.krok      # приклади розбираються; базовий покриває всі токени
 python tools/krok_parse.py --invalid examples/invalid/*.krok
 python tools/gen_diagrams.py                               # grammar/krok.ebnf -> diagrams/

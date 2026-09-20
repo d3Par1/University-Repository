@@ -61,7 +61,7 @@ def number_labels(lines):
             if m.group(3):
                 labels[m.group(3)] = number
             continue
-        m = re.match(r"^(?:Таблиця|@tokentable|@checks|@grammarstats)\{#([\w:-]+)\}", line)
+        m = re.match(r"^(?:Таблиця|@tokentable|@checks|@grammarstats|@transforms)\{#([\w:-]+)\}", line)
         if m:
             tab += 1
             labels[m.group(1)] = f"{h[0]}.{tab}"
@@ -439,6 +439,11 @@ class Builder:
                 self.table(rows, m.group(1), m.group(2), widths=[1.2, 4.6, 2.6, 1.6, 6.0])
                 i += 1
                 continue
+            m = re.match(r"^@transforms\{#([\w:-]+)\}\s*(.+)$", line)
+            if m:
+                self.table(transform_rows(self.grammar), m.group(1), m.group(2), widths=[4.5, 12.0], font=11)
+                i += 1
+                continue
             m = re.match(r"^@grammarstats\{#([\w:-]+)\}\s*(.+)$", line)
             if m:
                 self.table(grammar_stats(self.grammar), m.group(1), m.group(2), widths=[7.0, 5.0, 4.5])
@@ -497,6 +502,40 @@ class Builder:
         if dup or missing:
             raise SystemExit(f"rule/diagram coverage broken: duplicated={dup} missing={missing}")
         print(f"all {len(counts)} rules presented exactly once with diagrams")
+
+
+def transform_rows(g):
+    """Rows for the table of standard grammar transformations (lecture 3)."""
+    ll = ebnf.LL1(g, "Program", check_grammar.TOKEN_CLASSES)
+    nullable = sorted(n for n in ll.names if ll.nullable[n])
+    chains = ebnf.chain_productions(g)
+    cycles = ebnf.chain_cycles(g)
+    useless = sorted(set(g.rules) - ebnf.reachable(g, check_grammar.ROOTS)) + \
+              sorted(set(g.rules) - ebnf.productive(g))
+    return [
+        ("Трансформація", "Стан граматики мови Krok"),
+        ("Видалення ε-продукцій",
+         f"правил виду `A = ε` немає: порожній ланцюжок породжують лише метасимволи `[ ]` та `{{ }}`. "
+         f"Анульовними є {len(nullable)} нетермінали: " + ", ".join(f"`{n}`" for n in nullable) +
+         ". Перевірка вимагає, щоб тіло `[ ]` чи `{{ }}` само не було анульовним"),
+        ("Видалення марних символів",
+         "не потрібне: марних символів немає" if not useless else ", ".join(useless)),
+        ("Видалення ланцюгових продукцій",
+         f"{len(chains)} ланцюгових продукцій збережено свідомо: вони або класифікують конструкції "
+         "(`Statement`, `Operand`, `Type`, `Token`), або іменують рівні пріоритету "
+         "(`Expression = OrExpr`). Для LL(1)-аналізу вони нешкідливі — кожній відповідає один виклик "
+         "процедури рекурсивного спуску"),
+        ("Видалення циклів",
+         "не потрібне: циклів `A ⇒⁺ A` немає" if not cycles else "; ".join(" → ".join(c) for c in cycles)),
+        ("Факторизація",
+         "застосовано до `SimpleStmt` (спільний префікс — вираз) та до груп операторів `AddOp`, `MulOp`"),
+        ("Заміна рекурсії ітерацією",
+         "застосовано до всіх рівнів виразів і до списків `X { ',' X }` — див. розд. 8.2"),
+        ("Нормальні форми Хомського та Грейбах",
+         "не застосовуються: вони потрібні алгоритмам загального КВ-розбору (наприклад, CYK), "
+         "тоді як для рекурсивного спуску достатньо відсутності лівої рекурсії та факторизації; "
+         "крім того, бінарна нормальна форма несумісна з метасимволами РБНФ"),
+    ]
 
 
 def grammar_stats(g):

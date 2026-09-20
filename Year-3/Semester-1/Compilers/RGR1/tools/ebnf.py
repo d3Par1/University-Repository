@@ -409,6 +409,41 @@ class LL1:
         return cycles
 
 
+def alternatives(node):
+    """Top-level alternatives of a rule body (a body without '|' is a single alternative)."""
+    return list(node.items) if isinstance(node, Alt) else [node]
+
+
+def chain_productions(g: Grammar, names=None):
+    """Chain productions A -> B (a whole alternative that is just one nonterminal)."""
+    names = set(g.rules) if names is None else set(names)
+    out = []
+    for name in sorted(names):
+        for alt in alternatives(g.rules[name].body):
+            if isinstance(alt, NonTerm) and alt.name in g.rules:
+                out.append((name, alt.name))
+    return out
+
+
+def chain_cycles(g: Grammar, names=None):
+    """Cycles A =>+ A built only from chain productions (lecture 3: 'видалення циклів')."""
+    edges = {}
+    for a, b in chain_productions(g, names):
+        edges.setdefault(a, set()).add(b)
+    cycles = []
+    for start in edges:
+        stack, seen = [(start, [start])], set()
+        while stack:
+            cur, path = stack.pop()
+            for nxt in edges.get(cur, ()):
+                if nxt == start:
+                    cycles.append(path + [start])
+                elif nxt not in seen:
+                    seen.add(nxt)
+                    stack.append((nxt, path + [nxt]))
+    return cycles
+
+
 def terminals(node, acc=None):
     acc = set() if acc is None else acc
     if isinstance(node, Term):
