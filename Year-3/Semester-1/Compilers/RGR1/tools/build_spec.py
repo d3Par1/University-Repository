@@ -433,10 +433,10 @@ class Builder:
                 continue
             m = re.match(r"^@tokentable\{#([\w:-]+)\}\s*(.+)$", line)
             if m:
-                rows = [("Код", "Приклади лексем", "Токен", "Неформальний опис")]
+                rows = [("Код", "Приклади лексем", "Токен", "Клас", "Неформальний опис")]
                 rows += [(str(c), f"`{ex}`" if tok not in ("id", "intnum", "floatnum", "strlit") else ex,
-                          tok, desc) for c, ex, tok, desc in token_table()]
-                self.table(rows, m.group(1), m.group(2), widths=[1.5, 5.0, 3.0, 7.0])
+                          tok, cls, desc) for c, ex, tok, cls, desc in token_table()]
+                self.table(rows, m.group(1), m.group(2), widths=[1.2, 4.6, 2.6, 1.6, 6.0])
                 i += 1
                 continue
             m = re.match(r"^@grammarstats\{#([\w:-]+)\}\s*(.+)$", line)
@@ -519,7 +519,7 @@ def grammar_stats(g):
         ("Нетермінали |N|", str(len(syn_names)), str(len(lex_names))),
         ("Термінали |T|", f"{len(syn_terms)} + {len(tokens)} класи токенів", f"{len(lex_terms)} символів + {len(lex_special)} спец. послідовності"),
         ("Правила РБНФ |P|", str(len(syn_names)), str(len(lex_names))),
-        ("Клас за Хомським", "тип 2 (контекстно вільна), LL(1)", "тип 2; задає регулярні множини"),
+        ("Клас мови", "контекстно вільна (тип 2), LL(1)", "регулярна (тип 3); ДСА"),
     ]
 
 

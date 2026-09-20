@@ -49,24 +49,29 @@ SEMICOLON_TRIGGERS = {"Ident", "IntLit", "FloatLit", "StringLit", "true", "false
 
 
 def token_table():
-    """Rows (code, examples, token, description) for the spec, in presentation order."""
+    """Rows (code, examples, token, class, description) for the spec, in presentation order.
+
+    The class column follows the classification used in Медведєва/Третяк [2]:
+    TRM — keywords, operators and delimiters; IDN — identifiers; CON — literals.
+    Rows marked "—" are lexemes that are not tokens (they never reach the parser).
+    """
     rows = [
-        ("x, total, Point, _tmp1", "id", "ідентифікатор"),
-        ("0, 42, 1000", "intnum", "ціле без знака"),
-        ("3.14, 2., .5, 1e3, 6.02E+23", "floatnum", "дійсне без знака"),
-        ('"", "Krok", "a\\tb\\n"', "strlit", "рядковий літерал"),
-        ("true", "boolval", "логічне значення"),
-        ("false", "boolval", "логічне значення"),
+        ("x, total, Point, _tmp1", "id", "IDN", "ідентифікатор"),
+        ("0, 42, 1000", "intnum", "CON", "ціле без знака"),
+        ("3.14, 2., .5, 1e3, 6.02E+23", "floatnum", "CON", "дійсне без знака"),
+        ('"", "Krok", "a\\tb\\n"', "strlit", "CON", "рядковий літерал"),
+        ("true", "boolval", "CON", "логічне значення"),
+        ("false", "boolval", "CON", "логічне значення"),
     ]
-    rows += [(k, "keyword", f"символ {k}") for k in KEYWORDS]
+    rows += [(k, "keyword", "TRM", f"символ {k}") for k in KEYWORDS]
     order = ["+", "-", "*", "/", "%", "**", "==", "!=", "<", "<=", ">", ">=",
              "&&", "||", "!", "=", ":=", "++", "--", "&"]
-    rows += [(op, OPERATORS[op][0], OPERATORS[op][1]) for op in order]
-    rows += [(d, tok, desc) for d, (tok, desc) in DELIMITERS.items()]
+    rows += [(op, OPERATORS[op][0], "TRM", OPERATORS[op][1]) for op in order]
+    rows += [(d, tok, "TRM", desc) for d, (tok, desc) in DELIMITERS.items()]
     rows += [
-        ("// коментар", "comment", "однорядковий коментар (ігнорується)"),
-        ("\\32", "ws", "пробіл (ігнорується)"),
-        ("\\t", "ws", "горизонтальна табуляція (ігнорується)"),
-        ("\\n, \\r\\n", "eol", "кінець рядка (може породити ;)"),
+        ("// коментар", "comment", "—", "однорядковий коментар (ігнорується)"),
+        ("\\32", "ws", "—", "пробіл (ігнорується)"),
+        ("\\t", "ws", "—", "горизонтальна табуляція (ігнорується)"),
+        ("\\n, \\r\\n", "eol", "—", "кінець рядка (ігнорується; може породити ;)"),
     ]
     return [(i + 1, *r) for i, r in enumerate(rows)]

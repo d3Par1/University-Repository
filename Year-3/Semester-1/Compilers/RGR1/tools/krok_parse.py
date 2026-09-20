@@ -75,7 +75,7 @@ def coverage(path):
     seen = {t.row for t in toks if not t.implicit} | ignorable
     explicit_semicolon = any(t.kind == ";" and not t.implicit for t in toks)
     missing = []
-    for code, example, token, _ in token_table():
+    for code, example, token, _cls, _desc in token_table():
         key = {"id": "id", "intnum": "intnum", "floatnum": "floatnum", "strlit": "strlit"}.get(token, example)
         if token == ";" or example == ";":
             if not explicit_semicolon:
