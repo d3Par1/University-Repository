@@ -15,7 +15,9 @@
 
 ```
 grammar/krok.ebnf            повна граматика (РБНФ) — єдине джерело для діаграм і тексту
-grammar/krok-visualizer.ebnf та сама граматика у діалекті EBNF Visualizer (генерується)
+grammar/krok-visualizer.ebnf та сама граматика для EBNF Visualizer (генерується)
+grammar/krok-iso14977.ebnf   те саме у нотації ISO/IEC 14977 (EBNF 2 RailRoad)
+grammar/krok-w3c.ebnf        те саме у нотації W3C (Railroad Diagram Generator)
 spec/krok-spec.md            текст специфікації з директивами збирання
 spec/title-template.docx     зразок титульного аркуша
 examples/*.krok              контрольні приклади (base_example.krok — базовий приклад)
