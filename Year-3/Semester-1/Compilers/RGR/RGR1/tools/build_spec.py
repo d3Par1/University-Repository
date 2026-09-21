@@ -254,6 +254,12 @@ class Builder:
                 sp.set(qn("w:line"), "240")
                 sp.set(qn("w:lineRule"), "auto")
             anchor.addprevious(el)
+        sign = ROOT / "spec" / "signature.png"
+        if sign.exists():                       # scanned signature on the author line
+            for par in self.doc.paragraphs:
+                if "Степаненко Назар Юрійович" in par.text and "_ _ _" in par.text:
+                    par.add_run().add_picture(str(sign), height=Cm(1.0))
+                    break
         # drop trailing empty paragraphs of the template so the title fits one page
         self.page_break()
 
