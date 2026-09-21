@@ -43,6 +43,7 @@ python tools/gen_diagrams.py                               # grammar/krok.ebnf -
 python tools/export_visualizer.py                          # -> grammar/krok-visualizer.ebnf
 python tools/build_spec.py                                 # spec/krok-spec.md -> .docx
 pwsh tools/finalize.ps1                                    # оновити зміст у Word, експорт PDF
+python tools/build_stage.py 1-2 --name "етап 1"       # часткова версія для етапу РГР
 ```
 
 `build_spec.py` зупиняє збирання, якщо граматика не проходить самоперевірку або якщо якесь правило не наведене в розділах 2–3 рівно один раз разом зі своєю діаграмою.
