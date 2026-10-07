@@ -1,6 +1,6 @@
 # Звіт до роботи КП 1 (структура - за розд. 4 матеріалів до роботи): -> ТВ-43.КП_1.СтепаненкоНЮ.docx
 # Протокол тестування формується зі справжніх запусків krok_lex.py.
-import contextlib, io, os, sys
+import contextlib, io, os, sys, textwrap
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
@@ -49,7 +49,10 @@ def heading(text):
 
 
 def code(lines, size=8.5):
+    wrapped = []                                 # довгі рядки (словники таблиць) переносимо акуратно
     for line in lines:
+        wrapped += textwrap.wrap(line, 100, subsequent_indent='    ') if len(line) > 100 else [line]
+    for line in wrapped:
         p = doc.add_paragraph()
         pf = p.paragraph_format
         pf.space_after, pf.space_before, pf.line_spacing, pf.left_indent = Pt(0), Pt(0), 1.0, Cm(0.3)
