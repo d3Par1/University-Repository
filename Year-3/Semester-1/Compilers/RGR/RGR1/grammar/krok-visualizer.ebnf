@@ -1,0 +1,115 @@
+(* Граматика мови Krok для інструменту EBNF Visualizer (dotnet.jku.at/applications/visualizer)
+   Згенеровано з grammar/krok.ebnf програмою tools/export_visualizer.py — не редагувати вручну.
+   Load Grammar... -> обрати правило у меню Rule -> діаграма Вірта. *)
+
+
+(* Структура програми *)
+Program = PackageClause ";" { ImportDecl ";" } { TopLevelDecl ";" } .
+PackageClause = "package" Ident .
+ImportDecl = "import" StringLit .
+TopLevelDecl = VarDecl | ConstDecl | TypeDecl | FuncDecl .
+
+(* Оголошення *)
+VarDecl = "var" IdentList ( Type [ "=" ExpressionList ] | "=" ExpressionList ) .
+ConstDecl = "const" Ident [ Type ] "=" Expression .
+TypeDecl = "type" Ident ( Type | StructType ) .
+StructType = "struct" "{" FieldList "}" .
+FieldList = [ FieldDecl FieldTail ] .
+FieldTail = [ ";" FieldList ] .
+FieldDecl = IdentList Type .
+IdentList = Ident { "," Ident } .
+
+(* Типи *)
+Type = BasicType | TypeName | ArrayType .
+BasicType = "int" | "float" | "bool" | "string" .
+TypeName = Ident .
+ArrayType = "[" Expression "]" Type .
+
+(* Функції *)
+FuncDecl = "func" Ident "(" [ ParamList ] ")" [ Type ] Block .
+ParamList = ParamGroup { "," ParamGroup } .
+ParamGroup = IdentList ParamType .
+ParamType = [ "*" ] Type .
+
+(* Інструкції *)
+Block = "{" StatementList "}" .
+StatementList = [ Statement StatementTail ] .
+StatementTail = [ ";" StatementList ] .
+Statement = VarDecl | ConstDecl | IfStmt | ForStmt | ReturnStmt | IoStmt | Block | SimpleStmt .
+SimpleStmt = Expression [ AssignOp Expression | IncDecOp ] .
+AssignOp = "=" | ":=" .
+IncDecOp = "++" | "--" .
+IfStmt = "if" Expression Block [ "else" ( IfStmt | Block ) ] .
+ForStmt = "for" ForHeader Block .
+ForHeader = SimpleStmt [ ";" Expression ";" SimpleStmt ] .
+ReturnStmt = "return" [ Expression ] .
+IoStmt = "fmt" "." ( OutputCall | InputCall ) .
+OutputCall = ( "Print" | "Println" ) "(" [ ExpressionList ] ")" .
+InputCall = "Scan" "(" AddrExpr { "," AddrExpr } ")" .
+
+(* Вирази *)
+ExpressionList = Expression { "," Expression } .
+Expression = OrExpr .
+OrExpr = AndExpr { "||" AndExpr } .
+AndExpr = RelExpr { "&&" RelExpr } .
+RelExpr = AddExpr [ RelOp AddExpr ] .
+AddExpr = MulExpr { AddOp MulExpr } .
+MulExpr = UnaryExpr { MulOp UnaryExpr } .
+UnaryExpr = UnaryOp UnaryExpr | PowerExpr .
+PowerExpr = PrimaryExpr [ "**" UnaryExpr ] .
+PrimaryExpr = Operand { Selector | Index | Arguments } .
+Selector = "." Ident .
+Index = "[" Expression "]" .
+Arguments = "(" [ ArgumentList ] ")" .
+ArgumentList = Argument { "," Argument } .
+Argument = AddrExpr | Expression .
+AddrExpr = "&" PrimaryExpr .
+Operand = Literal | Ident | Dereference | Conversion | LenCall | ArrayLit | "(" Expression ")" .
+Dereference = "*" Ident .
+Conversion = BasicType "(" Expression ")" .
+LenCall = "len" "(" Expression ")" .
+ArrayLit = ArrayType LiteralValue .
+LiteralValue = "{" [ Element ElementTail ] "}" .
+ElementTail = [ "," [ Element ElementTail ] ] .
+Element = Expression | LiteralValue .
+Literal = IntLit | FloatLit | StringLit | BoolLit .
+BoolLit = "true" | "false" .
+RelOp = "==" | "!=" | "<" | "<=" | ">" | ">=" .
+AddOp = "+" | "-" .
+MulOp = "*" | "/" | "%" .
+UnaryOp = "-" | "+" | "!" .
+
+(* Лексеми *)
+SourceText = { Lexeme } .
+Lexeme = Token | Comment | WhiteSpace | EndOfLine .
+Token = Ident | Keyword | IntLit | FloatLit | StringLit | BoolLit | Operator | Delimiter .
+Keyword = "package" | "import" | "func" | "var" | "const" | "type" | "struct" | "if" | "else" | "for" | "return" | "int" | "float" | "bool" | "string" | "len" | "fmt" | "Print" | "Println" | "Scan" .
+Operator = ArithOp | RelOp | LogicOp | AssignOp | IncDecOp | "&" .
+ArithOp = "+" | "-" | "*" | "/" | "%" | "**" .
+LogicOp = "&&" | "||" | "!" .
+Delimiter = "(" | ")" | "[" | "]" | "{" | "}" | "," | ";" | "." .
+
+(* Ідентифікатори та літерали *)
+Ident = Letter { Letter | Digit } .
+IntLit = "0" | NonZeroDigit { Digit } .
+FloatLit = Digits "." [ Digits ] [ Exponent ] | Digits Exponent | "." Digits [ Exponent ] .
+Digits = Digit { Digit } .
+Exponent = ( "e" | "E" ) [ "+" | "-" ] Digits .
+StringLit = '"' { StringChar } '"' .
+StringChar = OrdinaryChar | EscapeSeq .
+EscapeSeq = "\" ( "n" | "t" | "r" | '"' | "\" ) .
+OrdinaryChar = '? будь-який символ Unicode, крім '"', '\', '\n' та '\r' ?' .
+Comment = "//" { CommentChar } .
+CommentChar = "? будь-який символ Unicode, крім '\n' та '\r' ?" .
+
+(* Алфавіт *)
+Alphabet = Letter | Digit | SpecialChar | WhiteSpace | EndOfLine | OtherChar .
+Letter = LowerLetter | UpperLetter | "_" .
+LowerLetter = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" .
+UpperLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" .
+Digit = "0" | NonZeroDigit .
+NonZeroDigit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" .
+SpecialChar = "+" | "-" | "*" | "/" | "%" | "=" | "!" | "<" | ">" | "&" | "|" | ":" | ";" | "," | "." | "(" | ")" | "[" | "]" | "{" | "}" | '"' | "\" .
+WhiteSpace = " " | "\t" .
+EndOfLine = "\n" | "\r" "\n" .
+OtherChar = "? інший символ Unicode (лише в StringLit та Comment) ?" .

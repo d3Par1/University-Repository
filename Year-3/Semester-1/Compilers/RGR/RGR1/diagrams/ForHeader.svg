@@ -1,0 +1,23 @@
+<svg class="railroad-diagram" height="71" viewBox="0 0 582.0 71" width="582.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g transform="translate(.5 .5)">
+<g>
+<path d="M20 30v20m10 -20v20m-10 -10h20" /></g><path d="M40 40h10" /><g>
+<path d="M50 40h0.0" /><path d="M532.0 40h0.0" /><g class="non-terminal ">
+<path d="M50.0 40h0.0" /><path d="M155.0 40h0.0" /><rect height="22" width="105" x="50" y="29"></rect><text x="102.5" y="44">SimpleStmt</text></g><path d="M155.0 40h10" /><g>
+<path d="M165.0 40h0.0" /><path d="M532.0 40h0.0" /><path d="M165.0 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10" /><g>
+<path d="M185.0 20h327.0" /></g><path d="M512.0 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10" /><path d="M165.0 40h20" /><g>
+<path d="M185.0 40h0.0" /><path d="M512.0 40h0.0" /><g class="terminal ">
+<path d="M185.0 40h0.0" /><path d="M213.5 40h0.0" /><rect height="22" rx="10" ry="10" width="28.5" x="185" y="29"></rect><text x="199.25" y="44">;</text></g><path d="M213.5 40h10" /><path d="M223.5 40h10" /><g class="non-terminal ">
+<path d="M233.5 40h0.0" /><path d="M338.5 40h0.0" /><rect height="22" width="105" x="233.5" y="29"></rect><text x="286" y="44">Expression</text></g><path d="M338.5 40h10" /><path d="M348.5 40h10" /><g class="terminal ">
+<path d="M358.5 40h0.0" /><path d="M387.0 40h0.0" /><rect height="22" rx="10" ry="10" width="28.5" x="358.5" y="29"></rect><text x="372.75" y="44">;</text></g><path d="M387.0 40h10" /><path d="M397.0 40h10" /><g class="non-terminal ">
+<path d="M407.0 40h0.0" /><path d="M512.0 40h0.0" /><rect height="22" width="105" x="407" y="29"></rect><text x="459.5" y="44">SimpleStmt</text></g></g><path d="M512.0 40h20" /></g></g><path d="M532.0 40h10" /><path d="M 542.0 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path></g><style>/* <![CDATA[ */
+
+svg.railroad-diagram { background-color: #ffffff; }
+svg.railroad-diagram path { stroke-width: 1.4; stroke: #000; fill: none; }
+svg.railroad-diagram text { font: 14px Consolas, 'DejaVu Sans Mono', monospace; text-anchor: middle; white-space: pre; fill: #000; }
+svg.railroad-diagram text.comment { font: italic 12px Consolas, monospace; }
+svg.railroad-diagram rect { stroke-width: 1.4; stroke: #000; fill: #fff; }
+svg.railroad-diagram g.non-terminal text { font-style: italic; }
+
+/* ]]> */
+</style></svg>

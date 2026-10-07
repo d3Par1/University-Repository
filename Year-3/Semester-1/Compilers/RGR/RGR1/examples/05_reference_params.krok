@@ -1,0 +1,31 @@
+// Передача параметрів за посиланням: сортування масиву
+package main
+
+import "fmt"
+
+const N = 6
+
+func swap(a, b *int) {
+	t := *a
+	*a = *b
+	*b = t
+}
+
+func sort(a *[N]int) {
+	for i := 0; i < N-1; i++ {
+		for j := 0; j < N-1-i; j++ {
+			if (*a)[j] > (*a)[j+1] {
+				swap(&(*a)[j], &(*a)[j+1])
+			}
+		}
+	}
+}
+
+func main() {
+	var v [N]int
+	for i := 0; i < N; i++ {
+		fmt.Scan(&v[i])
+	}
+	sort(&v)
+	fmt.Println(v[0], v[1], v[2], v[3], v[4], v[5])
+}
