@@ -1,0 +1,31 @@
+// Цикли: з передумовою та з лічильником (трикомпонентний)
+package main
+
+import "fmt"
+
+func main() {
+	var n int
+	fmt.Scan(&n)
+
+	// цикл з передумовою: сума цифр числа
+	digits := 0
+	for n > 0 {
+		digits = digits + n%10
+		n = n / 10
+	}
+	fmt.Println("сума цифр:", digits)
+
+	// вкладені цикли з лічильником: таблиця множення 3x3
+	for i := 1; i <= 3; i++ {
+		for j := 1; j <= 3; j++ {
+			fmt.Print(i*j, "\t")
+		}
+		fmt.Println()
+	}
+
+	// лічильник можна змінювати в тілі циклу
+	for k := 10; k > 0; k-- {
+		k = k - 2
+		fmt.Print(k, " ")
+	}
+}
