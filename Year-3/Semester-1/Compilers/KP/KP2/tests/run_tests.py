@@ -42,20 +42,20 @@ CASES = [   # (група плану тестування, опис, текст 
     ('2 зайвий термінал', 'зайва )', body('x = (1 + 2))'), False),
     ('2 зайвий термінал', 'зайва кома', body('fmt.Println(x,)'), False),
     ('2 зайвий термінал', 'зайве int', 'package main\nvar x int int\n', False),
-    ('3 ключове слово', 'fucn', 'package main\nfucn main() {\n}\n', False),
-    ('3 ключове слово', 'retrun', body('retrun 1'), False),
-    ('4 помилковий оператор', '+ *', body('x = 3 + * 4'), False),
-    ('4 помилковий оператор', '<>', body('a = b <> c'), False),
-    ('4 помилковий оператор', 'a < b < c', body('x = 1 < 2 < 3'), False),
-    ('5 пріоритет', 'a + b * c', body('x = a + b * c'), True),
-    ('5 пріоритет', '-2 ** 2 && !f || g', body('ok = -2 ** 2 > 0 && !f || g'), True),
-    ('6 асоціативність', 'a - b - c', body('x = a - b - c'), True),
-    ('6 асоціативність', '2 ** 3 ** 2', body('y = 2 ** 3 ** 2'), True),
+    ('3 помилка у наборі ключового слова', 'fucn', 'package main\nfucn main() {\n}\n', False),
+    ('3 помилка у наборі ключового слова', 'retrun', body('retrun 1'), False),
+    ('4 помилковий оператор у виразах', '+ *', body('x = 3 + * 4'), False),
+    ('4 помилковий оператор у виразах', '<>', body('a = b <> c'), False),
+    ('4 помилковий оператор у виразах', 'a < b < c', body('x = 1 < 2 < 3'), False),
+    ('5 перевірка пріоритетності операторів', 'a + b * c', body('x = a + b * c'), True),
+    ('5 перевірка пріоритетності операторів', '-2 ** 2 && !f || g', body('ok = -2 ** 2 > 0 && !f || g'), True),
+    ('6 перевірка асоціативності операторів', 'a - b - c', body('x = a - b - c'), True),
+    ('6 перевірка асоціативності операторів', '2 ** 3 ** 2', body('y = 2 ** 3 ** 2'), True),
 ]
 programs = sorted(glob.glob(os.path.join(KP, 'KP1', 'tests', '*.krok')))
 invalid = sorted(glob.glob(os.path.join(KP, '..', 'RGR', 'RGR1', 'examples', 'invalid', '*.krok')))
-CASES += [('7 програми', os.path.basename(p), open(p, encoding='utf-8').read(), True) for p in programs]
-CASES += [('8 некоректні програми', os.path.basename(p), open(p, encoding='utf-8').read(), False) for p in invalid]
+CASES += [('7 вкладені конструкції' if p.endswith('nested.krok') else '8 коректні програми', os.path.basename(p), open(p, encoding='utf-8').read(), True) for p in programs]
+CASES += [('9 некоректні програми', os.path.basename(p), open(p, encoding='utf-8').read(), False) for p in invalid]
 
 if __name__ == '__main__':
     failed = 0
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         got, ref = ours(text), theirs(text)
         ok = got == expected and ref == expected
         failed += not ok
-        print('{0:4} {1:24} {2}{3}'.format('ok' if ok else 'FAIL', group, name,
+        print('{0:4} {1:40} {2}{3}'.format('ok' if ok else 'FAIL', group, name,
                                            '' if ok else '  (парсер {0}, еталон {1})'.format(got, ref)))
     print('-' * 40)
     print('усі {0} тестів пройдено'.format(len(CASES)) if not failed else 'не пройдено: {0}'.format(failed))
