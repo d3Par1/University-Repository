@@ -1,0 +1,15 @@
+{
+  "name": "hello-devops-site",
+  "version": "2.0.2",
+  "private": true,
+  "description": "Static page for DevOps lab 2; validated and minified in the build stage of the Dockerfile",
+  "scripts": {
+    "validate": "html-validate src/*.html",
+    "minify": "html-minifier-terser --input-dir src --output-dir dist --file-ext html --collapse-whitespace --remove-comments --minify-css true",
+    "build": "npm run validate && npm run minify && cp src/favicon.svg dist/"
+  },
+  "devDependencies": {
+    "html-minifier-terser": "7.2.0",
+    "html-validate": "11.18.0"
+  }
+}

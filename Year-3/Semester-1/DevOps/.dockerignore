@@ -1,0 +1,3 @@
+# Контекст збірки потребує лише index.html, тому все інше відкидаємо (.git, terraform/, info.txt тощо).
+*
+!index.html

@@ -1,0 +1,33 @@
+# Шаблон конфігурації: під час старту контейнера entrypoint-скрипт nginx
+# підставляє сюди змінні оточення APP_* і кладе результат у /etc/nginx/conf.d/.
+server {
+    listen       80;
+    listen       [::]:80;
+    server_name  localhost;
+    root         /usr/share/nginx/html;
+    index        index.html;
+
+    # Не показувати версію nginx у заголовку Server і на сторінках помилок
+    server_tokens off;
+
+    # Той самий образ, різні середовища: значення приходять з -e / environment
+    add_header X-App-Env     "${APP_ENV}" always;
+    add_header X-App-Version "${APP_VERSION}" always;
+
+    location / {
+        try_files $uri $uri/ =404;
+        # Cache-Control: no-cache - браузер щоразу перевіряє ETag і отримує нову
+        # версію сторінки після розгортання (expires, а не add_header: add_header
+        # усередині location скасував би заголовки X-App-* рівня server)
+        expires -1;
+    }
+
+    # Ендпоінт для HEALTHCHECK і перевірок з compose / CI
+    location = /healthz {
+        access_log   off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    error_page 404 /404.html;
+}

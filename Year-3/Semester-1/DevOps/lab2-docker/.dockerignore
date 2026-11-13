@@ -1,0 +1,7 @@
+# У контекст збірки відправляємо лише те, що використовує Dockerfile
+*
+!package.json
+!package-lock.json
+!.htmlvalidate.json
+!src/
+!nginx/

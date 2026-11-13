@@ -1,0 +1,93 @@
+name: lab2-docker
+
+# ЛР2: збірка, перевірка й публікація образу hello-devops у GitHub Container Registry.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lab2-docker/**"
+      - ".github/workflows/lab2-docker.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/d3par1/hello-devops
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Lint Dockerfile (hadolint)
+        run: docker run --rm -i hadolint/hadolint:v2.15.1 hadolint - < lab2-docker/Dockerfile
+
+      - name: Validate compose.yaml
+        run: docker compose -f lab2-docker/compose.yaml config -q
+
+  build-test-push:
+    name: Build, test, scan, push
+    needs: lint
+    runs-on: ubuntu-24.04
+    # Право запису в реєстр має лише ця задача
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Read version
+        run: echo "APP_VERSION=$(jq -r .version lab2-docker/package.json)" >> "$GITHUB_ENV"
+
+      - name: Build and start (compose, wait for healthy)
+        run: docker compose -f lab2-docker/compose.yaml up -d --build --wait
+
+      - name: Smoke test
+        run: docker compose -f lab2-docker/compose.yaml --profile test run --rm smoke
+
+      - name: Container logs
+        if: always()
+        run: docker compose -f lab2-docker/compose.yaml logs --no-color web
+
+      - name: Stop
+        if: always()
+        run: docker compose -f lab2-docker/compose.yaml down
+
+      - name: Scan image (Trivy, fail on fixable HIGH/CRITICAL)
+        run: >
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
+          aquasec/trivy:0.76.2 image --scanners vuln --severity HIGH,CRITICAL
+          --ignore-unfixed --exit-code 1 --no-progress "hello-devops:${APP_VERSION}"
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      # Публікується саме той образ, що пройшов перевірки: без повторної збірки
+      - name: Tag and push
+        run: |
+          SHORT_SHA="${GITHUB_SHA::7}"
+          echo "SHORT_SHA=${SHORT_SHA}" >> "$GITHUB_ENV"
+          docker tag "hello-devops:${APP_VERSION}" "${IMAGE}:${APP_VERSION}"
+          docker tag "hello-devops:${APP_VERSION}" "${IMAGE}:sha-${SHORT_SHA}"
+          docker push "${IMAGE}:${APP_VERSION}"
+          docker push "${IMAGE}:sha-${SHORT_SHA}"
+
+      - name: Pull by digest and run
+        run: |
+          DIGEST_REF="$(docker inspect --format '{{index .RepoDigests 0}}' "${IMAGE}:sha-${SHORT_SHA}")"
+          echo "Pushed: ${DIGEST_REF}"
+          docker image rm "${IMAGE}:${APP_VERSION}" "${IMAGE}:sha-${SHORT_SHA}" "hello-devops:${APP_VERSION}"
+          docker pull "${DIGEST_REF}"
+          docker run -d --name from-registry -p 8081:80 "${DIGEST_REF}"
+          for _ in $(seq 1 30); do
+            [ "$(docker inspect --format '{{.State.Health.Status}}' from-registry)" = healthy ] && break
+            sleep 1
+          done
+          curl -fsS http://localhost:8081/ | grep -q "Hello, DevOps World!"
+          curl -fsSI http://localhost:8081/ | grep -i '^x-app-version'
+          echo "Image from the registry works: ${DIGEST_REF}"

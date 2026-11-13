@@ -1,0 +1,45 @@
+# Опис запуску всього проєкту одним файлом (лекція 3, слайд 32).
+#   docker compose up -d --wait                    # зібрати/запустити web і дочекатися healthy
+#   docker compose --profile test run --rm smoke   # перевірка web за іменем сервісу
+#   docker compose down
+name: hello-devops
+
+services:
+  web:
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION:-2.0.2}
+        NPM_REGISTRY: ${NPM_REGISTRY:-https://registry.npmjs.org/}
+    image: hello-devops:${APP_VERSION:-2.0.2}
+    ports:
+      - "8080:80"
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+    restart: unless-stopped
+    # Обмеження ресурсів (cgroups) і привілеїв, як у docker run з п. 3
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 64M
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  # Тестовий клієнт: запускається лише з профілем test, коли web уже healthy
+  smoke:
+    image: curlimages/curl:8.23.0
+    profiles: ["test"]
+    depends_on:
+      web:
+        condition: service_healthy
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        set -e
+        curl -fsS http://web/ | grep -q 'Hello, DevOps World!'
+        curl -fsS http://web/healthz
+        curl -fsSI http://web/ | grep -i '^x-app-'
+        echo "smoke: OK, web знайдено за іменем сервісу"

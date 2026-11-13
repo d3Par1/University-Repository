@@ -1,0 +1,51 @@
+name: CI
+
+# Конвеєр запускається автоматично на кожен push у гілку main.
+on:
+  push:
+    branches: [main]
+
+# Конвеєру потрібне лише читання коду, жодних інших прав.
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Test/Lint
+    # Конкретна версія образу раннера, а не рухомий ubuntu-latest.
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Lint Dockerfile (hadolint)
+        run: docker run --rm -i hadolint/hadolint:v2.15.1 hadolint - < Dockerfile
+
+      - name: Report
+        run: echo "Linting complete"
+
+  build:
+    name: Build/Package
+    runs-on: ubuntu-24.04
+    # Образ збирається лише тоді, коли перевірки пройшли.
+    needs: lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Build Docker image
+        run: docker build -t my-app:latest .
+
+      - name: Smoke test
+        run: |
+          docker run -d --name smoke -p 8080:80 my-app:latest
+          for _ in $(seq 1 10); do
+            if curl -fs http://localhost:8080 | grep -q "Hello, DevOps World!"; then
+              echo "Smoke test passed"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Page did not return the expected text"
+          docker logs smoke
+          exit 1

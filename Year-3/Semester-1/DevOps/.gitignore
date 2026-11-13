@@ -1,0 +1,15 @@
+# Службові каталоги інструментів, не частина проєкту
+.claude/
+.playwright-mcp/
+
+# Terraform: кеш провайдерів, стан і файл, який створює сам Terraform.
+# .terraform.lock.hcl навпаки комітимо: він фіксує версії провайдерів.
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+terraform/devops_iac_output.txt
+
+# ЛР2: залежності й результат збірки сайту створюються в Docker, не в репозиторії
+lab2-docker/node_modules/
+lab2-docker/dist/
