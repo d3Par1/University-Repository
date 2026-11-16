@@ -1,0 +1,35 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	n           int
+)
+
+.funcs(
+	factorial   int     1
+)
+
+.labels(
+	m1          7
+)
+
+.code(
+	n           r-val
+	1           int
+	<=          rel_op
+	m1          label
+	JF          jf
+	1           int
+	RET
+	m1          label
+	:           colon
+	n           r-val
+	0           int
+	+           math_op
+	n           r-val
+	1           int
+	-           math_op
+	factorial   CALL
+	*           math_op
+	RET
+)

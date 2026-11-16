@@ -1,0 +1,29 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	msg         string
+)
+
+.globVarList(
+	$pend
+	$out
+)
+
+.labels(
+	m1          5
+)
+
+.code(
+	$pend       r-val
+	m1          label
+	JF          jf
+	$out        r-val
+	OUT         out_op
+	m1          label
+	:           colon
+	msg         r-val
+	OUT         out_op
+	runtime_error label
+	JMP         jump
+)

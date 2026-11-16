@@ -1,0 +1,57 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	base        float
+	e           int
+)
+
+.funcs(
+	power       float   2
+)
+
+.labels(
+	m1          9
+	m2          25
+	m3          23
+)
+
+.code(
+	e           r-val
+	0           int
+	==          rel_op
+	m1          label
+	JF          jf
+	1.0         float
+	RET
+	m2          label
+	JMP         jump
+	m1          label
+	:           colon
+	e           r-val
+	0           int
+	<           rel_op
+	m3          label
+	JF          jf
+	1.0         float
+	base        r-val
+	e           r-val
+	NEG         math_op
+	power       CALL
+	/           math_op
+	RET
+	m3          label
+	:           colon
+	m2          label
+	:           colon
+	base        r-val
+	1.0         float
+	*           math_op
+	base        r-val
+	e           r-val
+	1           int
+	-           math_op
+	power       CALL
+	*           math_op
+	RET
+)

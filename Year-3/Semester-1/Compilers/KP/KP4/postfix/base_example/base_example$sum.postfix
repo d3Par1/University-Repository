@@ -1,0 +1,127 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	v[0]        int
+	v[1]        int
+	v[2]        int
+	v[3]        int
+	v[4]        int
+	s           int
+	i           int
+)
+
+.funcs(
+	$halt       void    1
+)
+
+.labels(
+	m1          6
+	m2          15
+	m3          24
+	m4          91
+	m5          85
+	m6          36
+	m7          46
+	m8          56
+	m9          66
+	m10         76
+)
+
+.code(
+	s           l-val
+	0           int
+	=           assign_op
+	i           l-val
+	0           int
+	=           assign_op
+	m1          label
+	:           colon
+	i           r-val
+	5           int
+	<           rel_op
+	m4          label
+	JF          jf
+	m3          label
+	JMP         jump
+	m2          label
+	:           colon
+	i           l-val
+	i           r-val
+	1           int
+	+           math_op
+	=           assign_op
+	m1          label
+	JMP         jump
+	m3          label
+	:           colon
+	s           l-val
+	s           r-val
+	i           r-val
+	0           int
+	==          rel_op
+	m6          label
+	JF          jf
+	v[0]        r-val
+	m5          label
+	JMP         jump
+	m6          label
+	:           colon
+	i           r-val
+	1           int
+	==          rel_op
+	m7          label
+	JF          jf
+	v[1]        r-val
+	m5          label
+	JMP         jump
+	m7          label
+	:           colon
+	i           r-val
+	2           int
+	==          rel_op
+	m8          label
+	JF          jf
+	v[2]        r-val
+	m5          label
+	JMP         jump
+	m8          label
+	:           colon
+	i           r-val
+	3           int
+	==          rel_op
+	m9          label
+	JF          jf
+	v[3]        r-val
+	m5          label
+	JMP         jump
+	m9          label
+	:           colon
+	i           r-val
+	4           int
+	==          rel_op
+	m10         label
+	JF          jf
+	v[4]        r-val
+	m5          label
+	JMP         jump
+	m10         label
+	:           colon
+	"runtime error RE-04 at 40: index " string
+	i           r-val
+	i2s         conv
+	CAT         cat_op
+	" out of range [0, 4]" string
+	CAT         cat_op
+	$halt       CALL
+	m5          label
+	:           colon
+	+           math_op
+	=           assign_op
+	m2          label
+	JMP         jump
+	m4          label
+	:           colon
+	s           r-val
+	RET
+)

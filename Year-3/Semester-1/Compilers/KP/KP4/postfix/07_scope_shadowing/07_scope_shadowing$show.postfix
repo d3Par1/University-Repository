@@ -1,0 +1,17 @@
+.target: Postfix Machine
+.version: 0.3
+
+.globVarList(
+	x
+)
+
+.code(
+	"global x =" string
+	" "         string
+	CAT         cat_op
+	x           r-val
+	i2s         conv
+	CAT         cat_op
+	OUT         out_op
+	RET
+)

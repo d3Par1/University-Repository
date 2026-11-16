@@ -1,0 +1,17 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	x           int
+)
+
+.funcs(
+	main        void    0
+)
+
+.code(
+	x           l-val
+	1           int
+	=           assign_op
+	main        CALL
+)

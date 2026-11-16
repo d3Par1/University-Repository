@@ -1,0 +1,76 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	x#2         string
+	x#3         float
+	i           int
+	x#4         int
+)
+
+.globVarList(
+	x
+)
+
+.funcs(
+	show        void    0
+)
+
+.labels(
+	m1          17
+	m2          26
+	m3          35
+	m4          45
+)
+
+.code(
+	x           r-val
+	i2s         conv
+	OUT         out_op
+	x#2         l-val
+	"local"     string
+	=           assign_op
+	x#3         l-val
+	3.5         float
+	=           assign_op
+	x#3         r-val
+	f2s         conv
+	OUT         out_op
+	x#2         r-val
+	OUT         out_op
+	i           l-val
+	0           int
+	=           assign_op
+	m1          label
+	:           colon
+	i           r-val
+	2           int
+	<           rel_op
+	m4          label
+	JF          jf
+	m3          label
+	JMP         jump
+	m2          label
+	:           colon
+	i           l-val
+	i           r-val
+	1           int
+	+           math_op
+	=           assign_op
+	m1          label
+	JMP         jump
+	m3          label
+	:           colon
+	x#4         l-val
+	i           r-val
+	=           assign_op
+	x#4         r-val
+	i2s         conv
+	OUT         out_op
+	m2          label
+	JMP         jump
+	m4          label
+	:           colon
+	show        CALL
+	RET
+)

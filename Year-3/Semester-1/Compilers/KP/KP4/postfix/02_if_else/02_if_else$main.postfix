@@ -1,0 +1,71 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	t           float
+)
+
+.labels(
+	m1          16
+	m2          50
+	m3          27
+	m4          48
+	m5          42
+	m6          46
+)
+
+.code(
+	t           l-val
+	0.0         float
+	=           assign_op
+	t           l-val
+	INP         inp_op
+	s2f         conv
+	=           assign_op
+	t           r-val
+	0.0         float
+	<           rel_op
+	m1          label
+	JF          jf
+	"мороз"     string
+	OUT         out_op
+	m2          label
+	JMP         jump
+	m1          label
+	:           colon
+	t           r-val
+	15.0        float
+	<           rel_op
+	m3          label
+	JF          jf
+	"прохолодно" string
+	OUT         out_op
+	m4          label
+	JMP         jump
+	m3          label
+	:           colon
+	t           r-val
+	25.0        float
+	<=          rel_op
+	t           r-val
+	20.0        float
+	!=          rel_op
+	AND         bool_op
+	m5          label
+	JF          jf
+	"комфортно" string
+	OUT         out_op
+	m6          label
+	JMP         jump
+	m5          label
+	:           colon
+	"спекотно або рівно 20" string
+	OUT         out_op
+	m6          label
+	:           colon
+	m4          label
+	:           colon
+	m2          label
+	:           colon
+	RET
+)

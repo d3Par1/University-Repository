@@ -1,0 +1,94 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	i           int
+	f           float
+	a           int
+	b           float
+	c           float
+	d           int
+	e           int
+	s           string
+)
+
+.funcs(
+	$imod       int     2
+)
+
+.code(
+	i           l-val
+	7           int
+	=           assign_op
+	f           l-val
+	2.0         float
+	=           assign_op
+	a           l-val
+	i           r-val
+	2           int
+	/           math_op
+	f2i         conv
+	=           assign_op
+	b           l-val
+	i           r-val
+	i2f         conv
+	2.0         float
+	/           math_op
+	=           assign_op
+	c           l-val
+	i           r-val
+	i2f         conv
+	2.0         float
+	/           math_op
+	=           assign_op
+	d           l-val
+	-3          int
+	=           assign_op
+	e           l-val
+	i           r-val
+	4           int
+	$imod       CALL
+	=           assign_op
+	s           l-val
+	"Krok"      string
+	=           assign_op
+	a           r-val
+	i2s         conv
+	" "         string
+	CAT         cat_op
+	b           r-val
+	f2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	c           r-val
+	f2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	d           r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	e           r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	s           r-val
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	f           r-val
+	2.0         float
+	^           pow_op
+	f2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	"4"         string
+	CAT         cat_op
+	OUT         out_op
+	RET
+)

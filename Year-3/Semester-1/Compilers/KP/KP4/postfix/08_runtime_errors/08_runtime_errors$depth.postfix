@@ -1,0 +1,20 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	n           int
+)
+
+.funcs(
+	depth       int     1
+)
+
+.code(
+	n           r-val
+	1           int
+	+           math_op
+	depth       CALL
+	1           int
+	+           math_op
+	RET
+)

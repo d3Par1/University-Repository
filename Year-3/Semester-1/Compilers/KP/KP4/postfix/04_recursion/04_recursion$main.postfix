@@ -1,0 +1,34 @@
+.target: Postfix Machine
+.version: 0.3
+
+.funcs(
+	fib         int     1
+	gcd         int     2
+	power       float   2
+)
+
+.code(
+	10          int
+	fib         CALL
+	i2s         conv
+	" "         string
+	CAT         cat_op
+	84          int
+	36          int
+	gcd         CALL
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	2.0         float
+	-3          int
+	power       CALL
+	f2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	"0.125"     string
+	CAT         cat_op
+	OUT         out_op
+	RET
+)

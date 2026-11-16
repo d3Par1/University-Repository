@@ -1,0 +1,21 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	$swap.a     int
+	$swap.b     int
+	$sort.a[0]  int
+	$sort.a[1]  int
+	$sort.a[2]  int
+	$sort.a[3]  int
+	$sort.a[4]  int
+	$sort.a[5]  int
+)
+
+.funcs(
+	main        void    0
+)
+
+.code(
+	main        CALL
+)

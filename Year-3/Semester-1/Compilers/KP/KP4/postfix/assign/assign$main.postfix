@@ -1,0 +1,39 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	a           int
+	v1          float
+)
+
+.funcs(
+	$imod       int     2
+)
+
+.code(
+	a           l-val
+	5           int
+	=           assign_op
+	v1          l-val
+	0.0         float
+	=           assign_op
+	v1          l-val
+	5.4         float
+	a           r-val
+	i2f         conv
+	+           math_op
+	2.0         float
+	/           math_op
+	=           assign_op
+	v1          r-val
+	f2s         conv
+	" "         string
+	CAT         cat_op
+	a           r-val
+	3           int
+	$imod       CALL
+	i2s         conv
+	CAT         cat_op
+	OUT         out_op
+	RET
+)

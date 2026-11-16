@@ -1,0 +1,19 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	a           int
+	b           int
+)
+
+.code(
+	a           r-val
+	a           r-val
+	b           r-val
+	/           math_op
+	f2i         conv
+	b           r-val
+	*           math_op
+	-           math_op
+	RET
+)
