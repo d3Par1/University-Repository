@@ -1,0 +1,404 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	n           int
+	m           int
+	data[0]     int
+	data[1]     int
+	data[2]     int
+	data[3]     int
+	data[4]     int
+	grid[0][0]  float
+	grid[0][1]  float
+	grid[0][2]  float
+	grid[1][0]  float
+	grid[1][1]  float
+	grid[1][2]  float
+	t           float
+	x           float
+	k           int
+	p.x         float
+	p.y         float
+	p.label     string
+	d           float
+	ok          bool
+	i           int
+)
+
+.globVarList(
+	$pend
+	$out
+	$swap.a
+	$swap.b
+	total
+	ready
+)
+
+.funcs(
+	swap        void    2
+	$imod       int     2
+	factorial   int     1
+	sum         int     5
+	distance    float   3
+	$b2s        string  1
+)
+
+.labels(
+	m1          17
+	m2          184
+	m3          198
+	m4          203
+	m5          212
+	m6          221
+	m7          275
+	m8          242
+	m9          271
+	m10         259
+	m11         269
+)
+
+.code(
+	n           l-val
+	0           int
+	=           assign_op
+	m           l-val
+	0           int
+	=           assign_op
+	$pend       r-val
+	m1          label
+	JF          jf
+	$out        r-val
+	OUT         out_op
+	$out        l-val
+	""          string
+	=           assign_op
+	$pend       l-val
+	false       bool
+	=           assign_op
+	m1          label
+	:           colon
+	n           l-val
+	INP         inp_op
+	s2i         conv
+	=           assign_op
+	m           l-val
+	INP         inp_op
+	s2i         conv
+	=           assign_op
+	n           r-val
+	m           r-val
+	swap        CALL
+	n           l-val
+	$swap.a     r-val
+	=           assign_op
+	m           l-val
+	$swap.b     r-val
+	=           assign_op
+	$out        r-val
+	"n ="       string
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	n           r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	"m ="       string
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	m           r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	"n! ="      string
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	n           r-val
+	10          int
+	$imod       CALL
+	factorial   CALL
+	i2s         conv
+	CAT         cat_op
+	OUT         out_op
+	$out        l-val
+	""          string
+	=           assign_op
+	$pend       l-val
+	false       bool
+	=           assign_op
+	3           int
+	-1          int
+	4           int
+	1           int
+	5           int
+	data[4]     l-val
+	SWAP        stack_op
+	=           assign_op
+	data[3]     l-val
+	SWAP        stack_op
+	=           assign_op
+	data[2]     l-val
+	SWAP        stack_op
+	=           assign_op
+	data[1]     l-val
+	SWAP        stack_op
+	=           assign_op
+	data[0]     l-val
+	SWAP        stack_op
+	=           assign_op
+	grid[0][0]  l-val
+	0.0         float
+	=           assign_op
+	grid[0][1]  l-val
+	0.0         float
+	=           assign_op
+	grid[0][2]  l-val
+	0.0         float
+	=           assign_op
+	grid[1][0]  l-val
+	0.0         float
+	=           assign_op
+	grid[1][1]  l-val
+	0.0         float
+	=           assign_op
+	grid[1][2]  l-val
+	0.0         float
+	=           assign_op
+	grid[1][2]  l-val
+	2.0         float
+	=           assign_op
+	total       l-val
+	data[0]     r-val
+	data[1]     r-val
+	data[2]     r-val
+	data[3]     r-val
+	data[4]     r-val
+	sum         CALL
+	=           assign_op
+	t           l-val
+	36.6        float
+	=           assign_op
+	t           l-val
+	t           r-val
+	n           r-val
+	i2f         conv
+	+           math_op
+	=           assign_op
+	x           l-val
+	total       r-val
+	i2f         conv
+	2.0         float
+	/           math_op
+	21.0        float
+	-           math_op
+	=           assign_op
+	k           l-val
+	x           r-val
+	NEG         math_op
+	f2i         conv
+	=           assign_op
+	p.x         l-val
+	0.0         float
+	=           assign_op
+	p.y         l-val
+	0.0         float
+	=           assign_op
+	p.label     l-val
+	""          string
+	=           assign_op
+	p.x         l-val
+	3.0         float
+	=           assign_op
+	p.y         l-val
+	4.0         float
+	=           assign_op
+	p.label     l-val
+	""          string
+	=           assign_op
+	d           l-val
+	p.x         r-val
+	p.y         r-val
+	p.label     r-val
+	distance    CALL
+	=           assign_op
+	ok          l-val
+	true        bool
+	=           assign_op
+	ready       l-val
+	d           r-val
+	5.0         float
+	>=          rel_op
+	k           r-val
+	0           int
+	==          rel_op
+	NOT         bool_op
+	AND         bool_op
+	total       r-val
+	12          int
+	!=          rel_op
+	OR          bool_op
+	=           assign_op
+	m2          label
+	:           colon
+	k           r-val
+	10          int
+	>           rel_op
+	m3          label
+	JF          jf
+	k           l-val
+	k           r-val
+	1           int
+	-           math_op
+	=           assign_op
+	m2          label
+	JMP         jump
+	m3          label
+	:           colon
+	i           l-val
+	0           int
+	=           assign_op
+	m4          label
+	:           colon
+	i           r-val
+	3           int
+	<           rel_op
+	m7          label
+	JF          jf
+	m6          label
+	JMP         jump
+	m5          label
+	:           colon
+	i           l-val
+	i           r-val
+	1           int
+	+           math_op
+	=           assign_op
+	m4          label
+	JMP         jump
+	m6          label
+	:           colon
+	grid[1][2]  r-val
+	i           r-val
+	i2f         conv
+	>           rel_op
+	m8          label
+	JF          jf
+	$out        l-val
+	$out        r-val
+	i           r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	=           assign_op
+	$pend       l-val
+	true        bool
+	=           assign_op
+	m9          label
+	JMP         jump
+	m8          label
+	:           colon
+	i           r-val
+	2           int
+	==          rel_op
+	m10         label
+	JF          jf
+	$out        l-val
+	$out        r-val
+	"last"      string
+	CAT         cat_op
+	=           assign_op
+	$pend       l-val
+	true        bool
+	=           assign_op
+	m11         label
+	JMP         jump
+	m10         label
+	:           colon
+	$out        l-val
+	$out        r-val
+	"-"         string
+	CAT         cat_op
+	=           assign_op
+	$pend       l-val
+	true        bool
+	=           assign_op
+	m11         label
+	:           colon
+	m9          label
+	:           colon
+	m5          label
+	JMP         jump
+	m7          label
+	:           colon
+	$out        r-val
+	OUT         out_op
+	$out        l-val
+	""          string
+	=           assign_op
+	$pend       l-val
+	false       bool
+	=           assign_op
+	$out        l-val
+	$out        r-val
+	"Krok:	"крок" \ 2026" string
+	CAT         cat_op
+	OUT         out_op
+	""          string
+	=           assign_op
+	$pend       l-val
+	false       bool
+	=           assign_op
+	$out        r-val
+	t           r-val
+	f2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	d           r-val
+	f2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	ready       r-val
+	$b2s        CALL
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	ok          r-val
+	$b2s        CALL
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	"0.0015"    string
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	x           r-val
+	-1.0        float
+	<           rel_op
+	$b2s        CALL
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	"512"       string
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	k           r-val
+	i2s         conv
+	CAT         cat_op
+	OUT         out_op
+	$out        l-val
+	""          string
+	=           assign_op
+	$pend       l-val
+	false       bool
+	=           assign_op
+	RET
+)

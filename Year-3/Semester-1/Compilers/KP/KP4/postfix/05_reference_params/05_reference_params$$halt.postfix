@@ -1,0 +1,13 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	msg         string
+)
+
+.code(
+	msg         r-val
+	OUT         out_op
+	runtime_error label
+	JMP         jump
+)

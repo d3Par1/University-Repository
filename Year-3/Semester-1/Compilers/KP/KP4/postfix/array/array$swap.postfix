@@ -1,0 +1,36 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	*a          int
+	*b          int
+	t           int
+)
+
+.globVarList(
+	$swap.a
+	$swap.b
+)
+
+.code(
+	t           l-val
+	*a          r-val
+	=           assign_op
+	*a          l-val
+	*b          r-val
+	=           assign_op
+	*b          l-val
+	t           r-val
+	=           assign_op
+	$swap.a     l-val
+	*a          r-val
+	0           int
+	+           math_op
+	=           assign_op
+	$swap.b     l-val
+	*b          r-val
+	0           int
+	+           math_op
+	=           assign_op
+	RET
+)

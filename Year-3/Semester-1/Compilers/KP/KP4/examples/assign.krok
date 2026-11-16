@@ -1,0 +1,10 @@
+package main
+
+import "fmt"
+
+func main() {
+	a := 5
+	var v1 float
+	v1 = (5.4 + a) / 2
+	fmt.Println(v1, a%3)
+}

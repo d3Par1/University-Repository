@@ -1,0 +1,22 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	b           bool
+)
+
+.labels(
+	m1          5
+)
+
+.code(
+	b           r-val
+	m1          label
+	JF          jf
+	"true"      string
+	RET
+	m1          label
+	:           colon
+	"false"     string
+	RET
+)

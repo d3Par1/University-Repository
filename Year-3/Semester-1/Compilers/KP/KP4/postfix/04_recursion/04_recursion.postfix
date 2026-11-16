@@ -1,0 +1,10 @@
+.target: Postfix Machine
+.version: 0.3
+
+.funcs(
+	main        void    0
+)
+
+.code(
+	main        CALL
+)

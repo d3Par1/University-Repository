@@ -1,0 +1,34 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	a           int
+	b           int
+)
+
+.funcs(
+	$imod       int     2
+	gcd         int     2
+)
+
+.labels(
+	m1          7
+)
+
+.code(
+	b           r-val
+	0           int
+	==          rel_op
+	m1          label
+	JF          jf
+	a           r-val
+	RET
+	m1          label
+	:           colon
+	b           r-val
+	a           r-val
+	b           r-val
+	$imod       CALL
+	gcd         CALL
+	RET
+)

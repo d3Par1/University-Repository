@@ -1,0 +1,19 @@
+package main
+
+import "fmt"
+
+func swap(a, b *int) {
+	t := *a
+	*a = *b
+	*b = t
+}
+
+func main() {
+	v := [3]int{7, 2, 5}
+	for i := 0; i < 2; i++ {
+		if v[i] > v[i+1] {
+			swap(&v[i], &v[i+1])
+		}
+	}
+	fmt.Println(v[0], v[1], v[2])
+}

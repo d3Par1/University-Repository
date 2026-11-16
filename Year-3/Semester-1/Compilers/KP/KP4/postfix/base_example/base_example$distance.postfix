@@ -1,0 +1,21 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	p.x         float
+	p.y         float
+	p.label     string
+)
+
+.code(
+	p.x         r-val
+	2.0         float
+	^           pow_op
+	p.y         r-val
+	2.0         float
+	^           pow_op
+	+           math_op
+	0.5         float
+	^           pow_op
+	RET
+)

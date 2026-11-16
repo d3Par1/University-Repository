@@ -1,0 +1,35 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	s.from.x    float
+	s.from.y    float
+	s.to.x      float
+	s.to.y      float
+	s.name      string
+	dx          float
+	dy          float
+)
+
+.code(
+	dx          l-val
+	s.to.x      r-val
+	s.from.x    r-val
+	-           math_op
+	=           assign_op
+	dy          l-val
+	s.to.y      r-val
+	s.from.y    r-val
+	-           math_op
+	=           assign_op
+	dx          r-val
+	dx          r-val
+	*           math_op
+	dy          r-val
+	dy          r-val
+	*           math_op
+	+           math_op
+	0.5         float
+	^           pow_op
+	RET
+)

@@ -1,0 +1,15 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	$swap.a     int
+	$swap.b     int
+)
+
+.funcs(
+	main        void    0
+)
+
+.code(
+	main        CALL
+)

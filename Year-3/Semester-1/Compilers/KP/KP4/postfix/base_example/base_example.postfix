@@ -1,0 +1,42 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	$out        string
+	$pend       bool
+	total       int
+	ready       bool
+	$swap.a     int
+	$swap.b     int
+)
+
+.funcs(
+	main        void    0
+)
+
+.labels(
+	m1          18
+)
+
+.code(
+	total       l-val
+	0           int
+	=           assign_op
+	ready       l-val
+	false       bool
+	=           assign_op
+	$out        l-val
+	""          string
+	=           assign_op
+	$pend       l-val
+	false       bool
+	=           assign_op
+	main        CALL
+	$pend       r-val
+	m1          label
+	JF          jf
+	$out        r-val
+	OUT         out_op
+	m1          label
+	:           colon
+)

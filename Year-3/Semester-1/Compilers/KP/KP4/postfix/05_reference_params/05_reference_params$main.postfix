@@ -1,0 +1,225 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	v[0]        int
+	v[1]        int
+	v[2]        int
+	v[3]        int
+	v[4]        int
+	v[5]        int
+	i           int
+)
+
+.globVarList(
+	$sort.a[0]
+	$sort.a[1]
+	$sort.a[2]
+	$sort.a[3]
+	$sort.a[4]
+	$sort.a[5]
+)
+
+.funcs(
+	$halt       void    1
+	sort        void    6
+)
+
+.labels(
+	m1          21
+	m2          30
+	m3          39
+	m4          126
+	m5          122
+	m6          53
+	m7          65
+	m8          77
+	m9          89
+	m10         101
+	m11         113
+)
+
+.code(
+	v[0]        l-val
+	0           int
+	=           assign_op
+	v[1]        l-val
+	0           int
+	=           assign_op
+	v[2]        l-val
+	0           int
+	=           assign_op
+	v[3]        l-val
+	0           int
+	=           assign_op
+	v[4]        l-val
+	0           int
+	=           assign_op
+	v[5]        l-val
+	0           int
+	=           assign_op
+	i           l-val
+	0           int
+	=           assign_op
+	m1          label
+	:           colon
+	i           r-val
+	6           int
+	<           rel_op
+	m4          label
+	JF          jf
+	m3          label
+	JMP         jump
+	m2          label
+	:           colon
+	i           l-val
+	i           r-val
+	1           int
+	+           math_op
+	=           assign_op
+	m1          label
+	JMP         jump
+	m3          label
+	:           colon
+	INP         inp_op
+	s2i         conv
+	i           r-val
+	0           int
+	==          rel_op
+	m6          label
+	JF          jf
+	v[0]        l-val
+	SWAP        stack_op
+	=           assign_op
+	m5          label
+	JMP         jump
+	m6          label
+	:           colon
+	i           r-val
+	1           int
+	==          rel_op
+	m7          label
+	JF          jf
+	v[1]        l-val
+	SWAP        stack_op
+	=           assign_op
+	m5          label
+	JMP         jump
+	m7          label
+	:           colon
+	i           r-val
+	2           int
+	==          rel_op
+	m8          label
+	JF          jf
+	v[2]        l-val
+	SWAP        stack_op
+	=           assign_op
+	m5          label
+	JMP         jump
+	m8          label
+	:           colon
+	i           r-val
+	3           int
+	==          rel_op
+	m9          label
+	JF          jf
+	v[3]        l-val
+	SWAP        stack_op
+	=           assign_op
+	m5          label
+	JMP         jump
+	m9          label
+	:           colon
+	i           r-val
+	4           int
+	==          rel_op
+	m10         label
+	JF          jf
+	v[4]        l-val
+	SWAP        stack_op
+	=           assign_op
+	m5          label
+	JMP         jump
+	m10         label
+	:           colon
+	i           r-val
+	5           int
+	==          rel_op
+	m11         label
+	JF          jf
+	v[5]        l-val
+	SWAP        stack_op
+	=           assign_op
+	m5          label
+	JMP         jump
+	m11         label
+	:           colon
+	"runtime error RE-04 at 27: index " string
+	i           r-val
+	i2s         conv
+	CAT         cat_op
+	" out of range [0, 5]" string
+	CAT         cat_op
+	$halt       CALL
+	m5          label
+	:           colon
+	m2          label
+	JMP         jump
+	m4          label
+	:           colon
+	v[0]        r-val
+	v[1]        r-val
+	v[2]        r-val
+	v[3]        r-val
+	v[4]        r-val
+	v[5]        r-val
+	sort        CALL
+	v[0]        l-val
+	$sort.a[0]  r-val
+	=           assign_op
+	v[1]        l-val
+	$sort.a[1]  r-val
+	=           assign_op
+	v[2]        l-val
+	$sort.a[2]  r-val
+	=           assign_op
+	v[3]        l-val
+	$sort.a[3]  r-val
+	=           assign_op
+	v[4]        l-val
+	$sort.a[4]  r-val
+	=           assign_op
+	v[5]        l-val
+	$sort.a[5]  r-val
+	=           assign_op
+	v[0]        r-val
+	i2s         conv
+	" "         string
+	CAT         cat_op
+	v[1]        r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	v[2]        r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	v[3]        r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	v[4]        r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	v[5]        r-val
+	i2s         conv
+	CAT         cat_op
+	OUT         out_op
+	RET
+)

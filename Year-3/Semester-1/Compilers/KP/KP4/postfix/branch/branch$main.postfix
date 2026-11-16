@@ -1,0 +1,60 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	a           int
+	b           int
+)
+
+.labels(
+	m1          23
+	m2          40
+	m3          34
+	m4          38
+)
+
+.code(
+	a           l-val
+	0           int
+	=           assign_op
+	b           l-val
+	0           int
+	=           assign_op
+	a           l-val
+	INP         inp_op
+	s2i         conv
+	=           assign_op
+	b           l-val
+	INP         inp_op
+	s2i         conv
+	=           assign_op
+	a           r-val
+	b           r-val
+	<           rel_op
+	m1          label
+	JF          jf
+	"менше"     string
+	OUT         out_op
+	m2          label
+	JMP         jump
+	m1          label
+	:           colon
+	a           r-val
+	b           r-val
+	==          rel_op
+	m3          label
+	JF          jf
+	"рівні"     string
+	OUT         out_op
+	m4          label
+	JMP         jump
+	m3          label
+	:           colon
+	"більше"    string
+	OUT         out_op
+	m4          label
+	:           colon
+	m2          label
+	:           colon
+	RET
+)

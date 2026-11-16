@@ -4,7 +4,8 @@
 «Структура змістовної частини звіту» та таблиці планів тестування), тому аудит перевіряє саме те,
 що написано в джерелі. Методичка КП3 вимог до звіту не містить: перевіряються оформлення як у КП1/КП2,
 розділи методички, відповідники її функцій і функцій forTabNames.py та повнота помилок специфікації.
-Матеріали курсу беруться з Word_KPI/Compilers/Lectures_Materials (далі - з папок курсу, Downloads).
+Методичка КП4 теж без вимог до звіту: перевіряються виконання прикладів на незміненій PSM.py, функції методички,
+формат .postfix-файлів і лістинги звіту. Матеріали курсу беруться з Word_KPI/Compilers/Lectures_Materials (далі - з папок курсу, Downloads).
 Результат: AUDIT.md поруч зі скриптом.
 Запуск:  python audit.py
 """
@@ -15,7 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DL = r'C:\Users\Nazar\Downloads'
 WORD = r'D:\OneDrive - kpi.ua\Word_KPI\Основи_розробки_трансляторів'
 LECT = r'D:\OneDrive - kpi.ua\Word_KPI\Compilers\Lectures_Materials'
-SOURCES = [LECT, WORD] + [os.path.join(WORD, d) for d in ('РГР', 'КП1', 'КП2', 'КП3')] + [DL]
+SOURCES = [LECT, WORD] + [os.path.join(WORD, d) for d in ('РГР', 'КП1', 'КП2', 'КП3', 'КП4')] + [DL]
 rows, fails = [], 0
 
 
@@ -222,6 +223,64 @@ for frag, ce in frags:
     check('КП3', 'некоректний фрагмент специфікації «{0}» у тестах з кодом {1}'.format(frag, ce), names3.get(frag) == ce,
           str(names3.get(frag)))
 
+# ---------------------------------------------------------------- КП4
+KP4 = os.path.join(HERE, 'KP', 'KP4')
+code, last = run(['tests/run_tests.py'], KP4)
+check('КП4', 'тести транслятора: програми виконує PSM.py, виведення прикладів - як у специфікації', code == 0, last)
+psm_zip = zipfile.ZipFile(material('PSM. 2025.zip')).read('PSM.py')
+check('КП4', 'PSM.py - файл з матеріалів курсу без змін (SHA1)',
+      hashlib.sha1(psm_zip).hexdigest() == sha(os.path.join(KP4, 'PSM.py')), hashlib.sha1(psm_zip).hexdigest()[:12])
+g4 = pdf_text(material('КП4. Трансляція у ПОЛІЗ та виконання програм.pdf'))
+src4 = ''.join(open(os.path.join(KP4, f), encoding='utf-8').read() for f in ('krok_translate.py', 'krok_codegen.py'))
+names4 = {n.name for n in ast.walk(ast.parse(src4)) if isinstance(n, ast.FunctionDef)}
+guide4 = sorted({f.replace('і', 'i').replace('І', 'I') for f in re.findall(r'def (\w+)\(', g4)})
+check('КП4', 'з методички витягнуто функцій', len(guide4) >= 10, ', '.join(guide4))
+mapping4 = {'parseAssign': 'parseSimpleStmt', 'parseExpression': 'parseExpression', 'parseFactor': 'parseOperand',
+            'parseIf': 'parseIfStmt', 'parseBoolExpr': 'parseRelExpr', 'parseTerm': 'parseMulExpr'}
+for fn in guide4 + ['serv', 'savePostfixCode']:
+    check('КП4', 'функція методички {0}() має відповідник'.format(fn), mapping4.get(fn, fn) in names4,
+          mapping4.get(fn, fn))
+spec_psm = pdf_text(material('Специфікація PSM.pdf'))
+check('КП4', 'специфікація PSM: директива .version: 0.3', '.versіon: 0.3' in spec_psm or '.version: 0.3' in spec_psm)
+posts = glob.glob(os.path.join(KP4, 'postfix', '*', '*.postfix'))
+heads = [open(f, encoding='utf-8').read().split('\n')[:2] for f in posts]
+check('КП4', 'усі .postfix-файли: .target: Postfix Machine, .version: 0.3',
+      len(posts) > 40 and all(h == ['.target: Postfix Machine', '.version: 0.3'] for h in heads), str(len(posts)))
+sections = ('target', 'version', 'vars', 'globVarList', 'funcs', 'labels', 'code')
+used = {l[1:].split('(')[0].split(':')[0] for f in posts for l in open(f, encoding='utf-8').read().split('\n')
+        if l.startswith('.')}
+check('КП4', 'секції .postfix-файлів - лише зі специфікації PSM', used == set(sections), ', '.join(sorted(used)))
+for ex in sorted(glob.glob(os.path.join(KP4, '..', 'KP1', 'tests', '*.krok'))):
+    name4 = os.path.splitext(os.path.basename(ex))[0]
+    check('КП4', 'приклад специфікації {0} трансльовано'.format(name4),
+          os.path.exists(os.path.join(KP4, 'postfix', name4, name4 + '$main.postfix')))
+rep4 = os.path.join(KP4, 'ТВ-43.КП_4.СтепаненкоНЮ.pdf')
+doc4 = pymupdf.open(rep4)
+pages4 = [p.get_text() for p in doc4]
+full4 = ' '.join(pages4).replace('\n', ' ')
+check('КП4', 'назва файлу НомерГрупи.КП_Номер.ПрізвищеІніціали.pdf',
+      re.fullmatch(r'ТВ-43\.КП_4\.Степаненко[А-ЯІЇЄ]{2}\.pdf', os.path.basename(rep4)) is not None)
+check('КП4', "прізвище, ім'я, група, номер роботи у верхньому колонтитулі кожної сторінки",
+      all('Степаненко Назар' in p and 'ТВ-43' in p and 'КП № 4' in p for p in pages4))
+numbered4 = sum(1 for p in doc4 if any(b[4].strip().isdigit() for b in p.get_text('blocks') if b[1] > p.rect.height * .9))
+check('КП4', 'нумерація сторінок у нижньому колонтитулі', numbered4 == len(doc4), '{0} із {1}'.format(numbered4, len(doc4)))
+first4 = [l for l in pages4[0].split('\n') if l.strip() and 'Степаненко' not in l and not l.strip().isdigit()]
+check('КП4', 'без титульного аркуша; назва роботи вгорі першого аркуша',
+      first4[0].strip() == 'Трансляція у ПОЛІЗ та виконання програм', first4[0][:60])
+for part in ('Коротка характеристика мови', 'Цільова машина', 'Схеми трансляції', 'Програмна реалізація',
+             'План тестування', 'Протокол тестування', 'Висновки'):
+    check('КП4', 'розділ звіту: «{0}»'.format(part), part.lower() in full4.lower())
+for topic in ('Оператор присвоювання', 'Оператор розгалуження', 'Оператор циклу', 'Оператори введення-виведення'):
+    check('КП4', 'тема методички «{0}» є у звіті'.format(topic), re.sub(r'\s+', '', topic) in re.sub(r'\s+', '', g4)
+          and any(k in full4 for k in {'Оператор присвоювання': ['Присвоювання'], 'Оператор розгалуження':
+                  ['розгалуження'], 'Оператор циклу': ['повторення'], 'Оператори введення-виведення':
+                  ['Введення та виведення']}[topic]))
+cmds = re.findall(r'(?m)^>([a-z]\S* \S+)', '\n'.join(pages4))     # рядки лістингів, що починаються з >
+check('КП4', 'лістинги протоколу містять лише команди python krok_translate.py, python PSM.py, python tests, type',
+      len(cmds) >= 10 and all(c.startswith(('python krok_translate.py', 'python PSM.py', 'python tests/', 'type postfix'))
+                              for c in cmds), str(len(cmds)))
+check('КП4', 'немає службових залишків', not any(x in full4 for x in ('.claude', 'scratch', 'Traceback', 'Error!', '[@')))
+
 # ---------------------------------------------------------------- Word_KPI
 for f in sorted(os.listdir(LECT)):
     copies = glob.glob(os.path.join(WORD, '**', f), recursive=True)
@@ -237,7 +296,8 @@ for f in ('Транслятори_01.2026.pdf', 'Транслятори_02. 2026
 for work, task, repo in (('РГР', 'Розробка і специфікація мови програмування. РГР. 2026.pdf', RGR),
                          ('КП1', 'КП1. Лексичний аналiз методом дiаграми станiв.pdf', KP1),
                          ('КП2', 'КП2. Синтаксичний аналіз методом рекурсивного спуску.pdf', KP2),
-                         ('КП3', 'КП3. Семантичний аналіз програм.pdf', KP3)):
+                         ('КП3', 'КП3. Семантичний аналіз програм.pdf', KP3),
+                         ('КП4', 'КП4. Трансляція у ПОЛІЗ та виконання програм.pdf', KP4)):
     check('Word_KPI', '{0}: завдання'.format(work), os.path.exists(os.path.join(WORD, work, task)))
     stale = []
     for src in glob.glob(os.path.join(repo, '**', '*'), recursive=True):

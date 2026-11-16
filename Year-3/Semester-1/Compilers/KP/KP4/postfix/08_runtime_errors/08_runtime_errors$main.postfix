@@ -1,0 +1,114 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	a[0]        int
+	a[1]        int
+	a[2]        int
+	i           int
+	z           int
+	$i1         int
+	big         int
+)
+
+.funcs(
+	$halt       void    1
+	depth       int     1
+)
+
+.labels(
+	m1          64
+	m2          35
+	m3          45
+	m4          55
+)
+
+.code(
+	a[0]        l-val
+	0           int
+	=           assign_op
+	a[1]        l-val
+	0           int
+	=           assign_op
+	a[2]        l-val
+	0           int
+	=           assign_op
+	i           l-val
+	0           int
+	=           assign_op
+	z           l-val
+	0           int
+	=           assign_op
+	i           l-val
+	INP         inp_op
+	s2i         conv
+	=           assign_op
+	z           l-val
+	INP         inp_op
+	s2i         conv
+	=           assign_op
+	i           r-val
+	$i1         l-val
+	SWAP        stack_op
+	=           assign_op
+	$i1         r-val
+	0           int
+	==          rel_op
+	m2          label
+	JF          jf
+	a[0]        r-val
+	m1          label
+	JMP         jump
+	m2          label
+	:           colon
+	$i1         r-val
+	1           int
+	==          rel_op
+	m3          label
+	JF          jf
+	a[1]        r-val
+	m1          label
+	JMP         jump
+	m3          label
+	:           colon
+	$i1         r-val
+	2           int
+	==          rel_op
+	m4          label
+	JF          jf
+	a[2]        r-val
+	m1          label
+	JMP         jump
+	m4          label
+	:           colon
+	"runtime error RE-04 at 14: index " string
+	$i1         r-val
+	i2s         conv
+	CAT         cat_op
+	" out of range [0, 2]" string
+	CAT         cat_op
+	$halt       CALL
+	m1          label
+	:           colon
+	i2s         conv
+	OUT         out_op
+	10          int
+	z           r-val
+	/           math_op
+	f2i         conv
+	i2s         conv
+	OUT         out_op
+	big         l-val
+	9223372036854775807 int
+	=           assign_op
+	big         r-val
+	1           int
+	+           math_op
+	i2s         conv
+	OUT         out_op
+	0           int
+	depth       CALL
+	i2s         conv
+	OUT         out_op
+	RET
+)

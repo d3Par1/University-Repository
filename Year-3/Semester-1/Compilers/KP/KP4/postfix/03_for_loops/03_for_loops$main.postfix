@@ -1,0 +1,221 @@
+.target: Postfix Machine
+.version: 0.3
+
+.vars(
+	n           int
+	digits      int
+	i           int
+	j           int
+	k           int
+)
+
+.globVarList(
+	$pend
+	$out
+)
+
+.funcs(
+	$imod       int     2
+)
+
+.labels(
+	m1          14
+	m2          23
+	m3          45
+	m4          65
+	m5          74
+	m6          83
+	m7          135
+	m8          88
+	m9          97
+	m10         106
+	m11         123
+	m12         140
+	m13         149
+	m14         158
+	m15         178
+)
+
+.code(
+	n           l-val
+	0           int
+	=           assign_op
+	$pend       r-val
+	m1          label
+	JF          jf
+	$out        r-val
+	OUT         out_op
+	$out        l-val
+	""          string
+	=           assign_op
+	$pend       l-val
+	false       bool
+	=           assign_op
+	m1          label
+	:           colon
+	n           l-val
+	INP         inp_op
+	s2i         conv
+	=           assign_op
+	digits      l-val
+	0           int
+	=           assign_op
+	m2          label
+	:           colon
+	n           r-val
+	0           int
+	>           rel_op
+	m3          label
+	JF          jf
+	digits      l-val
+	digits      r-val
+	n           r-val
+	10          int
+	$imod       CALL
+	+           math_op
+	=           assign_op
+	n           l-val
+	n           r-val
+	10          int
+	/           math_op
+	f2i         conv
+	=           assign_op
+	m2          label
+	JMP         jump
+	m3          label
+	:           colon
+	$out        r-val
+	"сума цифр:" string
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	digits      r-val
+	i2s         conv
+	CAT         cat_op
+	OUT         out_op
+	$out        l-val
+	""          string
+	=           assign_op
+	$pend       l-val
+	false       bool
+	=           assign_op
+	i           l-val
+	1           int
+	=           assign_op
+	m4          label
+	:           colon
+	i           r-val
+	3           int
+	<=          rel_op
+	m7          label
+	JF          jf
+	m6          label
+	JMP         jump
+	m5          label
+	:           colon
+	i           l-val
+	i           r-val
+	1           int
+	+           math_op
+	=           assign_op
+	m4          label
+	JMP         jump
+	m6          label
+	:           colon
+	j           l-val
+	1           int
+	=           assign_op
+	m8          label
+	:           colon
+	j           r-val
+	3           int
+	<=          rel_op
+	m11         label
+	JF          jf
+	m10         label
+	JMP         jump
+	m9          label
+	:           colon
+	j           l-val
+	j           r-val
+	1           int
+	+           math_op
+	=           assign_op
+	m8          label
+	JMP         jump
+	m10         label
+	:           colon
+	$out        l-val
+	$out        r-val
+	i           r-val
+	j           r-val
+	*           math_op
+	i2s         conv
+	CAT         cat_op
+	"	"         string
+	CAT         cat_op
+	=           assign_op
+	$pend       l-val
+	true        bool
+	=           assign_op
+	m9          label
+	JMP         jump
+	m11         label
+	:           colon
+	$out        r-val
+	OUT         out_op
+	$out        l-val
+	""          string
+	=           assign_op
+	$pend       l-val
+	false       bool
+	=           assign_op
+	m5          label
+	JMP         jump
+	m7          label
+	:           colon
+	k           l-val
+	10          int
+	=           assign_op
+	m12         label
+	:           colon
+	k           r-val
+	0           int
+	>           rel_op
+	m15         label
+	JF          jf
+	m14         label
+	JMP         jump
+	m13         label
+	:           colon
+	k           l-val
+	k           r-val
+	1           int
+	-           math_op
+	=           assign_op
+	m12         label
+	JMP         jump
+	m14         label
+	:           colon
+	k           l-val
+	k           r-val
+	2           int
+	-           math_op
+	=           assign_op
+	$out        l-val
+	$out        r-val
+	k           r-val
+	i2s         conv
+	CAT         cat_op
+	" "         string
+	CAT         cat_op
+	=           assign_op
+	$pend       l-val
+	true        bool
+	=           assign_op
+	m13         label
+	JMP         jump
+	m15         label
+	:           colon
+	RET
+)
