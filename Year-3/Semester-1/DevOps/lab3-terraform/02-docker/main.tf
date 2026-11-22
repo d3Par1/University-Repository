@@ -50,16 +50,17 @@ resource "docker_container" "web" {
   }
 
   # Ті самі обмеження, що в ЛР2: без capabilities, без підвищення прав,
-  # коренева ФС лише для читання, запис тільки в tmpfs.
+  # коренева ФС лише для читання, запис тільки в tmpfs. tmpfs за замовчуванням
+  # належить root (0755), а nginx працює від UID 101, тому власника задаємо явно.
   capabilities {
     drop = ["ALL"]
   }
   security_opts = ["no-new-privileges:true"]
   read_only     = true
   tmpfs = {
-    "/tmp"              = "rw,size=1m"
-    "/var/cache/nginx"  = "rw,size=8m"
-    "/etc/nginx/conf.d" = "rw,size=1m"
+    "/tmp"              = "rw,size=1m,uid=101,gid=101"
+    "/var/cache/nginx"  = "rw,size=8m,uid=101,gid=101"
+    "/etc/nginx/conf.d" = "rw,size=1m,uid=101,gid=101"
   }
 
   # HEALTHCHECK описано в образі; wait = true чекає стану healthy.
