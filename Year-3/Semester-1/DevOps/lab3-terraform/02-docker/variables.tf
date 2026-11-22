@@ -13,7 +13,7 @@ variable "image_repository" {
 variable "app_version" {
   description = "Тег образу (версія застосунку)"
   type        = string
-  default     = "2.0.1"
+  default     = "2.0.2"
 
   validation {
     condition     = can(regex("^[0-9]+[.][0-9]+[.][0-9]+$", var.app_version))
