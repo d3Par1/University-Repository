@@ -22,7 +22,7 @@ function page({ version, env, pod }) {
   </head>
   <body>
     <main>
-      <h1>Hello, DevOps!</h1>
+      <h1>Hello, DevOps World!</h1>
       <p>ЛР4: CI/CD і Kubernetes. Степаненко Назар, ТВ-43, № 14.</p>
       <p>Версія: <code>${version}</code> · середовище: <code>${env}</code></p>
       <p>Відповів под: <code>${pod}</code></p>
