@@ -1,0 +1,10 @@
+# Середовища hello-devops (згенеровано Terraform)
+
+Образ: `${image}`
+Дайджест: `${digest}`
+
+| Середовище | Адреса | Контейнер | ID |
+|---|---|---|---|
+%{ for name, e in envs ~}
+| ${name} | ${e.url} | ${e.container} | ${e.id} |
+%{ endfor ~}
