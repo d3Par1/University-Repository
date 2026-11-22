@@ -1,0 +1,34 @@
+# ЛР4, мінімальний варіант за завданням 4 (Технології DevOps):
+# два кроки, Test/Lint і Build/Package, запуск на кожен push у гілку main.
+# Проєкт з Dockerfile - результат завдання 2 (ЛР2, каталог lab2-docker).
+name: devops-lab4-minimal
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Year-3/Semester-1/DevOps/**"
+      - ".github/workflows/devops-lab4-minimal.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Test/Lint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - run: echo "Linting complete"
+
+  build:
+    name: Build/Package
+    needs: lint
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: Year-3/Semester-1/DevOps/lab2-docker
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t my-app:latest .
+      - run: docker image ls my-app
