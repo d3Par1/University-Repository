@@ -13,3 +13,8 @@ terraform/devops_iac_output.txt
 # ЛР2: залежності й результат збірки сайту створюються в Docker, не в репозиторії
 lab2-docker/node_modules/
 lab2-docker/dist/
+
+# ЛР3: файл, який створює Terraform, і збережені плани
+lab3-terraform/**/devops_iac_output.txt
+lab3-terraform/**/*.tfplan
+lab3-terraform/**/out/
