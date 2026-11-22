@@ -1,0 +1,14 @@
+# Локальний кластер Kubernetes у Docker (kind). Вузол закріплено за дайджестом,
+# версія збігається з kubectl 1.36 з Docker Desktop.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: lab4
+nodes:
+  - role: control-plane
+    image: kindest/node:v1.36.4@sha256:099e049362a1526b2db71494e1947aae99bd16290d7c895f2b7ea312e3cbfaed
+    extraPortMappings:
+      # NodePort 30080 сервісу web доступний на машині як http://localhost:8090
+      - containerPort: 30080
+        hostPort: 8090
+        listenAddress: "127.0.0.1"
+        protocol: TCP

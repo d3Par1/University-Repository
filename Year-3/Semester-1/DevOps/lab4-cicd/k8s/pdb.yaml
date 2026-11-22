@@ -1,0 +1,11 @@
+# Бюджет відмов (лекція 4, слайд 33): добровільні операції (drain вузла)
+# не можуть залишити менше двох робочих копій web.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web

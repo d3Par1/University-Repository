@@ -18,3 +18,6 @@ lab2-docker/dist/
 lab3-terraform/**/devops_iac_output.txt
 lab3-terraform/**/*.tfplan
 lab3-terraform/**/out/
+
+# ЛР4: залежності для лінтера й тестів ставить npm ci
+lab4-cicd/app/node_modules/
