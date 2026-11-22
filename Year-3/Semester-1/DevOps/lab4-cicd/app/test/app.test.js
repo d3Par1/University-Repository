@@ -26,7 +26,8 @@ test('головна сторінка містить привітання, ве�
   assert.equal(res.headers.get('x-app-version'), '1.2.3');
   assert.equal(res.headers.get('x-pod'), 'test-pod');
   const html = await res.text();
-  assert.match(html, /Hello, DevOps World!/);
+  // Саме заголовок сторінки, а не будь-яке входження: рядок є ще й у <title>.
+  assert.match(html, /<h1>Hello, DevOps World!<\/h1>/);
   assert.match(html, /1\.2\.3/);
   assert.match(html, /test-pod/);
 });

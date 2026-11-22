@@ -163,7 +163,7 @@ jobs:
 
       - name: smoke-тест через NodePort
         run: |
-          curl -fsS http://localhost:8090/ | grep -q "Hello, DevOps World!"
+          curl -fsS http://localhost:8090/ | grep -q "<h1>Hello, DevOps World!</h1>"
           info=$(curl -fsS http://localhost:8090/api/info)
           echo "$info"
           test "$(echo "$info" | jq -r .version)" = "$VERSION"
