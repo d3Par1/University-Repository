@@ -37,6 +37,8 @@ resource "docker_container" "web" {
   env     = ["APP_ENV=${each.key}"]
   restart = "unless-stopped"
   memory  = each.value.memory_mb
+  # Без цього Docker сам ставить swap = 2 x memory, і кожен plan показує зміну.
+  memory_swap = each.value.memory_mb
 
   ports {
     internal = 80
