@@ -1,0 +1,246 @@
+# ЛР4 (Технології DevOps): конвеєр CI/CD для сервісу hello-devops-api.
+# Стадії за лекцією 5: коміт (лінтери + модульні тести паралельно) -> збірка артефакту один раз
+# і сканування -> приймальні тести в ефемерному кластері Kubernetes (kind) -> публікація
+# того самого образу в GHCR із засвідченням походження (лише з main).
+name: devops-lab4-cicd
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Year-3/Semester-1/DevOps/lab4-cicd/**"
+      - ".github/workflows/devops-lab4-cicd.yml"
+  pull_request:
+    paths:
+      - "Year-3/Semester-1/DevOps/lab4-cicd/**"
+      - ".github/workflows/devops-lab4-cicd.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lab4-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  LAB_DIR: Year-3/Semester-1/DevOps/lab4-cicd
+  APP_DIR: Year-3/Semester-1/DevOps/lab4-cicd/app
+  IMAGE: hello-devops-api
+  REGISTRY_IMAGE: ghcr.io/d3par1/hello-devops-api
+
+jobs:
+  # ---------------------------------------------------------------- стадія коміту
+  lint:
+    name: "Коміт: лінтери"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: ESLint
+        run: npm run lint
+      - name: hadolint (Dockerfile)
+        run: docker run --rm -i hadolint/hadolint:v2.15.1 < Dockerfile
+      - name: kubeconform (маніфести Kubernetes)
+        run: |
+          kubectl kustomize ../k8s \
+            | docker run --rm -i ghcr.io/yannh/kubeconform:v0.8.0 -strict -summary -kubernetes-version 1.36.0 -
+
+  test:
+    name: "Коміт: модульні тести (Node ${{ matrix.node }})"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - name: node --test з порогами покриття
+        run: npm test
+
+  # ---------------------------------------------------------------- артефакт
+  build:
+    name: "Збірка образу й сканування"
+    needs: [lint, test]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: версія й тег
+        id: meta
+        run: |
+          version=$(jq -r .version package.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=$version-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - name: docker build (один раз на весь конвеєр)
+        run: |
+          docker build --build-arg APP_VERSION=${{ steps.meta.outputs.version }} \
+            -t "$IMAGE:${{ steps.meta.outputs.tag }}" .
+          docker image inspect "$IMAGE:${{ steps.meta.outputs.tag }}" --format 'id={{.Id}} size={{.Size}}'
+      - name: Trivy (HIGH/CRITICAL з виправленнями - зупинка)
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.76.2 image \
+            --quiet --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 \
+            "$IMAGE:${{ steps.meta.outputs.tag }}"
+      - name: зберегти образ як артефакт
+        run: docker save "$IMAGE:${{ steps.meta.outputs.tag }}" | gzip > "$RUNNER_TEMP/image.tar.gz"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: image
+          path: ${{ runner.temp }}/image.tar.gz
+          retention-days: 3
+
+  # ---------------------------------------------------------------- приймальні тести
+  acceptance:
+    name: "Приймання: kind, поступове оновлення, відкат"
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TAG: ${{ needs.build.outputs.tag }}
+      VERSION: ${{ needs.build.outputs.version }}
+    defaults:
+      run:
+        working-directory: ${{ env.LAB_DIR }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: image
+          path: ${{ runner.temp }}
+      - name: docker load
+        run: gunzip -c "$RUNNER_TEMP/image.tar.gz" | docker load
+      - uses: helm/kind-action@v1
+        with:
+          version: v0.33.0
+          kubectl_version: v1.36.1
+          config: ${{ env.LAB_DIR }}/kind-cluster.yaml
+          cluster_name: lab4
+      - name: kind load (той самий образ, що зібрано вище)
+        run: kind load docker-image "$IMAGE:$TAG" --name lab4
+
+      - name: розгортання (kustomize-накладка з тегом цього коміту)
+        run: |
+          mkdir -p ci-overlay
+          cat > ci-overlay/kustomization.yaml <<EOF
+          apiVersion: kustomize.config.k8s.io/v1beta1
+          kind: Kustomization
+          resources:
+            - ../k8s
+          images:
+            - name: $IMAGE
+              newTag: "$TAG"
+          EOF
+          kubectl apply -k ci-overlay
+          kubectl -n lab4 rollout status deployment/backend --timeout=120s
+          kubectl -n lab4 rollout status deployment/web --timeout=120s
+          kubectl -n lab4 get pods -o wide
+
+      - name: smoke-тест через NodePort
+        run: |
+          curl -fsS http://localhost:8090/ | grep -q "<h1>Hello, DevOps World!</h1>"
+          info=$(curl -fsS http://localhost:8090/api/info)
+          echo "$info"
+          test "$(echo "$info" | jq -r .version)" = "$VERSION"
+          test "$(echo "$info" | jq -r .env)" = "kind"
+          curl -fsS http://localhost:8090/readyz
+
+      - name: оновлення без простою під навантаженням
+        run: |
+          curl -s -o /dev/null -H "Connection: close" --rate 20/s -m 2 -w "%{http_code}\n" \
+            "http://localhost:8090/?n=[1-500]" > load.log &
+          load=$!
+          sleep 2
+          kubectl -n lab4 rollout restart deployment/web
+          kubectl -n lab4 rollout status deployment/web --timeout=120s
+          wait $load
+          sort load.log | uniq -c
+          errors=$(grep -vc '^200$' load.log || true)
+          echo "помилок під час оновлення: $errors з $(wc -l < load.log)"
+          test "$errors" -eq 0
+
+      - name: невдалий випуск зупиняється, відкат відновлює
+        run: |
+          kubectl -n lab4 set image deployment/web web="$IMAGE:does-not-exist"
+          if kubectl -n lab4 rollout status deployment/web --timeout=30s; then
+            echo "оновлення на неіснуючий образ не мало завершитися успішно"; exit 1
+          fi
+          kubectl -n lab4 get pods -l app.kubernetes.io/name=web
+          curl -fsS http://localhost:8090/api/info
+          kubectl -n lab4 rollout undo deployment/web
+          kubectl -n lab4 rollout status deployment/web --timeout=120s
+          test "$(curl -fsS http://localhost:8090/api/info | jq -r .version)" = "$VERSION"
+
+      - name: діагностика при збої
+        if: failure()
+        run: |
+          kubectl -n lab4 get all -o wide || true
+          kubectl -n lab4 describe deployment web || true
+          kubectl -n lab4 get events --sort-by=.lastTimestamp | tail -n 40 || true
+
+  # ---------------------------------------------------------------- публікація
+  publish:
+    name: "Публікація в GHCR (лише main)"
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build, acceptance]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    env:
+      TAG: ${{ needs.build.outputs.tag }}
+      VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: image
+          path: ${{ runner.temp }}
+      - name: docker load
+        run: gunzip -c "$RUNNER_TEMP/image.tar.gz" | docker load
+      - name: вхід у GHCR через GITHUB_TOKEN
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: push того самого образу з двома тегами
+        id: push
+        run: |
+          docker tag "$IMAGE:$TAG" "$REGISTRY_IMAGE:$VERSION"
+          docker tag "$IMAGE:$TAG" "$REGISTRY_IMAGE:sha-${GITHUB_SHA::7}"
+          docker push "$REGISTRY_IMAGE:$VERSION"
+          docker push "$REGISTRY_IMAGE:sha-${GITHUB_SHA::7}"
+          digest=$(docker image inspect "$REGISTRY_IMAGE:$VERSION" --format '{{index .RepoDigests 0}}' | cut -d@ -f2)
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+          echo "### Опубліковано" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`$REGISTRY_IMAGE:$VERSION\` = \`$digest\`" >> "$GITHUB_STEP_SUMMARY"
+      - name: засвідчення походження (provenance)
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-name: ${{ env.REGISTRY_IMAGE }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true

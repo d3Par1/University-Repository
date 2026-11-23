@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/part-of: hello-devops-api
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  # Поступова заміна (лекція 4, слайд 35): спершу нова копія, і лише коли вона готова,
+  # прибирається одна стара. Недоступних копій під час оновлення - нуль.
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: web
+        app.kubernetes.io/part-of: hello-devops-api
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: web
+          image: hello-devops-api
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: APP_ENV
+              value: kind
+            - name: WARMUP_MS # імітація прогріву: з'єднання з БД, кеш
+              value: "4000"
+            - name: DRAIN_MS # після SIGTERM ще 5 с обслуговувати запити
+              value: "5000"
+            - name: DEPENDENCY_URL
+              value: http://backend/healthz
+          # Готовність: чи слати трафік. Тут враховано прогрів і залежність.
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 1
+            failureThreshold: 1
+          # Життєздатність: чи перезапускати. Лише сам процес, без залежностей.
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 48Mi
+            limits:
+              memory: 96Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30080

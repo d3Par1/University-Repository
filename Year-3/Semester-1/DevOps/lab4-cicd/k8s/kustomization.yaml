@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: lab4
+resources:
+  - namespace.yaml
+  - backend.yaml
+  - web.yaml
+  - pdb.yaml
+# Версію образу змінюють тут (або в конвеєрі через kustomize edit set image),
+# а не командою kubectl set image: бажаний стан лежить у репозиторії.
+images:
+  - name: hello-devops-api
+    newTag: 1.0.0

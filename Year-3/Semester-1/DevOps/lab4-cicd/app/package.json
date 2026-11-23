@@ -1,0 +1,20 @@
+{
+  "name": "hello-devops-api",
+  "version": "1.0.0",
+  "description": "ЛР4 Технології DevOps: сервіс для конвеєра CI/CD і розгортання в Kubernetes",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.8"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "lint": "eslint .",
+    "test": "node --test --experimental-test-coverage --test-coverage-include=src/app.js --test-coverage-lines=95 --test-coverage-branches=90 --test-coverage-functions=95 test/*.test.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.14.0",
+    "globals": "17.14.0"
+  }
+}

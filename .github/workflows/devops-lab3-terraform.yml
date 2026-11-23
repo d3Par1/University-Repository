@@ -1,0 +1,142 @@
+# ЛР3 (Технології DevOps): перевірка й тест інфраструктурного коду Terraform.
+# Файл лежить у корені репозиторію, бо GitHub запускає конвеєри лише з .github/workflows.
+name: devops-lab3-terraform
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Year-3/Semester-1/DevOps/lab3-terraform/**"
+      - ".github/workflows/devops-lab3-terraform.yml"
+  pull_request:
+    paths:
+      - "Year-3/Semester-1/DevOps/lab3-terraform/**"
+      - ".github/workflows/devops-lab3-terraform.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lab3-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TF_IN_AUTOMATION: "1"
+  TF_INPUT: "0"
+  TF_VERSION: "1.17.2"
+
+defaults:
+  run:
+    working-directory: Year-3/Semester-1/DevOps/lab3-terraform
+
+jobs:
+  validate:
+    name: fmt + validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: terraform fmt -check
+        run: terraform fmt -check -recursive -diff
+
+      - name: terraform validate (обидві конфігурації)
+        run: |
+          for d in 01-local 02-docker; do
+            echo "::group::$d"
+            terraform -chdir="$d" init -backend=false -lockfile=readonly
+            terraform -chdir="$d" validate
+            echo "::endgroup::"
+          done
+
+  task3:
+    name: "Завдання 3: init, plan, apply, destroy"
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: Year-3/Semester-1/DevOps/lab3-terraform/01-local
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - run: terraform init -lockfile=readonly
+      - run: terraform plan -out=task3.tfplan
+      - run: terraform apply task3.tfplan
+
+      - name: файл створено з потрібним вмістом
+        run: |
+          cat devops_iac_output.txt; echo
+          test "$(cat devops_iac_output.txt)" = "Цей файл створено за допомогою Terraform"
+
+      - name: повторний plan порожній (ідемпотентність)
+        run: terraform plan -detailed-exitcode
+
+      - run: terraform destroy -auto-approve
+
+      - name: файл видалено
+        run: test ! -e devops_iac_output.txt
+
+  docker:
+    name: "Docker-провайдер: apply, smoke, дрейф, destroy"
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: Year-3/Semester-1/DevOps/lab3-terraform/02-docker
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - run: terraform init -lockfile=readonly
+      - run: terraform apply -auto-approve
+
+      - name: smoke-тест обох середовищ
+        run: |
+          docker ps --filter label=com.kpi.lab=lr3
+          for env in staging:8081 production:8082; do
+            name=${env%%:*}; port=${env##*:}
+            headers=$(curl -fsSI "http://localhost:$port/")
+            echo "$headers" | grep -i '^x-app'
+            echo "$headers" | grep -qi "^x-app-env: $name"
+            curl -fs "http://localhost:$port/" | grep -q "Hello, DevOps World!"
+          done
+          cat out/environments.md
+
+      - name: повторний plan порожній (ідемпотентність)
+        run: terraform plan -detailed-exitcode
+
+      - name: ручне видалення контейнера виявляється як дрейф
+        run: |
+          docker rm -f lab3-staging
+          set +e
+          terraform plan -detailed-exitcode > /dev/null
+          code=$?
+          set -e
+          echo "код виходу plan після ручної зміни: $code"
+          test "$code" -eq 2
+
+      - name: apply відновлює бажаний стан
+        run: |
+          terraform apply -auto-approve
+          curl -fsI http://localhost:8081/ | grep -i '^x-app-env: staging'
+          terraform plan -detailed-exitcode
+
+      - name: destroy
+        if: always()
+        run: |
+          terraform destroy -auto-approve
+          test -z "$(docker ps -aq --filter label=com.kpi.lab=lr3)"
