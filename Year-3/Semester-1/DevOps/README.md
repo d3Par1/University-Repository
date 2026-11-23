@@ -3,8 +3,37 @@
 [![CI](https://github.com/d3Par1/devops-lab1/actions/workflows/main.yml/badge.svg)](https://github.com/d3Par1/devops-lab1/actions/workflows/main.yml)
 [![lab2-docker](https://github.com/d3Par1/devops-lab1/actions/workflows/lab2-docker.yml/badge.svg)](https://github.com/d3Par1/devops-lab1/actions/workflows/lab2-docker.yml)
 
-Лабораторні роботи № 1 і № 2 з дисципліни «Технології DevOps».
+Лабораторні роботи № 1–4 з дисципліни «Технології DevOps».
 Виконав: Степаненко Назар Юрійович, ТВ-43, № 14 у списку групи.
+
+Бейджі вище – запуски ЛР1–ЛР2 у репозиторії `devops-lab1`. Конвеєри ЛР3–ЛР4 лежать у корені цього
+репозиторію: `.github/workflows/devops-lab3-terraform.yml`, `devops-lab4-minimal.yml`, `devops-lab4-cicd.yml`.
+
+## ЛР4: CI/CD і Kubernetes (`lab4-cicd/`)
+
+Сервіс `hello-devops-api` (Node.js, модульні тести з порогами покриття), маніфести Kubernetes з
+перевірками готовності й життєздатності та конвеєр: лінтери й тести → збірка + Trivy →
+приймальні тести в кластері kind → публікація в GHCR (лише з `main`).
+
+```bash
+cd lab4-cicd/app && npm ci && npm run lint && npm test
+docker build --build-arg APP_VERSION=1.0.0 -t hello-devops-api:1.0.0 app   # з каталогу lab4-cicd
+kind create cluster --config kind-cluster.yaml
+kind load docker-image hello-devops-api:1.0.0 --name lab4
+kubectl apply -k k8s && kubectl -n lab4 rollout status deployment/web
+curl localhost:8090/api/info
+kind delete cluster --name lab4
+```
+
+## ЛР3: інфраструктура як код (`lab3-terraform/`)
+
+`01-local` – конфігурація із завдання 3 (`local_file`), `02-docker` – образ ЛР2 у двох середовищах
+(staging :8081, production :8082) через провайдер Docker.
+
+```bash
+cd lab3-terraform/01-local && terraform init && terraform apply && terraform destroy
+cd ../02-docker && terraform init && terraform apply   # потім terraform destroy
+```
 
 ## ЛР2: контейнеризація (`lab2-docker/`)
 
